@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Your Dictionary</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="look_up_words">Show Stored Words</string>
+    <string name="word_list_fragment_label">Words That Start With {letter}</string>
+    <string name="word_details_fragment_label">{word}</string>
+</resources>
