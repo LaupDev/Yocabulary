@@ -1,5 +1,6 @@
 package com.laupdev.yourdictionary.ui
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -47,8 +48,15 @@ class WordDetailsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val currWordObj = viewModel.getWordByName(currWord)
-        binding.word.text = currWordObj.value?.word ?: "Error"
+        viewModel.getWordByName(currWord).observe(viewLifecycleOwner, {
+            it?.let {
+                binding.word.text = it.word
+                binding.transcription.text = it.transcription
+                binding.translation.text = it.translation
+                binding.meaning.text = it.meaning
+                binding.example.text = it.example
+            }
+        })
 
     }
 }
