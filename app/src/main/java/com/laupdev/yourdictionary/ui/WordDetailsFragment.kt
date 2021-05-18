@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yourdictionary.R
 import com.laupdev.yourdictionary.application.DictionaryApplication
 import com.laupdev.yourdictionary.databinding.FragmentWordDetailsBinding
@@ -15,7 +16,7 @@ import com.laupdev.yourdictionary.model.DictionaryViewModelFactory
 class WordDetailsFragment : Fragment() {
 
     companion object {
-        const val WORD = "word"
+        const val WORD_ID = "word_id"
     }
 
     private var _binding: FragmentWordDetailsBinding? = null
@@ -29,13 +30,14 @@ class WordDetailsFragment : Fragment() {
             .get(DictionaryViewModel::class.java)
     }
 
-    private lateinit var currWord: String
+    private var currWordId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        println("_____________________________________WDF___________")
         arguments?.let {
-            currWord = it.getString(WORD).toString()
+            currWordId = it.getInt(WORD_ID)
         }
     }
 
@@ -49,8 +51,10 @@ class WordDetailsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.getWordByName(currWord).observe(viewLifecycleOwner, {
+        var wordId: Int = 0
+        viewModel.getWordById(currWordId).observe(viewLifecycleOwner, {
             it?.let {
+                wordId = it.id
                 binding.word.text = it.word
                 binding.transcription.text = it.transcription
                 binding.translation.text = it.translation
@@ -58,6 +62,16 @@ class WordDetailsFragment : Fragment() {
                 binding.example.text = it.example
             }
         })
+        binding.editWordBtn.setOnClickListener {
+            if (wordId != 0) {
+                val action =
+                    WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(wordId)
+                view.findNavController().navigate(action)
+            } else {
+                Snackbar.make(requireView(), R.string.word_update_error, Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+        }
 
     }
 
@@ -84,9 +98,8 @@ class WordDetailsFragment : Fragment() {
     }
 
     private fun removeWord() {
-        viewModel.removeWord(currWord)
+        viewModel.removeWord(currWordId)
         requireView().findNavController().popBackStack()
     }
-
 
 }

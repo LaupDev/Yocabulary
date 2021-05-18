@@ -27,8 +27,6 @@ class LetterListFragment : Fragment() {
         return view
     }
 
-    // TODO: 14.05.2021 Add action for FAB and new fragment for adding words
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)

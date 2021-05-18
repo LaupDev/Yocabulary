@@ -30,7 +30,8 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         holder.button?.text = currentList[position].word
         holder.button?.setOnClickListener {
-            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(word = holder.button.text.toString())
+            println("______________________________" + currentList[position])
+            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].id)
             holder.view.findNavController().navigate(action)
         }
     }

@@ -17,6 +17,10 @@ import com.laupdev.yourdictionary.model.AddWordViewModelFactory
 
 class AddNewWordFragment : Fragment() {
 
+    companion object {
+        const val WORD_ID = "word_id"
+    }
+
     private var _binding: FragmentAddNewWordBinding? = null
     private val binding get() = _binding!!
 
@@ -24,8 +28,20 @@ class AddNewWordFragment : Fragment() {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
-        ViewModelProvider(this, AddWordViewModelFactory((activity.application as DictionaryApplication).repository))
+        ViewModelProvider(
+            this,
+            AddWordViewModelFactory((activity.application as DictionaryApplication).repository)
+        )
             .get(AddWordViewModel::class.java)
+    }
+
+    private var wordId = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            wordId = it.getInt(WORD_ID)
+        }
     }
 
     override fun onCreateView(
@@ -38,29 +54,49 @@ class AddNewWordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.newWord.setOnClickListener {
-            binding.newWord.error = null
+            binding.newWord.error = null  // TODO: 18.05.2021 Fix error reset
         }
         binding.saveButton.setOnClickListener {
-                addWordToDatabase()
+            addWordToDatabase()
         }
         binding.cancelButton.setOnClickListener {
             view.findNavController().popBackStack()
         }
+
+        if (wordId != 0) {
+            viewModel.getWordById(wordId).observe(viewLifecycleOwner, {
+                it?.let {
+                    binding.newWordEditText.setText(it.word)
+                    binding.transcriptionEditText.setText(it.transcription)
+                    binding.translationEditText.setText(it.translation)
+                    binding.meaningEditText.setText(it.meaning)
+                    binding.exampleEditText.setText(it.example)
+                }
+            })
+        }
     }
 
     private fun addWordToDatabase() {
-        if (binding.newWordEditText.text != null && binding.newWordEditText.text.toString().isNotEmpty()) {
+        if (binding.newWordEditText.text != null &&
+            binding.newWordEditText.text.toString().isNotEmpty()
+        ) {
             val newWord = Word(
-            0,
-            binding.newWordEditText.text.toString(),
-            binding.translationEditText.text.toString(),
-            binding.transcriptionEditText.text.toString(),
-            binding.meaningEditText.text.toString(),
-            binding.exampleEditText.text.toString()
+                wordId,
+                binding.newWordEditText.text.toString(),
+                binding.translationEditText.text.toString(),
+                binding.transcriptionEditText.text.toString(),
+                binding.meaningEditText.text.toString(),
+                binding.exampleEditText.text.toString()
             )
-            viewModel.insert(newWord)
+            if (wordId == 0) {
+                viewModel.insert(newWord)
+                Snackbar.make(requireView(), R.string.new_word_added, Snackbar.LENGTH_SHORT).show()
+            } else {
+                viewModel.update(newWord)
+                Snackbar.make(requireView(), R.string.word_updated_success, Snackbar.LENGTH_SHORT)
+                    .show()
+            }
             requireView().findNavController().popBackStack()
-            Snackbar.make(requireView(), R.string.new_word_added, Snackbar.LENGTH_SHORT).show()
         } else {
             binding.newWord.error = getString(R.string.word_error_message)
         }

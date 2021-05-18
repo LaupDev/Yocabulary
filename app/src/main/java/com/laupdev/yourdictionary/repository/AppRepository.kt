@@ -11,6 +11,8 @@ class AppRepository(private val wordDao: WordDao) {
 
     fun getWord(word: String) = wordDao.getWordByName(word)
 
+    fun getWordById(wordId: Int) = wordDao.getWordById(wordId)
+
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(word: Word) {
@@ -19,8 +21,14 @@ class AppRepository(private val wordDao: WordDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun removeWordByName(word: String) {
-        wordDao.removeWordByName(word)
+    suspend fun removeWordById(wordId: Int) {
+        wordDao.removeWordById(wordId)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun update(word: Word) {
+        wordDao.update(word)
     }
 
 }

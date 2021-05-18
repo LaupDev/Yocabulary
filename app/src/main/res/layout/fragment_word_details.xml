@@ -58,4 +58,13 @@
         </LinearLayout>
     </ScrollView>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_word_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/edit_word"
+        android:src="@drawable/ic_edit_24" />
+
 </FrameLayout>

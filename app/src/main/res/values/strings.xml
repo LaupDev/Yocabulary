@@ -7,7 +7,10 @@
     <string name="word_details_fragment_label">{word}</string>
     <string name="submit">Add new word</string>
     <string name="add_new_word">Add New Word</string>
+
     <string name="remove_word">Remove word</string>
+    <string name="edit_word">Edit word</string>
+    <string name="word_update_error">Error. Try again</string>
 
     <!--fragment_add_new_word-->
     <string name="new_word">New word</string>
@@ -19,4 +22,5 @@
     <string name="button_cancel">Cancel</string>
     <string name="word_error_message">Enter a new word</string>
     <string name="new_word_added">Added new word</string>
+    <string name="word_updated_success">Successfully updated</string>
 </resources>

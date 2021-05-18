@@ -15,11 +15,17 @@ interface WordDao {
     @Query("SELECT * FROM Word WHERE word = :word")
     fun getWordByName(word: String): Flow<Word>
 
+    @Query("SELECT * FROM Word WHERE id = :wordId")
+    fun getWordById(wordId: Int): Flow<Word>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(word: Word)
 
-    @Query("DELETE FROM Word WHERE word = :word")
-    suspend fun removeWordByName(word: String)
+    @Update
+    suspend fun update(word: Word)
+
+    @Query("DELETE FROM Word WHERE id = :wordId")
+    suspend fun removeWordById(wordId: Int)
 
     @Query("DELETE FROM Word")
     suspend fun deleteAll()

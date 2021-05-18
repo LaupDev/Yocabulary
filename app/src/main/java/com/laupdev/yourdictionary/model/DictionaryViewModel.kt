@@ -10,10 +10,10 @@ class DictionaryViewModel(private val repository: AppRepository) : ViewModel() {
 
     val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
 
-    fun getWordByName(word: String) = repository.getWord(word).asLiveData()
+    fun getWordById(wordId: Int) = repository.getWordById(wordId).asLiveData()
 
-    fun removeWord(word: String) = viewModelScope.launch {
-        repository.removeWordByName(word)
+    fun removeWord(wordId: Int) = viewModelScope.launch {
+        repository.removeWordById(wordId)
     }
 
 }
