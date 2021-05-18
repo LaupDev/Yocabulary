@@ -47,14 +47,15 @@ class AddNewWordFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAddNewWordBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.newWord.setOnClickListener {
-            binding.newWord.error = null  // TODO: 18.05.2021 Fix error reset
+        binding.newWordEditText.setOnKeyListener { _, _, _ ->
+            binding.newWord.error = null
+            false
         }
         binding.saveButton.setOnClickListener {
             addWordToDatabase()
@@ -76,10 +77,19 @@ class AddNewWordFragment : Fragment() {
         }
     }
 
+
+    /***
+    * This function has two use cases:
+    * 1. If a user click on the btn for adding new words
+    * then this function will add new word to the database
+    * 2. If a user click on the edit btn in fragment_word_details
+    * then this word will be updated in the database
+    ***/
     private fun addWordToDatabase() {
         if (binding.newWordEditText.text != null &&
             binding.newWordEditText.text.toString().isNotEmpty()
         ) {
+            binding.newWord.error = null
             val newWord = Word(
                 wordId,
                 binding.newWordEditText.text.toString(),
