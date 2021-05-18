@@ -1,6 +1,8 @@
 package com.laupdev.yourdictionary.ui
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -17,6 +19,7 @@ class WordDetailsFragment : Fragment() {
 
     companion object {
         const val WORD_ID = "word_id"
+        const val SEARCH_PREFIX = "https://www.google.com/search?q="
     }
 
     private var _binding: FragmentWordDetailsBinding? = null
@@ -35,7 +38,6 @@ class WordDetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        println("_____________________________________WDF___________")
         arguments?.let {
             currWordId = it.getInt(WORD_ID)
         }
@@ -45,13 +47,13 @@ class WordDetailsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentWordDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var wordId: Int = 0
+        var wordId = 0
         viewModel.getWordById(currWordId).observe(viewLifecycleOwner, {
             it?.let {
                 wordId = it.id
@@ -62,6 +64,7 @@ class WordDetailsFragment : Fragment() {
                 binding.example.text = it.example
             }
         })
+
         binding.editWordBtn.setOnClickListener {
             if (wordId != 0) {
                 val action =
@@ -73,7 +76,18 @@ class WordDetailsFragment : Fragment() {
             }
         }
 
+        binding.searchTranslationBtn.setOnClickListener {
+            searchWordTranslationInWeb()
+        }
+
     }
+
+    private fun searchWordTranslationInWeb() {
+        val queryUrl: Uri = Uri.parse("${SEARCH_PREFIX}${binding.word.text} translation")
+        val intent = Intent(Intent.ACTION_VIEW, queryUrl)
+        requireContext().startActivity(intent)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

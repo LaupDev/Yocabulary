@@ -12,6 +12,8 @@
     <string name="edit_word">Edit word</string>
     <string name="word_update_error">Error. Try again</string>
 
+    <string name="search_word_btn">Search translation</string>
+
     <!--fragment_add_new_word-->
     <string name="new_word">New word</string>
     <string name="transcription">Transcription</string>
