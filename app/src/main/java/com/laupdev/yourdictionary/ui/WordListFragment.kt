@@ -33,7 +33,10 @@ class WordListFragment : Fragment() {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
-        ViewModelProvider(this, DictionaryViewModelFactory((activity.application as DictionaryApplication).repository))
+        ViewModelProvider(
+            this,
+            DictionaryViewModelFactory((activity.application as DictionaryApplication).repository)
+        )
             .get(DictionaryViewModel::class.java)
     }
 
@@ -49,7 +52,7 @@ class WordListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentWordListBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
@@ -70,13 +73,19 @@ class WordListFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
-        viewModel.allWords.observe(viewLifecycleOwner, { words ->
-            words?.let {
-                adapter.submitList(it.filter { word ->
-                    word.word.first().toString().equals(letterId, true)
-                })
+        if (letterId == "recent") {
+            viewModel.allWords.observe(viewLifecycleOwner) {
+                adapter.submitList(it.sortedByDescending { word -> word.id })
             }
-        })
+        } else {
+            viewModel.allWords.observe(viewLifecycleOwner, { words ->
+                words?.let {
+                    adapter.submitList(it.filter { word ->
+                        word.word.first().toString().equals(letterId, true)
+                    }.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { word -> word.word }))
+                }
+            })
+        }
     }
 
 }

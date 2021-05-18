@@ -1,13 +1,12 @@
 package com.laupdev.yourdictionary.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.laupdev.yourdictionary.R
 import com.laupdev.yourdictionary.databinding.FragmentLetterListBinding
 
 class LetterListFragment : Fragment() {
@@ -17,11 +16,16 @@ class LetterListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLetterListBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
@@ -41,6 +45,23 @@ class LetterListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.show_recent_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.show_recent -> {
+                val action =
+                    LetterListFragmentDirections.actionLetterListFragmentToWordListFragment("recent")
+                requireView().findNavController().navigate(action)
+
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }

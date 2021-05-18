@@ -29,7 +29,10 @@ class WordDetailsFragment : Fragment() {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
-        ViewModelProvider(this, DictionaryViewModelFactory((activity.application as DictionaryApplication).repository))
+        ViewModelProvider(
+            this,
+            DictionaryViewModelFactory((activity.application as DictionaryApplication).repository)
+        )
             .get(DictionaryViewModel::class.java)
     }
 
@@ -68,7 +71,9 @@ class WordDetailsFragment : Fragment() {
         binding.editWordBtn.setOnClickListener {
             if (wordId != 0) {
                 val action =
-                    WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(wordId)
+                    WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
+                        wordId
+                    )
                 view.findNavController().navigate(action)
             } else {
                 Snackbar.make(requireView(), R.string.word_update_error, Snackbar.LENGTH_SHORT)
@@ -88,7 +93,6 @@ class WordDetailsFragment : Fragment() {
         requireContext().startActivity(intent)
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -107,7 +111,7 @@ class WordDetailsFragment : Fragment() {
             }
 
             else -> super.onOptionsItemSelected(item)
-         }
+        }
 
     }
 

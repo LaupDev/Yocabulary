@@ -9,6 +9,7 @@
     <string name="add_new_word">Add New Word</string>
 
     <string name="remove_word">Remove word</string>
+    <string name="show_recent">Show recent words</string>
     <string name="edit_word">Edit word</string>
     <string name="word_update_error">Error. Try again</string>
 
