@@ -13,4 +13,13 @@
         android:padding="16dp"
         tools:listitem="@layout/item_view" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_new_word_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_add_24"
+        android:contentDescription="@string/submit"
+        android:layout_margin="16dp" />
+
 </FrameLayout>

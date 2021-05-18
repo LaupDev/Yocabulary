@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,6 +64,11 @@ class WordListFragment : Fragment() {
         recyclerView.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
+
+        binding.addNewWordBtn.setOnClickListener {
+            val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment()
+            view.findNavController().navigate(action)
+        }
 
         viewModel.allWords.observe(viewLifecycleOwner, { words ->
             words?.let {

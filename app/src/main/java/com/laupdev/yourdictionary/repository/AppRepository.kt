@@ -17,4 +17,10 @@ class AppRepository(private val wordDao: WordDao) {
         wordDao.insert(word)
     }
 
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun removeWordByName(word: String) {
+        wordDao.removeWordByName(word)
+    }
+
 }

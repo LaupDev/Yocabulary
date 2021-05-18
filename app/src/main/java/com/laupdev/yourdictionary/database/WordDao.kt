@@ -1,26 +1,26 @@
 package com.laupdev.yourdictionary.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WordDao {
 
-    @Query("SELECT * FROM word")
+    @Query("SELECT * FROM Word")
     fun getAllWords(): Flow<List<Word>>
 
-    @Query("SELECT * FROM word WHERE word LIKE :letter || '%'")
+    @Query("SELECT * FROM Word WHERE word LIKE :letter || '%'")
     fun getByFirstLetter(letter: Char): Flow<List<Word>>
 
-    @Query("SELECT * FROM word WHERE word = :word")
+    @Query("SELECT * FROM Word WHERE word = :word")
     fun getWordByName(word: String): Flow<Word>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(word: Word)
 
-    @Query("DELETE FROM word")
+    @Query("DELETE FROM Word WHERE word = :word")
+    suspend fun removeWordByName(word: String)
+
+    @Query("DELETE FROM Word")
     suspend fun deleteAll()
 }

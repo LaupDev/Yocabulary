@@ -10,11 +10,11 @@ class DictionaryViewModel(private val repository: AppRepository) : ViewModel() {
 
     val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
 
-    fun insert(word: Word) = viewModelScope.launch {
-        repository.insert(word)
-    }
-
     fun getWordByName(word: String) = repository.getWord(word).asLiveData()
+
+    fun removeWord(word: String) = viewModelScope.launch {
+        repository.removeWordByName(word)
+    }
 
 }
 

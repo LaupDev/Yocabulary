@@ -1,0 +1,74 @@
+package com.laupdev.yourdictionary.ui
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import com.google.android.material.snackbar.Snackbar
+import com.laupdev.yourdictionary.R
+import com.laupdev.yourdictionary.application.DictionaryApplication
+import com.laupdev.yourdictionary.database.Word
+import com.laupdev.yourdictionary.databinding.FragmentAddNewWordBinding
+import com.laupdev.yourdictionary.model.AddWordViewModel
+import com.laupdev.yourdictionary.model.AddWordViewModelFactory
+
+class AddNewWordFragment : Fragment() {
+
+    private var _binding: FragmentAddNewWordBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: AddWordViewModel by lazy {
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onActivityCreated()"
+        }
+        ViewModelProvider(this, AddWordViewModelFactory((activity.application as DictionaryApplication).repository))
+            .get(AddWordViewModel::class.java)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAddNewWordBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.newWord.setOnClickListener {
+            binding.newWord.error = null
+        }
+        binding.saveButton.setOnClickListener {
+                addWordToDatabase()
+        }
+        binding.cancelButton.setOnClickListener {
+            view.findNavController().popBackStack()
+        }
+    }
+
+    private fun addWordToDatabase() {
+        if (binding.newWordEditText.text != null && binding.newWordEditText.text.toString().isNotEmpty()) {
+            val newWord = Word(
+            0,
+            binding.newWordEditText.text.toString(),
+            binding.translationEditText.text.toString(),
+            binding.transcriptionEditText.text.toString(),
+            binding.meaningEditText.text.toString(),
+            binding.exampleEditText.text.toString()
+            )
+            viewModel.insert(newWord)
+            requireView().findNavController().popBackStack()
+            Snackbar.make(requireView(), R.string.new_word_added, Snackbar.LENGTH_SHORT).show()
+        } else {
+            binding.newWord.error = getString(R.string.word_error_message)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+}

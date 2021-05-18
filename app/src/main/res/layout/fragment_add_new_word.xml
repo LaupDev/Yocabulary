@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.AddNewWordFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/new_word"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/new_word"
+            app:counterEnabled="true"
+            app:counterMaxLength="30"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_word_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/transcription"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="@string/transcription">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/transcription_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/translation"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="@string/translation">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/translation_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/meaning"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="@string/meaning">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/meaning_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/example"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="@string/example">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/example_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:text="@string/button_save" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancel_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_toStartOf="@id/save_button"
+                android:layout_toLeftOf="@id/save_button"
+                android:text="@string/button_cancel" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

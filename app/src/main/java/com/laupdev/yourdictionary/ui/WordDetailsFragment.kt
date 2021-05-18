@@ -2,11 +2,11 @@ package com.laupdev.yourdictionary.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import com.laupdev.yourdictionary.R
 import com.laupdev.yourdictionary.application.DictionaryApplication
 import com.laupdev.yourdictionary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yourdictionary.model.DictionaryViewModel
@@ -33,6 +33,7 @@ class WordDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         arguments?.let {
             currWord = it.getString(WORD).toString()
         }
@@ -59,4 +60,33 @@ class WordDetailsFragment : Fragment() {
         })
 
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.remove_word_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.remove_word -> {
+                removeWord()
+
+                return true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+         }
+
+    }
+
+    private fun removeWord() {
+        viewModel.removeWord(currWord)
+        requireView().findNavController().popBackStack()
+    }
+
+
 }

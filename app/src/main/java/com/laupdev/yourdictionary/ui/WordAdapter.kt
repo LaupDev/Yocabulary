@@ -32,7 +32,6 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
         holder.button?.setOnClickListener {
             val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(word = holder.button.text.toString())
             holder.view.findNavController().navigate(action)
-            Toast.makeText(holder.view.context, "Word Details", Toast.LENGTH_SHORT).show()
         }
     }
 
