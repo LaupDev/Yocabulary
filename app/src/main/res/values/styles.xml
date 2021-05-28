@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<!--    <style name="Widget.YourDictionary.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout"-->
-
-<!--    <style name="Theme.YourDictionary" parent="Theme.MaterialComponents.NoActionBar">-->
-
-<!--    </style>-->
-    
-    <style name="Theme.YourDictionary.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Theme.YourDictionary" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:statusBarColor">@color/color_grey</item>
     </style>
 
     <style name="WordItemButton">
