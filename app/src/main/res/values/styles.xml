@@ -3,4 +3,43 @@
 
 <!--    <style name="Widget.YourDictionary.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout"-->
 
+<!--    <style name="Theme.YourDictionary" parent="Theme.MaterialComponents.NoActionBar">-->
+
+<!--    </style>-->
+    
+    <style name="Theme.YourDictionary.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="WordItemButton">
+        <item name="android:minHeight">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+    </style>
+
+    <!--  Tabs Style  -->
+    <style name="TextAppearance.YourDictionary.Button" parent="TextAppearance.MaterialComponents.Button">
+        <item name="fontFamily">@font/poppins_bold</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    
+    <style name="Widget.YourDictionary.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.YourDictionary.TabLayout</item>
+        <item name="tabTextAppearance">@style/TextAppearance.YourDictionary.Button</item>
+    </style>
+
+    <style name="ThemeOverlay.YourDictionary.TabLayout" parent="">
+        <item name="colorPrimary">@color/color_orange</item>
+        <item name="colorSurface">@color/color_grey</item>
+        <item name="colorOnSurface">@color/color_white_45percent</item>
+    </style>
+
+    <!--  Top App bar Style  -->
+    <style name="Widget.YourDictionary.ToolBar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/poppins_semi_bold</item>
+    </style>
+
+
 </resources>

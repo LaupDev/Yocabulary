@@ -64,28 +64,24 @@ class WordListFragment : Fragment() {
         val adapter = WordAdapter()
         recyclerView.adapter = adapter
 
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        )
-
         binding.addNewWordBtn.setOnClickListener {
             val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment()
             view.findNavController().navigate(action)
         }
 
-        if (letterId == "recent") {
-            viewModel.allWords.observe(viewLifecycleOwner) {
-                adapter.submitList(it.sortedByDescending { word -> word.id })
-            }
-        } else {
-            viewModel.allWords.observe(viewLifecycleOwner, { words ->
-                words?.let {
-                    adapter.submitList(it.filter { word ->
-                        word.word.first().toString().equals(letterId, true)
-                    }.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { word -> word.word }))
-                }
-            })
+//        if (letterId == "recent") {
+        viewModel.allWords.observe(viewLifecycleOwner) {
+            adapter.submitList(it.sortedByDescending { word -> word.id })
         }
+//        } else {
+//            viewModel.allWords.observe(viewLifecycleOwner, { words ->
+//                words?.let {
+//                    adapter.submitList(it.filter { word ->
+//                        word.word.first().toString().equals(letterId, true)
+//                    }.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { word -> word.word }))
+//                }
+//            })
+//        }
     }
 
 }

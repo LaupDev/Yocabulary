@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -17,7 +19,10 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
 ) {
 
     class WordViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val button: Button? = view.findViewById(R.id.button_item)
+        val wordContainer: View? = view.findViewById(R.id.word_container)
+        val wordTextView: TextView? = view.findViewById(R.id.word)
+        val transTextView: TextView? = view.findViewById(R.id.translation)
+        val addWordToFavorite: ImageView? = view.findViewById(R.id.add_to_favorite)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
@@ -28,8 +33,10 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
     }
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
-        holder.button?.text = currentList[position].word
-        holder.button?.setOnClickListener {
+        holder.wordTextView?.text = currentList[position].word
+        holder.transTextView?.text = currentList[position].translation
+//        holder.addWordToFavorite?.contentDescription = holder.view.context.getString(R.string.add_word_to_favorite, currentList[position].word) // Check how it works
+        holder.wordContainer?.setOnClickListener {
             val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].id)
             holder.view.findNavController().navigate(action)
         }

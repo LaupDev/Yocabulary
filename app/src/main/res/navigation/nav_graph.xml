@@ -3,20 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/letterListFragment">
+    app:startDestination="@id/wordListFragment">
 
-    <fragment
-        android:id="@+id/letterListFragment"
-        android:name="com.laupdev.yourdictionary.ui.LetterListFragment"
-        android:label="@string/app_name"
-        tools:layout="@layout/fragment_letter_list">
-        <action
-            android:id="@+id/action_letterListFragment_to_wordListFragment"
-            app:destination="@id/wordListFragment" />
-        <action
-            android:id="@+id/action_letterListFragment_to_addNewWordFragment"
-            app:destination="@id/addNewWordFragment" />
-    </fragment>
     <fragment
         android:id="@+id/wordListFragment"
         android:name="com.laupdev.yourdictionary.ui.WordListFragment"

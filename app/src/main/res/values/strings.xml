@@ -26,4 +26,15 @@
     <string name="word_error_message">Enter a new word</string>
     <string name="new_word_added">Added new word</string>
     <string name="word_updated_success">Successfully updated</string>
+
+
+    <!--Vocabulary fragments -->
+    <string name="vocabulary_tab">Vocabulary</string>
+    <string name="my_words_tab">My words</string>
+    <string name="my_sets_tab">My sets</string>
+    <string name="sort_words">Sort words</string>
+    <string name="search_words_hint">Search words</string>
+    <string name="add_word_to_favorite">Add word %s to favorite</string>
+    <string name="pronounce_word">Pronounce word</string>
+
 </resources>
