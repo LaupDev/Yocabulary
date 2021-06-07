@@ -1,6 +1,5 @@
-package com.laupdev.yourdictionary.database
+package com.laupdev.yocabulary.database
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull

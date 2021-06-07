@@ -1,8 +1,8 @@
-package com.laupdev.yourdictionary.application
+package com.laupdev.yocabulary.application
 
 import android.app.Application
-import com.laupdev.yourdictionary.database.AppDatabase
-import com.laupdev.yourdictionary.repository.AppRepository
+import com.laupdev.yocabulary.database.AppDatabase
+import com.laupdev.yocabulary.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 

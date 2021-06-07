@@ -1,4 +1,4 @@
-package com.laupdev.yourdictionary
+package com.laupdev.yocabulary
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

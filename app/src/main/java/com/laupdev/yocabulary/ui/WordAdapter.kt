@@ -1,18 +1,16 @@
-package com.laupdev.yourdictionary.ui
+package com.laupdev.yocabulary.ui
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.laupdev.yourdictionary.R
-import com.laupdev.yourdictionary.database.Word
+import com.laupdev.yocabulary.R
+import com.laupdev.yocabulary.database.Word
 
 class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback

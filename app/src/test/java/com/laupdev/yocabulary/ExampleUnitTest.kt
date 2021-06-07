@@ -1,4 +1,4 @@
-package com.laupdev.yourdictionary
+package com.laupdev.yocabulary
 
 import org.junit.Test
 

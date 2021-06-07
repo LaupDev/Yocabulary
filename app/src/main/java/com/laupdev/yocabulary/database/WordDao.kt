@@ -1,4 +1,4 @@
-package com.laupdev.yourdictionary.database
+package com.laupdev.yocabulary.database
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow

@@ -1,38 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.YourDictionary" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="android:statusBarColor">@color/color_grey</item>
-    </style>
+    <style name="Theme.Yocabulary" parent="Theme.MaterialComponents.NoActionBar">
 
-    <style name="WordItemButton">
-        <item name="android:minHeight">0dp</item>
-        <item name="android:layout_margin">0dp</item>
+        <item name="colorPrimary">@color/color_grey</item>
+        <item name="colorPrimaryVariant">@color/color_grey_lighter</item>
+        <item name="colorOnPrimary">@color/color_white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/color_orange</item>
+        <item name="colorSecondaryVariant">@color/color_orange_lighter</item>
+        <item name="colorOnSecondary">@color/color_black</item>
+        <!-- Error color -->
+        <item name="colorError">@color/color_red</item>
+        <!-- Status bar style -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <!-- Tool bar style. -->
+        <item name="toolbarStyle">@style/Widget.Yocabulary.ToolBar</item>
+        <!-- Tab Layout style. -->
+        <item name="tabStyle">@style/Widget.Yocabulary.TabLayout</item>
+        <!-- Customize your theme here. -->
+        <item name="android:colorBackground">@color/color_grey</item>
     </style>
 
     <!--  Tabs Style  -->
-    <style name="TextAppearance.YourDictionary.Button" parent="TextAppearance.MaterialComponents.Button">
+    <style name="TextAppearance.Yocabulary.TabButton" parent="TextAppearance.MaterialComponents.Button">
         <item name="fontFamily">@font/poppins_bold</item>
         <item name="android:fontFamily">@font/poppins_bold</item>
         <item name="android:textSize">14sp</item>
     </style>
-    
-    <style name="Widget.YourDictionary.TabLayout" parent="Widget.MaterialComponents.TabLayout">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.YourDictionary.TabLayout</item>
-        <item name="tabTextAppearance">@style/TextAppearance.YourDictionary.Button</item>
+
+    <style name="Widget.Yocabulary.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.TabLayout</item>
+        <item name="tabTextAppearance">@style/TextAppearance.Yocabulary.TabButton</item>
     </style>
 
-    <style name="ThemeOverlay.YourDictionary.TabLayout" parent="">
+    <style name="ThemeOverlay.Yocabulary.TabLayout" parent="">
         <item name="colorPrimary">@color/color_orange</item>
         <item name="colorSurface">@color/color_grey</item>
         <item name="colorOnSurface">@color/color_white_45percent</item>
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/color_grey</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <!--  Top App bar Style  -->
-    <style name="Widget.YourDictionary.ToolBar" parent="Widget.MaterialComponents.Toolbar">
-        <item name="android:textSize">20sp</item>
-        <item name="android:fontFamily">@font/poppins_semi_bold</item>
+    <style name="Widget.Yocabulary.ToolBar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.Toolbar</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Yocabulary.Headline6</item>
     </style>
+
+    <style name="ThemeOverlay.Yocabulary.Toolbar" parent="">
+        <item name="colorPrimary">@color/color_grey</item>
+        <item name="colorOnPrimary">@color/color_white</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <!-- Word details fragment styles -->
+    <style name="TextAppearance.Yocabulary.Word" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="fontFamily">@font/poppins_bold</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">@color/color_orange_text</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Transcription" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Translation" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.PartOfSpeech" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins_semi_bold_italic</item>
+        <item name="android:fontFamily">@font/poppins_semi_bold_italic</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/color_orange_text</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Meaning" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Example" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.SynonymWords" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <style name="Widget.Yocabulary.WordButton1" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.WordButton1</item>
+
+        <item name="cornerRadius">4dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/color_orange</item>
+
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+    </style>
+
+    <style name="ThemeOverlay.Yocabulary.WordButton1" parent="">
+        <item name="colorPrimary">@color/color_grey_lighter</item>
+        <item name="colorOnPrimary">@color/color_white</item>
+    </style>
+
+    <!-- Add new word fragment styles -->
+    <style name="Widget.Yocabulary.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.TextInputLayout</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout</item>
+
+        <item name="boxBackgroundColor">@color/color_state_material_edit_text_layout</item>
+        <item name="boxStrokeWidth">0dp</item>
+
+        <item name="hintTextColor">@color/color_orange_text</item>
+    </style>
+
+    <style name="Widget.Yocabulary.TextInputLayout.FilledBox.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.TextInputLayout.ExposedDropdownMenu</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout</item>
+
+        <item name="boxBackgroundColor">@color/color_grey_lighter</item>
+        <item name="boxStrokeWidth">0dp</item>
+
+        <item name="hintTextColor">@color/color_orange_text</item>
+    </style>
+
+    <style name="Widget.Yocabulary.AddButton" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.Button</item>
+        <item name="android:textAppearance">@style/TextAppearance.Yocabulary.AddButton</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout</item>
+
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="iconSize">30dp</item>
+        <item name="iconTint">@color/color_orange</item>
+    </style>
+
+    <style name="ThemeOverlay.Yocabulary.TextInputLayout" parent="">
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Yocabulary.Subtitle1</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Yocabulary.Caption</item>
+        <item name="editTextStyle">@style/Widget.MaterialComponents.TextInputEditText.FilledBox</item>
+    </style>
+
+    <style name="ThemeOverlay.Yocabulary.TextInputLayout.ExposedDropdownMenu" parent="">
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Yocabulary.Subtitle1</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Yocabulary.Caption</item>
+        <item name="autoCompleteTextViewStyle">@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox</item>
+    </style>
+
+    <style name="ThemeOverlay.Yocabulary.Button" parent="">
+        <item name="colorPrimary">@color/color_grey_lighter</item>
+        <item name="colorOnPrimary">@color/color_white</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/poppins_light</item>
+        <item name="android:fontFamily">@font/poppins_light</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.AddButton" parent="TextAppearance.MaterialComponents.Button">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Yocabulary.TextInputLayout" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+<!--    <style name="CustomHintDisabled" parent="TextAppearance.MaterialComponents.Caption">-->
+<!--        <item name="textColor">@color/gray</item>-->
+<!--    </style>-->
+
+<!--    <style name="CustomHintEnabled" parent="YourBaseTheme.TextAppearance">-->
+<!--        <item name="textColor">@color/black</item>-->
+<!--    </style>-->
 
 
 </resources>

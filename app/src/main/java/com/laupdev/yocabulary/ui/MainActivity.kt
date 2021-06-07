@@ -1,11 +1,8 @@
-package com.laupdev.yourdictionary.ui
+package com.laupdev.yocabulary.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.laupdev.yourdictionary.R
+import com.laupdev.yocabulary.R
 
 class MainActivity : AppCompatActivity() {
 

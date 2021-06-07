@@ -17,4 +17,8 @@
     <color name="color_white_60percent">#99FFFFFF</color>
     <color name="color_white_45percent">#73FFFFFF</color>
     <color name="color_black">#FF000000</color>
+    <color name="color_red">#FFFF0033</color>
+
+    <color name="color_disabled_input_text">#99303030</color>
+    <color name="color_enabled_input_text">#FF303030</color>
 </resources>

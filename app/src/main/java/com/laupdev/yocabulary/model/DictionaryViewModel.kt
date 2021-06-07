@@ -1,8 +1,8 @@
-package com.laupdev.yourdictionary.model
+package com.laupdev.yocabulary.model
 
 import androidx.lifecycle.*
-import com.laupdev.yourdictionary.database.Word
-import com.laupdev.yourdictionary.repository.AppRepository
+import com.laupdev.yocabulary.database.Word
+import com.laupdev.yocabulary.repository.AppRepository
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 

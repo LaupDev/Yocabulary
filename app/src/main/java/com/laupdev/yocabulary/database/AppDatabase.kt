@@ -1,4 +1,4 @@
-package com.laupdev.yourdictionary.database
+package com.laupdev.yocabulary.database
 
 import android.content.Context
 import androidx.room.Database

@@ -1,21 +1,18 @@
-package com.laupdev.yourdictionary.ui
+package com.laupdev.yocabulary.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.laupdev.yourdictionary.application.DictionaryApplication
-import com.laupdev.yourdictionary.databinding.FragmentWordListBinding
-import com.laupdev.yourdictionary.model.DictionaryViewModel
-import com.laupdev.yourdictionary.model.DictionaryViewModelFactory
+import com.laupdev.yocabulary.R
+import com.laupdev.yocabulary.application.DictionaryApplication
+import com.laupdev.yocabulary.databinding.FragmentWordListBinding
+import com.laupdev.yocabulary.model.DictionaryViewModel
+import com.laupdev.yocabulary.model.DictionaryViewModelFactory
 
 class WordListFragment : Fragment() {
 
@@ -42,7 +39,7 @@ class WordListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setHasOptionsMenu(true)
         arguments?.let {
             letterId = it.getString(LETTER).toString()
         }
@@ -54,11 +51,12 @@ class WordListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWordListBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
         val adapter = WordAdapter()
@@ -82,6 +80,11 @@ class WordListFragment : Fragment() {
 //                }
 //            })
 //        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.sort_words_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
 }

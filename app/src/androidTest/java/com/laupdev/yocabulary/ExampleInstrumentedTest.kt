@@ -1,4 +1,4 @@
-package com.laupdev.yourdictionary
+package com.laupdev.yocabulary
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

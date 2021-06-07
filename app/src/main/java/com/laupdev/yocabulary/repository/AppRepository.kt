@@ -1,8 +1,8 @@
-package com.laupdev.yourdictionary.repository
+package com.laupdev.yocabulary.repository
 
 import androidx.annotation.WorkerThread
-import com.laupdev.yourdictionary.database.Word
-import com.laupdev.yourdictionary.database.WordDao
+import com.laupdev.yocabulary.database.Word
+import com.laupdev.yocabulary.database.WordDao
 import kotlinx.coroutines.flow.Flow
 
 class AppRepository(private val wordDao: WordDao) {
