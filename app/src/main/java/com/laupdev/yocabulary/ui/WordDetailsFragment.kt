@@ -59,8 +59,13 @@ class WordDetailsFragment : Fragment() {
     ): View {
         _binding = FragmentWordDetailsBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
+
+
+
         return binding.root
     }
+
+    // TODO: 08.06.2021 Add remove button for part_of_speech_block and meanings
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var wordId = 0

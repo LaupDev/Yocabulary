@@ -2,4 +2,6 @@
 <resources>
     <item name="part_of_speech" type="id" />
     <item name="synonym_words" type="id" />
+    <item name="part_of_speech_block" type="id" />
+    <item name="part_of_speech_dropdown" type="id" />
 </resources>
