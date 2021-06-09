@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AutoCompleteTextView
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -21,6 +23,8 @@ import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddWordViewModel
 import com.laupdev.yocabulary.model.AddWordViewModelFactory
+import java.util.*
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 class AddNewWordFragment : Fragment() {
@@ -48,7 +52,7 @@ class AddNewWordFragment : Fragment() {
 
     private var wordId = 0
     private var partsOfSpeechCount = 1
-    private var meaningsCount = 1
+    private val meaningsCountMap = mutableMapOf(partsOfSpeechCount to 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -242,17 +246,17 @@ class AddNewWordFragment : Fragment() {
 //        partsOfSpeechCount++
 //        return partOfSpeechLinearLayout
 
-        val newPartOfSpeechView = layoutInflater.inflate(R.layout.view_part_of_speech, binding.addWordFields, false)
-        newPartOfSpeechView.id = R.id.part_of_speech_block + 20000 + partsOfSpeechCount
+        val newPartOfSpeechView = layoutInflater.inflate(R.layout.view_part_of_speech, binding.addWordFields, false) as LinearLayout
+        newPartOfSpeechView.id = R.id.part_of_speech_block + 15000 + partsOfSpeechCount
 
         val partOfSpeechTextInputLayout = newPartOfSpeechView.findViewById<TextInputLayout>(R.id.part_of_speech)
-        partOfSpeechTextInputLayout.id = R.id.part_of_speech + 20000 + partsOfSpeechCount
+        partOfSpeechTextInputLayout.id = R.id.part_of_speech + 16000 + partsOfSpeechCount
         partOfSpeechTextInputLayout.hint = resources.getString(R.string.part_of_speech,
             "$partsOfSpeechCount."
         )
 
         val partOfSpeechAutoCompleteTextView = newPartOfSpeechView.findViewById<AutoCompleteTextView>(R.id.part_of_speech_dropdown)
-        partOfSpeechAutoCompleteTextView.id = R.id.part_of_speech_dropdown + 20000 + partsOfSpeechCount
+        partOfSpeechAutoCompleteTextView.id = R.id.part_of_speech_dropdown + 17000 + partsOfSpeechCount
         val adapter = AdapterForDropdown(
             requireContext(),
             resources.getStringArray(R.array.parts_of_speech).toList()
@@ -267,37 +271,62 @@ class AddNewWordFragment : Fragment() {
         )
 
         val translationTextInputLayout = newPartOfSpeechView.findViewById<TextInputLayout>(R.id.translation)
-        translationTextInputLayout.id = R.id.translation + 20000 + partsOfSpeechCount
+        translationTextInputLayout.id = R.id.translation + 18000 + partsOfSpeechCount
         translationTextInputLayout.isEnabled = false
         translationTextInputLayout.hint = resources.getString(R.string.translation, "$partsOfSpeechCount.")
-        newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text).id = R.id.translation_edit_text + 20000 + partsOfSpeechCount
+        newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text).id = R.id.translation_edit_text + 18000 + partsOfSpeechCount
+        println("BEFORE---------------------------------------" + R.id.translation + 18000 + partsOfSpeechCount)
 
-        val meaningTextInputLayout = newPartOfSpeechView.findViewById<TextInputLayout>(R.id.meaning)
-        meaningTextInputLayout.id = R.id.meaning + 20000 + meaningsCount
-        meaningTextInputLayout.isEnabled = false
-        meaningTextInputLayout.hint = resources.getString(R.string.meaning, "$partsOfSpeechCount.$meaningsCount.")
-        newPartOfSpeechView.findViewById<TextInputEditText>(R.id.meaning_edit_text).id = R.id.meaning_edit_text + 20000 + meaningsCount
+        val meaningButton = newPartOfSpeechView.findViewById<Button>(R.id.add_meaning)
+        meaningButton.id = R.id.add_meaning + 19000 + partsOfSpeechCount
+        meaningButton.isEnabled = false
 
-        val exampleTextInputLayout = newPartOfSpeechView.findViewById<TextInputLayout>(R.id.example)
-        exampleTextInputLayout.id = R.id.example + 20000 + meaningsCount
-        exampleTextInputLayout.isEnabled = false
-        exampleTextInputLayout.hint = resources.getString(R.string.example, "$partsOfSpeechCount.$meaningsCount.")
-        newPartOfSpeechView.findViewById<TextInputEditText>(R.id.example_edit_text).id = R.id.example_edit_text + 20000 + meaningsCount
+        addMeaning(newPartOfSpeechView, false, partsOfSpeechCount)
 
-        partOfSpeechAutoCompleteTextView.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, _, _ ->
-                translationTextInputLayout.isEnabled = true
-                meaningTextInputLayout.isEnabled = true
-                exampleTextInputLayout.isEnabled = true
-            }
+        val tempValue = partsOfSpeechCount
+        meaningButton.setOnClickListener {
+            addMeaning(newPartOfSpeechView, true, tempValue)
+        }
 
         partsOfSpeechCount++
+        meaningsCountMap[partsOfSpeechCount] = 1
         binding.addWordFields.addView(newPartOfSpeechView)
         // TODO: 09.06.2021 Fix bug with disappearing of programmatically added views when turning phone
     }
 
-    private fun addMeaning(): View {
-        return View(requireContext())
+    private fun addMeaning(parentView: ViewGroup, isFieldsEnabled: Boolean, partsOfSpeechCount: Int) {
+
+        val meaningsCount = meaningsCountMap[partsOfSpeechCount] ?: 0
+
+        val newMeaningView = layoutInflater.inflate(R.layout.view_meaning, parentView, false)
+        newMeaningView.id = R.id.meaning_block + 20000 + meaningsCount
+
+        val meaningTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.meaning)
+        meaningTextInputLayout.id = R.id.meaning + 21000 + meaningsCount
+        meaningTextInputLayout.isEnabled = isFieldsEnabled
+        meaningTextInputLayout.hint = resources.getString(R.string.meaning, "$partsOfSpeechCount.$meaningsCount.")
+        newMeaningView.findViewById<TextInputEditText>(R.id.meaning_edit_text).id = R.id.meaning_edit_text + 21000 + meaningsCount
+
+        val exampleTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.example)
+        exampleTextInputLayout.id = R.id.example + 22000 + meaningsCount
+        exampleTextInputLayout.isEnabled = isFieldsEnabled
+        exampleTextInputLayout.hint = resources.getString(R.string.example, "$partsOfSpeechCount.$meaningsCount.")
+        newMeaningView.findViewById<TextInputEditText>(R.id.example_edit_text).id = R.id.example_edit_text + 22000 + meaningsCount
+
+        if (!isFieldsEnabled) {
+            parentView.findViewById<AutoCompleteTextView>(R.id.part_of_speech_dropdown + 17000 + partsOfSpeechCount).onItemClickListener =
+                AdapterView.OnItemClickListener { _, _, _, _ ->
+                    println("---------------------------------------" + R.id.translation + 18000 + partsOfSpeechCount)
+                    parentView.findViewById<TextInputLayout>(R.id.translation + 18000 + partsOfSpeechCount).isEnabled = true
+                    parentView.findViewById<Button>(R.id.add_meaning + 19000 + partsOfSpeechCount).isEnabled = true
+                    meaningTextInputLayout.isEnabled = true
+                    exampleTextInputLayout.isEnabled = true
+                }
+        }
+
+        meaningsCountMap[partsOfSpeechCount] = meaningsCount + 1
+
+        parentView.findViewById<LinearLayout>(R.id.meanings).addView(newMeaningView)
     }
 
     override fun onDestroyView() {

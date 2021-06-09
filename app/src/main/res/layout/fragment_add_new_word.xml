@@ -160,13 +160,13 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/add_definition"
-                style="@style/Widget.Yocabulary.AddButton"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
-                android:text="@string/add_meaning"
-                app:icon="@drawable/ic_add_24" />
+<!--            <Button-->
+<!--                android:id="@+id/add_meaning"-->
+<!--                style="@style/Widget.Yocabulary.AddButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="45dp"-->
+<!--                android:text="@string/add_meaning"-->
+<!--                app:icon="@drawable/ic_add_24" />-->
 
             <Button
                 android:id="@+id/add_part_of_speech"
