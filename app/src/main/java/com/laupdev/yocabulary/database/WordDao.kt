@@ -6,27 +6,36 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WordDao {
 
-    @Query("SELECT * FROM Word")
+    @Query("SELECT * FROM words")
     fun getAllWords(): Flow<List<Word>>
 
-    @Query("SELECT * FROM Word WHERE word LIKE :letter || '%'")
+    @Query("SELECT * FROM words WHERE word LIKE :letter || '%'")
     fun getByFirstLetter(letter: Char): Flow<List<Word>>
 
-    @Query("SELECT * FROM Word WHERE word = :word")
+    @Query("SELECT * FROM words WHERE word = :word")
     fun getWordByName(word: String): Flow<Word>
 
-    @Query("SELECT * FROM Word WHERE id = :wordId")
+    @Query("SELECT * FROM words WHERE id = :wordId")
     fun getWordById(wordId: Int): Flow<Word>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(word: Word)
+    suspend fun insert(word: Word): Long
 
     @Update
     suspend fun update(word: Word)
 
-    @Query("DELETE FROM Word WHERE id = :wordId")
+    @Query("DELETE FROM words WHERE id = :wordId")
     suspend fun removeWordById(wordId: Int)
 
-    @Query("DELETE FROM Word")
+    @Query("DELETE FROM words")
     suspend fun deleteAll()
+
+    @Transaction
+    @Query("SELECT * FROM words WHERE word = :word")
+    fun getWordWithPosAndMeaningsByWord(word: String): Flow<WordWithPartsOfSpeechAndMeanings>
+
+    @Transaction
+    @Query("SELECT * FROM words WHERE id = :wordId")
+    fun getWordWithPosAndMeaningsById(wordId: Int): Flow<WordWithPartsOfSpeechAndMeanings>
+
 }

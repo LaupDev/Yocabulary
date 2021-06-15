@@ -9,6 +9,7 @@
         <item>Preposition</item>
         <item>Conjunction</item>
         <item>Interjection</item>
-        <item>Unknown</item>
+        <item>Other</item>
+        <item>None</item>
     </string-array>
 </resources>

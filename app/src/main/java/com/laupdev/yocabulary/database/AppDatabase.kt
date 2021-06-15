@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun wordDao(): WordDao
+    abstract fun partOfSpeechDao(): PartOfSpeechDao
+    abstract fun meaningDao(): MeaningDao
 
     private class WordDatabaseCallback(
         private val scope: CoroutineScope
@@ -21,21 +23,37 @@ abstract class AppDatabase : RoomDatabase() {
             super.onCreate(db)
             INSTANCE?.let { database ->
                 scope.launch {
-                    populateDatabase(database.wordDao())
+                    populateDatabase(database.wordDao(), database.partOfSpeechDao(), database.meaningDao())
                 }
             }
         }
 
-        suspend fun populateDatabase(wordDao: WordDao) {
+        suspend fun populateDatabase(wordDao: WordDao, partOfSpeechDao: PartOfSpeechDao, meaningDao: MeaningDao) {
             // Delete all content here.
             wordDao.deleteAll()
 
-            var word = Word(0,"Hello", "Привіт", "həˈləʊ", "Used when meeting or greeting someone", "Hello, John! How are you?")
-            wordDao.insert(word)
-            word = Word(0, "Hi", "Привіт", "haɪ", "Used as an informal greeting, usually to people who you know", "Hi, there!")
-            wordDao.insert(word)
-            word = Word(0, "Apple", "Яблуко", "", "", "He took a bite out of the apple")
-            wordDao.insert(word)
+            var word = Word(wordId = 0, word = "Hello", transcription = "həˈləʊ", audioUrl = "https://lex-audio.useremarkable.com/mp3/hello_us_1_rr.mp3")
+            var newWordId = wordDao.insert(word)
+            var partOfSpeech = PartOfSpeech(0, newWordId, "Interjection", "Привіт")
+            var newPosId = partOfSpeechDao.insert(partOfSpeech)
+            var meaning = Meaning(0, newPosId, "Used when meeting or greeting someone", "Hello, John! How are you?")
+            meaningDao.insert(meaning)
+
+            word = Word(wordId = 0, word = "Hi", transcription = "haɪ")
+            newWordId = wordDao.insert(word)
+            partOfSpeech = PartOfSpeech(0, newWordId, "Interjection", "Привіт")
+            newPosId = partOfSpeechDao.insert(partOfSpeech)
+            meaning = Meaning(0, newPosId, "Used as an informal greeting, usually to people who you know", "Hi, there!", "Hello")
+            meaningDao.insert(meaning)
+
+            word = Word(wordId = 0, word = "Apple", audioUrl = "https://lex-audio.useremarkable.com/mp3/apple_us_1.mp3")
+            newWordId = wordDao.insert(word)
+            partOfSpeech = PartOfSpeech(0, newWordId, "Noun", "Яблуко")
+            newPosId = partOfSpeechDao.insert(partOfSpeech)
+            meaning = Meaning(0, newPosId, "", "He took a bite out of the apple")
+            meaningDao.insert(meaning)
+
+            // TODO: 14.06.2021 Populate database, change AddNewWordFragment to store new data and WordDetailsFragment to use data
 
         }
     }

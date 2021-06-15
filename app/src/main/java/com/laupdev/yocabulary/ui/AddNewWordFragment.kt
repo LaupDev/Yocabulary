@@ -8,11 +8,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.get
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.textfield.TextInputEditText
@@ -52,6 +52,7 @@ class AddNewWordFragment : Fragment() {
 
     private var wordId = 0
     private var partsOfSpeechCount = 1
+    private var currentPartOfSpeechCount = 0
     private val meaningsCountMap = mutableMapOf(partsOfSpeechCount to 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,75 +178,6 @@ class AddNewWordFragment : Fragment() {
     }
 
     private fun addPartOfSpeech() {
-//        val partOfSpeechLinearLayout = LinearLayout(requireContext())
-//        partOfSpeechLinearLayout.id = R.id.part_of_speech_block + 20000 + partsOfSpeechCount
-//        partOfSpeechLinearLayout.layoutParams = ViewGroup.LayoutParams(
-//            ViewGroup.LayoutParams.MATCH_PARENT,
-//            ViewGroup.LayoutParams.WRAP_CONTENT
-//        )
-//        partOfSpeechLinearLayout.orientation = LinearLayout.VERTICAL
-//
-////        val partOfSpeechTextInputLayout = TextInputLayout(
-////            ContextThemeWrapper(
-////                requireContext(),
-////                R.style.Widget_Yocabulary_TextInputLayout_FilledBox_ExposedDropdownMenu
-////            ), null, R.attr.textInputStyle
-////        )
-//        val partOfSpeechTextInputLayout = TextInputLayout(requireContext())
-//        partOfSpeechTextInputLayout.id = R.id.part_of_speech + 20000 + partsOfSpeechCount
-//        val paramsMargin = ViewGroup.MarginLayoutParams(
-//            ViewGroup.LayoutParams(
-//                convertDpToPixel(220),
-//                ViewGroup.LayoutParams.WRAP_CONTENT
-//            )
-//        )
-//        paramsMargin.topMargin = 10
-//        partOfSpeechTextInputLayout.layoutParams = paramsMargin
-//        partOfSpeechTextInputLayout.hint = resources.getString(
-//            R.string.part_of_speech,
-//            "$partsOfSpeechCount."
-//        )
-//        partOfSpeechTextInputLayout.style {
-//            add(R.style.Widget_Yocabulary_TextInputLayout_FilledBox_ExposedDropdownMenu)
-//        }
-//        val partOfSpeechAutoCompleteTextView = AutoCompleteTextView(requireContext())
-//        partOfSpeechAutoCompleteTextView.id =
-//            R.id.part_of_speech_dropdown + 20000 + partsOfSpeechCount
-//        partOfSpeechAutoCompleteTextView.layoutParams = LinearLayout.LayoutParams(
-//            LinearLayout.LayoutParams.MATCH_PARENT,
-//            LinearLayout.LayoutParams.WRAP_CONTENT
-//        )
-//        partOfSpeechAutoCompleteTextView.dropDownHeight = convertDpToPixel(300)
-//        partOfSpeechAutoCompleteTextView.inputType = InputType.TYPE_NULL
-//        val adapter = AdapterForDropdown(
-//            requireContext(),
-//            resources.getStringArray(R.array.parts_of_speech).toList()
-//        )
-//        partOfSpeechAutoCompleteTextView.setAdapter(adapter)
-//        partOfSpeechAutoCompleteTextView.setDropDownBackgroundDrawable(
-//            ResourcesCompat.getDrawable(
-//                resources,
-//                R.drawable.custom_popupmenu_background,
-//                null
-//            )
-//        )
-//        partOfSpeechAutoCompleteTextView.onItemClickListener =
-//            AdapterView.OnItemClickListener { _, _, _, _ ->
-//                binding.translation.isEnabled = true
-//                binding.meaning.isEnabled = true
-//                binding.example.isEnabled = true
-//            }
-//
-//        partOfSpeechTextInputLayout.addView(partOfSpeechAutoCompleteTextView)
-//
-//        partOfSpeechLinearLayout.addView(partOfSpeechTextInputLayout)
-
-
-//        partOfSpeechLinearLayout.addView(addMeaning())
-
-//        partsOfSpeechCount++
-//        return partOfSpeechLinearLayout
-
         val newPartOfSpeechView = layoutInflater.inflate(R.layout.view_part_of_speech, binding.addWordFields, false) as LinearLayout
         newPartOfSpeechView.id = R.id.part_of_speech_block + 15000 + partsOfSpeechCount
 
@@ -270,12 +202,33 @@ class AddNewWordFragment : Fragment() {
             )
         )
 
+        val partOfSpeechRemoveButton = newPartOfSpeechView.findViewById<ImageButton>(R.id.remove_part_of_speech)
+        partOfSpeechRemoveButton.id = R.id.remove_part_of_speech + 17000 + partsOfSpeechCount
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(newPartOfSpeechView.findViewById<ConstraintLayout>(R.id.pos_constraint_layout))
+        constraintSet.connect(
+            partOfSpeechRemoveButton.id,
+            ConstraintSet.START,
+            partOfSpeechTextInputLayout.id,
+            ConstraintSet.END
+        )
+        constraintSet.applyTo(newPartOfSpeechView.findViewById(R.id.pos_constraint_layout))
+
+        partOfSpeechRemoveButton.setOnClickListener {
+            binding.addWordFields.removeView(newPartOfSpeechView)
+            currentPartOfSpeechCount--
+            if (currentPartOfSpeechCount == 0) {
+                meaningsCountMap.clear()
+                partsOfSpeechCount = 1
+                meaningsCountMap[partsOfSpeechCount] = 1
+            }
+        }
+
         val translationTextInputLayout = newPartOfSpeechView.findViewById<TextInputLayout>(R.id.translation)
         translationTextInputLayout.id = R.id.translation + 18000 + partsOfSpeechCount
         translationTextInputLayout.isEnabled = false
         translationTextInputLayout.hint = resources.getString(R.string.translation, "$partsOfSpeechCount.")
         newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text).id = R.id.translation_edit_text + 18000 + partsOfSpeechCount
-        println("BEFORE---------------------------------------" + R.id.translation + 18000 + partsOfSpeechCount)
 
         val meaningButton = newPartOfSpeechView.findViewById<Button>(R.id.add_meaning)
         meaningButton.id = R.id.add_meaning + 19000 + partsOfSpeechCount
@@ -289,10 +242,21 @@ class AddNewWordFragment : Fragment() {
         }
 
         partsOfSpeechCount++
+        currentPartOfSpeechCount++
         meaningsCountMap[partsOfSpeechCount] = 1
         binding.addWordFields.addView(newPartOfSpeechView)
         // TODO: 09.06.2021 Fix bug with disappearing of programmatically added views when turning phone
     }
+
+//    private fun removePartOfSpeech(partOfSpeechPosition: Int) {
+//        for (pair in meaningsCountMap) {
+//            if (pair.key >= partOfSpeechPosition) {
+//                meaningsCountMap[pair.key - 1] = pair.value
+//            }
+//        }
+//        meaningsCountMap.remove(partsOfSpeechCount)
+//        partsOfSpeechCount--
+//    }
 
     private fun addMeaning(parentView: ViewGroup, isFieldsEnabled: Boolean, partsOfSpeechCount: Int) {
 
@@ -315,12 +279,21 @@ class AddNewWordFragment : Fragment() {
 
         if (!isFieldsEnabled) {
             parentView.findViewById<AutoCompleteTextView>(R.id.part_of_speech_dropdown + 17000 + partsOfSpeechCount).onItemClickListener =
-                AdapterView.OnItemClickListener { _, _, _, _ ->
-                    println("---------------------------------------" + R.id.translation + 18000 + partsOfSpeechCount)
-                    parentView.findViewById<TextInputLayout>(R.id.translation + 18000 + partsOfSpeechCount).isEnabled = true
-                    parentView.findViewById<Button>(R.id.add_meaning + 19000 + partsOfSpeechCount).isEnabled = true
-                    meaningTextInputLayout.isEnabled = true
-                    exampleTextInputLayout.isEnabled = true
+                AdapterView.OnItemClickListener { parent, _, postion, _ ->
+                    when (parent.getItemAtPosition(postion).toString()) {
+                        "None" -> {
+                            parentView.findViewById<TextInputLayout>(R.id.translation + 18000 + partsOfSpeechCount).isEnabled = false
+                            parentView.findViewById<Button>(R.id.add_meaning + 19000 + partsOfSpeechCount)
+                            meaningTextInputLayout.isEnabled = false
+                            exampleTextInputLayout.isEnabled = false
+                        }
+                        else -> {
+                            parentView.findViewById<TextInputLayout>(R.id.translation + 18000 + partsOfSpeechCount).isEnabled = true
+                            parentView.findViewById<Button>(R.id.add_meaning + 19000 + partsOfSpeechCount).isEnabled = true
+                            meaningTextInputLayout.isEnabled = true
+                            exampleTextInputLayout.isEnabled = true
+                        }
+                    }
                 }
         }
 
