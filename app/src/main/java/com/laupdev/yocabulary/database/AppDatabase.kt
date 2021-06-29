@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = arrayOf(Word::class), version = 1)
+@Database(entities = [Meaning::class, PartOfSpeech::class, Word::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun wordDao(): WordDao
@@ -74,7 +74,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "word_database"
+                    "yocabulary_database"
                 )
                     .addCallback(WordDatabaseCallback(scope))
                     .build()

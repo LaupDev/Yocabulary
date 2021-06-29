@@ -22,6 +22,7 @@
     <string name="translation">%s Translation</string>
     <string name="meaning">%s Meaning</string>
     <string name="example">%s Example</string>
+    <string name="synonyms">%s Synonyms</string>
     <string name="save_word">Save word</string>
     <string name="button_cancel">Cancel</string>
     <string name="word_error_message">Enter a new word</string>
@@ -31,6 +32,7 @@
     <string name="add_meaning">Add Meaning</string>
     <string name="add_part_of_speech">Add Part of speech</string>
     <string name="remove_part_of_speech">Remove Part of speech</string>
+    <string name="remove_meaning">Remove Meaning</string>
 
 
     <!--Vocabulary fragments -->
@@ -40,6 +42,7 @@
     <string name="sort_words">Sort words</string>
     <string name="search_words_hint">Search words</string>
     <string name="add_word_to_favorite">Add word %s to favorite</string>
+    <string name="add_word_to_vocabulary">Add word %s to favourite</string>
     <string name="pronounce_word">Pronounce word</string>
     <string name="delete_word">Delete word</string>
     <string name="more_options_menu">More options</string>

@@ -19,7 +19,7 @@ data class PartOfSpeech(
     @ColumnInfo(name = "id")
     val posId: Long,
     @ColumnInfo(name = "word_id")
-    val wordId: Long,
+    var wordId: Long,
     @ColumnInfo(name = "part_of_speech")
     val partOfSpeech: String,
     @ColumnInfo(name = "translation")

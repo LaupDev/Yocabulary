@@ -32,17 +32,17 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         holder.wordTextView?.text = currentList[position].word
-        holder.transTextView?.text = currentList[position].translation
+//        holder.transTextView?.text = currentList[position].translation
 //        holder.addWordToFavorite?.contentDescription = holder.view.context.getString(R.string.add_word_to_favorite, currentList[position].word) // Check how it works
         holder.wordContainer?.setOnClickListener {
-            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].id)
+            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].wordId)
             holder.view.findNavController().navigate(action)
         }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<Word>() {
         override fun areItemsTheSame(oldItem: Word, newItem: Word): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.wordId == newItem.wordId
         }
 
         override fun areContentsTheSame(oldItem: Word, newItem: Word): Boolean {

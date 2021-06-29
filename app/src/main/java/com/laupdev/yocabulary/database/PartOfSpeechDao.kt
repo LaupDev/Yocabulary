@@ -5,8 +5,6 @@ import androidx.room.Insert
 
 @Dao
 interface PartOfSpeechDao {
-
     @Insert
     suspend fun insert(pos: PartOfSpeech): Long
-
 }

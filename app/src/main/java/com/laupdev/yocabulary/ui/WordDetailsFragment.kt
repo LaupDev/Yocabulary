@@ -1,8 +1,9 @@
 package com.laupdev.yocabulary.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
-import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -14,14 +15,24 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
+import com.laupdev.yocabulary.database.Meaning
+import com.laupdev.yocabulary.database.PartOfSpeechWithMeanings
 import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yocabulary.model.DictionaryViewModel
 import com.laupdev.yocabulary.model.DictionaryViewModelFactory
+
+enum class UniqueIdAddition(val idAddition: Int) {
+    PART_OF_SPEECH(10000),
+    MEANING(11000),
+    EXAMPLE(12000),
+    SYNONYM_WORDS(13000)
+}
 
 class WordDetailsFragment : Fragment() {
 
     companion object {
         const val WORD_ID = "word_id"
+        const val WORD_NAME = "word_name"
         const val SEARCH_PREFIX = "https://www.google.com/search?q="
     }
 
@@ -39,16 +50,20 @@ class WordDetailsFragment : Fragment() {
             .get(DictionaryViewModel::class.java)
     }
 
-    private var currWordId: Int = 0
+    private var currWordId: Long = 0
+    private var wordToSearch: String = ""
 
     private var partOfSpeechCount = 1
-    private var definitionCount = 1
+    private var meaningsCount = 1
+
+    private var translations = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            currWordId = it.getInt(WORD_ID)
+            currWordId = it.getLong(WORD_ID)
+            wordToSearch = it.getString(WORD_NAME).toString()
         }
     }
 
@@ -59,44 +74,26 @@ class WordDetailsFragment : Fragment() {
     ): View {
         _binding = FragmentWordDetailsBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
-
-
-
         return binding.root
     }
 
-    // TODO: 08.06.2021 Add remove button for part_of_speech_block and meanings
-
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var wordId = 0
-        viewModel.getWordById(currWordId).observe(viewLifecycleOwner, {
-            it?.let {
-                wordId = it.id
-                binding.word.text = it.word
-                binding.transcription.text = it.transcription
-                binding.translation.text = it.translation
-            }
-        })
 
-        // TODO: 02.06.2021 Change database and populate word details using data from this database add icon for "delete word" menu item
-        populateWordDetails()
+        if (wordToSearch != "0") {
+            binding.addToFavorite.visibility = GONE
+            binding.editWordBtn.visibility = GONE
+            binding.addToVocabulary.visibility = VISIBLE
+        } else {
+            //Add word details for word from vocabulary
+            addWordDetails(view)
+        }
 
+        // TODO: 02.06.2021 Add icon for "delete word" menu item
         binding.topAppBar.setNavigationOnClickListener {
             findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
         }
 
-        binding.editWordBtn.setOnClickListener {
-            if (wordId != 0) {
-                val action =
-                    WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
-                        wordId
-                    )
-                view.findNavController().navigate(action)
-            } else {
-                Snackbar.make(requireView(), R.string.word_update_error, Snackbar.LENGTH_SHORT)
-                    .show()
-            }
-        }
 
         // TODO: 01.06.2021 Complete button selector
 
@@ -104,6 +101,37 @@ class WordDetailsFragment : Fragment() {
 //            searchWordTranslationInWeb()
 //        }
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun addWordDetails(view: View) {
+        viewModel.getWordWithPosAndMeaningsById(currWordId).observe(viewLifecycleOwner, {
+            it?.let {
+                binding.word.text = it.word.word
+                if (it.word.transcription.isNotEmpty()) {
+                    binding.transcription.text = "[${it.word.transcription}]"
+                } else {
+                    binding.transcription.visibility = GONE
+                }
+                it.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
+                    addPartOfSpeech(partOfSpeechWithMeanings)
+                }
+            }
+        })
+
+        binding.editWordBtn.setOnClickListener {
+            if (currWordId != 0L) {
+                val action =
+                    WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
+                        currWordId
+                        // TODO: 16.06.2021 Update edit word functionality
+                    )
+                view.findNavController().navigate(action)
+            } else {
+                Snackbar.make(requireView(), R.string.word_update_error, Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 
 //    private fun searchWordTranslationInWeb() {
@@ -118,7 +146,9 @@ class WordDetailsFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.word_details_menu, menu)
+        if (wordToSearch == "0") {
+            inflater.inflate(R.menu.word_details_menu, menu)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -140,9 +170,26 @@ class WordDetailsFragment : Fragment() {
         requireView().findNavController().popBackStack()
     }
 
+//    private fun addPartOfSpeech(partOfSpeechWithMeanings: PartOfSpeechWithMeanings) {
+//
+//        val wordDetailsLinearLayout = LinearLayout(requireContext())
+//        wordDetailsLinearLayout.layoutParams = LayoutParams(
+//            LayoutParams.MATCH_PARENT,
+//            LayoutParams.WRAP_CONTENT
+//        )
+//        wordDetailsLinearLayout.orientation = LinearLayout.VERTICAL
+//
+//        wordDetailsLinearLayout.addView(addPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech))
+//
+//        partOfSpeechWithMeanings.meanings.forEach {
+//            wordDetailsLinearLayout.addView(addDefinition(it))
+//        }
+//
+//        binding.wordBody.addView(wordDetailsLinearLayout)
+//    }
 
-    private fun populateWordDetails() {
-
+    @SuppressLint("SetTextI18n")
+    private fun addPartOfSpeech(partOfSpeechWithMeanings: PartOfSpeechWithMeanings) {
         val wordDetailsLinearLayout = LinearLayout(requireContext())
         wordDetailsLinearLayout.layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -150,37 +197,58 @@ class WordDetailsFragment : Fragment() {
         )
         wordDetailsLinearLayout.orientation = LinearLayout.VERTICAL
 
-        wordDetailsLinearLayout.addView(addPartOfSpeech())
+        val partOfSpeech = partOfSpeechWithMeanings.partOfSpeech
 
-        binding.wordBody.addView(wordDetailsLinearLayout)
-
-        binding.wordBody.addView(addDefinition(meaning = true, example = true, synonyms = true))
-
-    }
-
-    private fun addPartOfSpeech(): View {
         val partOfSpeechTextView = TextView(requireContext())
 
-        partOfSpeechTextView.id = R.id.part_of_speech + 10000 + partOfSpeechCount
+        partOfSpeechTextView.id = R.id.part_of_speech + UniqueIdAddition.PART_OF_SPEECH.idAddition + partOfSpeechCount
 
-        partOfSpeechTextView.layoutParams = LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT
+        val paramsMargin = ViewGroup.MarginLayoutParams(
+            LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            )
         )
+        if (partOfSpeechCount > 1) {
+            paramsMargin.topMargin = AddNewWordFragment.convertDpToPixel(14)
+        }
 
-        partOfSpeechTextView.text = "- transitive verb (отримати доступ)"
+        partOfSpeechTextView.layoutParams = paramsMargin
+
+        partOfSpeechTextView.text = if (partOfSpeech.translation.isNotEmpty()) {
+            "- ${partOfSpeech.partOfSpeech} (${partOfSpeech.translation})"
+        } else {
+            "- ${partOfSpeech.partOfSpeech}"
+        }
 
         TextViewCompat.setTextAppearance(
             partOfSpeechTextView,
             R.style.TextAppearance_Yocabulary_PartOfSpeech
         )
 
+        if (translations.isNotEmpty()) {
+            translations += ", ${partOfSpeech.translation}"
+        } else {
+            translations = partOfSpeech.translation
+        }
+
+        binding.translation.text = translations
+
         partOfSpeechCount++
-        return partOfSpeechTextView
+
+        wordDetailsLinearLayout.addView(partOfSpeechTextView)
+
+        meaningsCount = 1
+        partOfSpeechWithMeanings.meanings.forEach {
+            wordDetailsLinearLayout.addView(addDefinition(it))
+        }
+
+        binding.wordBody.addView(wordDetailsLinearLayout)
 
     }
 
-    private fun addDefinition(meaning: Boolean, example: Boolean, synonyms: Boolean): View {
+    @SuppressLint("SetTextI18n")
+    private fun addDefinition(meaning: Meaning): View {
         val definitionLinearLayout = LinearLayout(requireContext())
         definitionLinearLayout.layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -188,9 +256,9 @@ class WordDetailsFragment : Fragment() {
         )
         definitionLinearLayout.orientation = LinearLayout.VERTICAL
 
-        if (meaning) {
+        if (meaning.meaning.isNotEmpty()) {
             val meaningTextView = TextView(requireContext())
-            meaningTextView.id = R.id.meaning + 10000 + definitionCount
+            meaningTextView.id = R.id.meaning + UniqueIdAddition.MEANING.idAddition + meaningsCount
 
             val paramsMargin = ViewGroup.MarginLayoutParams(
                 LayoutParams(
@@ -198,10 +266,14 @@ class WordDetailsFragment : Fragment() {
                     LayoutParams.WRAP_CONTENT
                 )
             )
-            paramsMargin.topMargin = 4
+            if (meaningsCount > 1) {
+                paramsMargin.topMargin = AddNewWordFragment.convertDpToPixel(8)
+            } else {
+                paramsMargin.topMargin = AddNewWordFragment.convertDpToPixel(6)
+            }
             meaningTextView.layoutParams = paramsMargin
 
-            meaningTextView.text = definitionCount.toString() + "." + "Approach or enter (a place)"
+            meaningTextView.text = "${meaningsCount}. ${meaning.meaning}"
             TextViewCompat.setTextAppearance(
                 meaningTextView,
                 R.style.TextAppearance_Yocabulary_Meaning
@@ -210,9 +282,9 @@ class WordDetailsFragment : Fragment() {
             definitionLinearLayout.addView(meaningTextView)
         }
 
-        if (example) {
+        if (meaning.example.isNotEmpty()) {
             val exampleTextView = TextView(requireContext())
-            exampleTextView.id = R.id.example + 10000 + definitionCount
+            exampleTextView.id = R.id.example + UniqueIdAddition.EXAMPLE.idAddition + meaningsCount
 
             val paramsWithMargin = ViewGroup.MarginLayoutParams(
                 LayoutParams(
@@ -220,10 +292,14 @@ class WordDetailsFragment : Fragment() {
                     LayoutParams.WRAP_CONTENT
                 )
             )
-            paramsWithMargin.topMargin = 8
+            paramsWithMargin.topMargin = AddNewWordFragment.convertDpToPixel(8)
             exampleTextView.layoutParams = paramsWithMargin
 
-            exampleTextView.text = "Single rooms have private baths accessed via the balcony"
+            exampleTextView.text = if (meaning.meaning.isNotEmpty()) {
+                meaning.example
+            } else {
+                "${meaningsCount}. ${meaning.example}"
+            }
             TextViewCompat.setTextAppearance(
                 exampleTextView,
                 R.style.TextAppearance_Yocabulary_Example
@@ -232,7 +308,7 @@ class WordDetailsFragment : Fragment() {
             definitionLinearLayout.addView(exampleTextView)
         }
 
-        if (synonyms) {
+        if (meaning.synonyms.isNotEmpty()) {
             val synonymsHeaderTextView = TextView(requireContext())
 
             val paramsWithMargin = ViewGroup.MarginLayoutParams(
@@ -241,7 +317,7 @@ class WordDetailsFragment : Fragment() {
                     LayoutParams.WRAP_CONTENT
                 )
             )
-            paramsWithMargin.topMargin = 8
+            paramsWithMargin.topMargin = AddNewWordFragment.convertDpToPixel(8)
             synonymsHeaderTextView.layoutParams = paramsWithMargin
 
             synonymsHeaderTextView.text = getString(R.string.synonyms_header)
@@ -254,12 +330,16 @@ class WordDetailsFragment : Fragment() {
             definitionLinearLayout.addView(synonymsHeaderTextView)
 
             val synonymsWordsTextView = TextView(requireContext())
-            synonymsWordsTextView.id = R.id.synonym_words + 10000 + definitionCount
+            synonymsWordsTextView.id = R.id.synonym_words + UniqueIdAddition.SYNONYM_WORDS.idAddition + meaningsCount
 
-            paramsWithMargin.topMargin = 4
+            paramsWithMargin.topMargin = AddNewWordFragment.convertDpToPixel(4)
             synonymsWordsTextView.layoutParams = paramsWithMargin
 
-            synonymsWordsTextView.text = "retrieve, gain, gain access to, acquire, obtain"
+            synonymsWordsTextView.text = if (meaning.meaning.isNotEmpty()) {
+                meaning.synonyms
+            } else {
+                "${meaningsCount}. ${meaning.synonyms}"
+            }
             TextViewCompat.setTextAppearance(
                 synonymsWordsTextView,
                 R.style.TextAppearance_Yocabulary_SynonymWords
@@ -268,7 +348,7 @@ class WordDetailsFragment : Fragment() {
             definitionLinearLayout.addView(synonymsWordsTextView)
         }
 
-        definitionCount++
+        meaningsCount++
         return definitionLinearLayout
     }
 

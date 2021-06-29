@@ -25,7 +25,7 @@ interface WordDao {
     suspend fun update(word: Word)
 
     @Query("DELETE FROM words WHERE id = :wordId")
-    suspend fun removeWordById(wordId: Int)
+    suspend fun removeWordById(wordId: Long)
 
     @Query("DELETE FROM words")
     suspend fun deleteAll()
@@ -36,6 +36,6 @@ interface WordDao {
 
     @Transaction
     @Query("SELECT * FROM words WHERE id = :wordId")
-    fun getWordWithPosAndMeaningsById(wordId: Int): Flow<WordWithPartsOfSpeechAndMeanings>
+    fun getWordWithPosAndMeaningsById(wordId: Long): Flow<WordWithPartsOfSpeechAndMeanings>
 
 }

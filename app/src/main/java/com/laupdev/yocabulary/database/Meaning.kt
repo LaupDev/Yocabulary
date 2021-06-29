@@ -18,7 +18,7 @@ data class Meaning(
     @ColumnInfo(name = "id")
     val meaningId: Long,
     @ColumnInfo(name = "pos_id")
-    val posId: Long,
+    var posId: Long,
     @ColumnInfo(name = "meaning")
     val meaning: String,
     @ColumnInfo(name = "example")

@@ -7,8 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
 class DictionaryApplication : Application() {
-    val applicationScope = CoroutineScope(SupervisorJob())
+    private val applicationScope = CoroutineScope(SupervisorJob())
 
     val database by lazy { AppDatabase.getDatabase(this, applicationScope) }
-    val repository by lazy { AppRepository(database.wordDao()) }
+    val repository by lazy { AppRepository(database.wordDao(), database.partOfSpeechDao(), database.meaningDao()) }
 }

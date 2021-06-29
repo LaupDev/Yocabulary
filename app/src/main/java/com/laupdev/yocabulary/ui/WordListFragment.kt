@@ -69,7 +69,7 @@ class WordListFragment : Fragment() {
 
 //        if (letterId == "recent") {
         viewModel.allWords.observe(viewLifecycleOwner) {
-            adapter.submitList(it.sortedByDescending { word -> word.id })
+            adapter.submitList(it.sortedByDescending { word -> word.wordId })
         }
 //        } else {
 //            viewModel.allWords.observe(viewLifecycleOwner, { words ->

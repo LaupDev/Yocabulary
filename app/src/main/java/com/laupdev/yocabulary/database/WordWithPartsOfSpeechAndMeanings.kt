@@ -11,5 +11,5 @@ data class WordWithPartsOfSpeechAndMeanings(
         parentColumn = "id",
         entityColumn = "word_id"
     )
-    val partsOfSpeech: List<PartOfSpeechWithMeanings>
+    val partsOfSpeechWithMeanings: List<PartOfSpeechWithMeanings>
 )

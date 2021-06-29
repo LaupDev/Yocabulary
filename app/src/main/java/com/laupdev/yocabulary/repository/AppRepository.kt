@@ -1,11 +1,10 @@
 package com.laupdev.yocabulary.repository
 
 import androidx.annotation.WorkerThread
-import com.laupdev.yocabulary.database.Word
-import com.laupdev.yocabulary.database.WordDao
+import com.laupdev.yocabulary.database.*
 import kotlinx.coroutines.flow.Flow
 
-class AppRepository(private val wordDao: WordDao) {
+class AppRepository(private val wordDao: WordDao, private val posDao: PartOfSpeechDao, private val meaningDao: MeaningDao) {
 
     val allWords: Flow<List<Word>> = wordDao.getAllWords()
 
@@ -13,20 +12,24 @@ class AppRepository(private val wordDao: WordDao) {
 
     fun getWordById(wordId: Int) = wordDao.getWordById(wordId)
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun insert(word: Word) {
-        wordDao.insert(word)
+    fun getWordWithPosAndMeaningsById(wordId: Long) = wordDao.getWordWithPosAndMeaningsById(wordId)
+
+    suspend fun insertWord(word: Word) : Long {
+        return wordDao.insert(word)
     }
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun removeWordById(wordId: Int) {
+    suspend fun insertPartOfSpeech(partOfSpeech: PartOfSpeech) : Long {
+        return posDao.insert(partOfSpeech)
+    }
+
+    suspend fun insertMeaning(meaning: Meaning) {
+        meaningDao.insert(meaning)
+    }
+
+    suspend fun removeWordById(wordId: Long) {
         wordDao.removeWordById(wordId)
     }
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
     suspend fun update(word: Word) {
         wordDao.update(word)
     }
