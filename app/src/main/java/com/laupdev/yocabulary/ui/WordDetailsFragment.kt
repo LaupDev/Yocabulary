@@ -15,11 +15,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
-import com.laupdev.yocabulary.database.Meaning
-import com.laupdev.yocabulary.database.PartOfSpeechWithMeanings
+import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
-import com.laupdev.yocabulary.model.DictionaryViewModel
-import com.laupdev.yocabulary.model.DictionaryViewModelFactory
+import com.laupdev.yocabulary.model.WordDetailsViewModel
+import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
+import com.laupdev.yocabulary.network.WordFromDictionary
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -39,15 +39,15 @@ class WordDetailsFragment : Fragment() {
     private var _binding: FragmentWordDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: DictionaryViewModel by lazy {
+    private val viewModel: WordDetailsViewModel by lazy {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
         ViewModelProvider(
             this,
-            DictionaryViewModelFactory((activity.application as DictionaryApplication).repository)
+            WordDetailsViewModelFactory((activity.application as DictionaryApplication).repository)
         )
-            .get(DictionaryViewModel::class.java)
+            .get(WordDetailsViewModel::class.java)
     }
 
     private var currWordId: Long = 0
@@ -81,12 +81,11 @@ class WordDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         if (wordToSearch != "0") {
-            binding.addToFavorite.visibility = GONE
-            binding.editWordBtn.visibility = GONE
-            binding.addToVocabulary.visibility = VISIBLE
+            addWordDetailsFromDictionary()
+            // TODO: 30.06.2021 Adding word from dictionary
         } else {
-            //Add word details for word from vocabulary
-            addWordDetails(view)
+            //Add word details and callbacks for word from vocabulary
+            addWordDetailsFromVocabulary(view)
         }
 
         // TODO: 02.06.2021 Add icon for "delete word" menu item
@@ -98,24 +97,16 @@ class WordDetailsFragment : Fragment() {
         // TODO: 01.06.2021 Complete button selector
 
 //        binding.searchTranslationBtn.setOnClickListener {
-//            searchWordTranslationInWeb()
+//            searchWordTranslationInWeb()z
 //        }
 
     }
 
     @SuppressLint("SetTextI18n")
-    private fun addWordDetails(view: View) {
+    private fun addWordDetailsFromVocabulary(view: View) {
         viewModel.getWordWithPosAndMeaningsById(currWordId).observe(viewLifecycleOwner, {
             it?.let {
-                binding.word.text = it.word.word
-                if (it.word.transcription.isNotEmpty()) {
-                    binding.transcription.text = "[${it.word.transcription}]"
-                } else {
-                    binding.transcription.visibility = GONE
-                }
-                it.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
-                    addPartOfSpeech(partOfSpeechWithMeanings)
-                }
+                addWordMainDetails(it)
             }
         })
 
@@ -131,6 +122,71 @@ class WordDetailsFragment : Fragment() {
                 Snackbar.make(requireView(), R.string.word_update_error, Snackbar.LENGTH_SHORT)
                     .show()
             }
+        }
+    }
+
+    private fun addWordDetailsFromDictionary() {
+        binding.addToFavorite.visibility = GONE
+        binding.editWordBtn.visibility = GONE
+        binding.addToVocabulary.visibility = VISIBLE
+        viewModel.getWordFromDictionary(wordToSearch)
+        viewModel.wordFromDictionary.observe(viewLifecycleOwner, {
+            val formattedWord = dictionaryWordToVocabularyFormat(it)
+            addWordMainDetails(formattedWord)
+        })
+        viewModel.status.observe(viewLifecycleOwner, {
+            println("---------------------STATUS------------------ " + it)
+        })
+    }
+
+    private fun dictionaryWordToVocabularyFormat(wordFromDictionary: WordFromDictionary): WordWithPartsOfSpeechAndMeanings {
+
+        val partsOfSpeechWithMeanings = mutableListOf<PartOfSpeechWithMeanings>()
+
+        wordFromDictionary.meanings.forEach {
+            val newPartOfSpeechWithMeanings = PartOfSpeechWithMeanings(
+                PartOfSpeech(posId = 0, wordId = 0, partOfSpeech = it.partOfSpeech),
+                it.definitions.let { meanings ->
+                    val newMeaningsList = mutableListOf<Meaning>()
+                    meanings.forEach { meaning ->
+                        newMeaningsList.add(
+                            Meaning(
+                                meaningId = 0,
+                                posId = 0,
+                                meaning = meaning.definition,
+                                example = meaning.example,
+                                synonyms = meaning.synonyms.let { synonyms ->
+                                    synonyms.joinToString(separator = ", ")
+                                }
+                        ))
+                    }
+                    newMeaningsList
+                }
+            )
+            partsOfSpeechWithMeanings.add(newPartOfSpeechWithMeanings)
+        }
+
+        return WordWithPartsOfSpeechAndMeanings(
+            Word(
+                wordId = 0,
+                word = wordFromDictionary.word,
+                transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text else "",
+                audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].audio else ""),
+            partsOfSpeechWithMeanings
+        )
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun addWordMainDetails(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+        binding.word.text = wordWithPartsOfSpeechAndMeanings.word.word
+        if (wordWithPartsOfSpeechAndMeanings.word.transcription.isNotEmpty()) {
+            binding.transcription.text = "[${wordWithPartsOfSpeechAndMeanings.word.transcription}]"
+        } else {
+            binding.transcription.visibility = GONE
+        }
+
+        wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
+            addPartOfSpeech(partOfSpeechWithMeanings)
         }
     }
 

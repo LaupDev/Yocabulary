@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.databinding.FragmentWordListBinding
-import com.laupdev.yocabulary.model.DictionaryViewModel
-import com.laupdev.yocabulary.model.DictionaryViewModelFactory
+import com.laupdev.yocabulary.model.WordDetailsViewModel
+import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
 
 class WordListFragment : Fragment() {
 
@@ -26,15 +26,15 @@ class WordListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var letterId: String
 
-    private val viewModel: DictionaryViewModel by lazy {
+    private val viewModel: WordDetailsViewModel by lazy {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
         ViewModelProvider(
             this,
-            DictionaryViewModelFactory((activity.application as DictionaryApplication).repository)
+            WordDetailsViewModelFactory((activity.application as DictionaryApplication).repository)
         )
-            .get(DictionaryViewModel::class.java)
+            .get(WordDetailsViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -145,6 +145,21 @@ class AddNewWordFragment : Fragment() {
             addPartOfSpeech()
         }
 
+        binding.searchInDictionary.setOnClickListener {
+            if (binding.newWordEditText.text.toString().isNotEmpty()) {
+                binding.newWord.error = null
+
+                val action =
+                    AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
+                        wordName = binding.newWordEditText.text.toString()
+                    )
+                view.findNavController().navigate(action)
+            } else {
+                binding.newWord.isErrorEnabled = true
+                binding.newWord.error = getString(R.string.word_error_message)
+            }
+        }
+
 //        if (wordId != 0L) {
 //            viewModel.getWordById(wordId).observe(viewLifecycleOwner, {
 //                it?.let {
@@ -166,9 +181,7 @@ class AddNewWordFragment : Fragment() {
      * then this word will be updated in the database
      ***/
     private fun addWordToDatabase() {
-        if (binding.newWordEditText.text != null &&
-            binding.newWordEditText.text.toString().isNotEmpty()
-        ) {
+        if (isFieldsRight()) {
             binding.newWord.error = null
 
             val newWord = Word(
@@ -181,10 +194,6 @@ class AddNewWordFragment : Fragment() {
             // TODO: 29.06.2021 Trim redundant spaces
             // TODO: 17.06.2021 Add functionality for word updating
             val dataMap = mutableMapOf<PartOfSpeech, MutableList<Meaning>>()
-
-
-            println("----------------------------------   " + partsOfSpeechIdsWithMeaningsIdsMap)
-
 
             for (pair in partsOfSpeechIdsWithMeaningsIdsMap) {
                 if (requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.isNotEmpty()) {
@@ -237,9 +246,17 @@ class AddNewWordFragment : Fragment() {
 //                    .show()
 //            }
 
+        }
+    }
+
+    private fun isFieldsRight(): Boolean {
+        return if (binding.newWordEditText.text.toString().isNotEmpty()) {
+            binding.newWord.error = null
+            true
         } else {
             binding.newWord.isErrorEnabled = true
             binding.newWord.error = getString(R.string.word_error_message)
+            false
         }
     }
 
@@ -279,6 +296,8 @@ class AddNewWordFragment : Fragment() {
                 null
             )
         )
+
+        // TODO: 01.07.2021 Add "Other" option for "Part of speech" field and additional input field
 
         val partOfSpeechRemoveButton =
             newPartOfSpeechView.findViewById<ImageButton>(R.id.remove_part_of_speech)

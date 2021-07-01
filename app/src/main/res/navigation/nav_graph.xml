@@ -51,5 +51,8 @@
             android:name="word_id"
             app:argType="long"
             android:defaultValue="0L" />
+        <action
+            android:id="@+id/action_addNewWordFragment_to_wordDetailsFragment"
+            app:destination="@id/wordDetailsFragment" />
     </fragment>
 </navigation>
