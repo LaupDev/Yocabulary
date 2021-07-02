@@ -38,4 +38,8 @@ class AppRepository(private val network: DictionaryNetwork, private val wordDao:
         wordDao.update(word)
     }
 
+    suspend fun updateWordIsFavorite(word: WordIsFavorite) {
+        wordDao.updateIsFavorite(word)
+    }
+
 }

@@ -24,15 +24,18 @@ interface WordDao {
     @Update
     suspend fun update(word: Word)
 
+    @Update(entity = Word::class)
+    suspend fun updateIsFavorite(word: WordIsFavorite)
+
     @Query("DELETE FROM words WHERE id = :wordId")
     suspend fun removeWordById(wordId: Long)
 
     @Query("DELETE FROM words")
     suspend fun deleteAll()
 
-    @Transaction
-    @Query("SELECT * FROM words WHERE word = :word")
-    fun getWordWithPosAndMeaningsByWord(word: String): Flow<WordWithPartsOfSpeechAndMeanings>
+//    @Transaction
+//    @Query("SELECT * FROM words WHERE word = :word")
+//    fun getWordWithPosAndMeaningsByWord(word: String): Flow<WordWithPartsOfSpeechAndMeanings>
 
     @Transaction
     @Query("SELECT * FROM words WHERE id = :wordId")

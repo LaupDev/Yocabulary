@@ -24,3 +24,11 @@ data class Word(
     @ColumnInfo(name = "audio_url")
     val audioUrl: String = ""
 )
+
+@Entity
+data class WordIsFavorite(
+    @ColumnInfo(name = "id")
+    val wordId: Long,
+    @ColumnInfo(name = "is_favorite")
+    val isFavourite: Int
+)

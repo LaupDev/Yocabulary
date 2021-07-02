@@ -14,15 +14,15 @@ import java.lang.IllegalArgumentException
 
 class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
-    suspend fun insertWord(word: Word) = viewModelScope.launch {
+    fun insertWord(word: Word) = viewModelScope.launch {
         repository.insertWord(word)
     }
 
-    suspend fun insertPartOfSpeech(partOfSpeech: PartOfSpeech) = viewModelScope.launch {
+    fun insertPartOfSpeech(partOfSpeech: PartOfSpeech) = viewModelScope.launch {
         repository.insertPartOfSpeech(partOfSpeech)
     }
 
-    suspend fun insertMeaning(meaning: Meaning) = viewModelScope.launch {
+    fun insertMeaning(meaning: Meaning) = viewModelScope.launch {
         repository.insertMeaning(meaning)
     }
 

@@ -48,7 +48,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="text"
-                        tools:text="access"/>
+                        tools:text="access" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,6 +84,7 @@
                         android:insetBottom="0dp"
                         android:text="@string/search_in_dictionary"
                         android:textSize="12sp"
+                        android:textColor="@color/color_white"
                         app:cornerRadius="12dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -91,82 +92,82 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--                <com.google.android.material.textfield.TextInputLayout-->
-<!--                    android:id="@+id/part_of_speech"-->
-<!--                    style="@style/Widget.Yocabulary.TextInputLayout.FilledBox.ExposedDropdownMenu"-->
-<!--                    android:layout_width="220dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:hint="@string/part_of_speech">-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:id="@+id/part_of_speech"-->
+                <!--                    style="@style/Widget.Yocabulary.TextInputLayout.FilledBox.ExposedDropdownMenu"-->
+                <!--                    android:layout_width="220dp"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:hint="@string/part_of_speech">-->
 
-<!--                    <AutoCompleteTextView-->
-<!--                        android:id="@+id/part_of_speech_dropdown"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:dropDownHeight="300dp"-->
-<!--                        android:inputType="none"-->
-<!--                        tools:ignore="LabelFor" />-->
+                <!--                    <AutoCompleteTextView-->
+                <!--                        android:id="@+id/part_of_speech_dropdown"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:dropDownHeight="300dp"-->
+                <!--                        android:inputType="none"-->
+                <!--                        tools:ignore="LabelFor" />-->
 
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
 
-<!--                <com.google.android.material.textfield.TextInputLayout-->
-<!--                    android:id="@+id/translation"-->
-<!--                    style="@style/Widget.Yocabulary.TextInputLayout"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:hint="@string/translation">-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:id="@+id/translation"-->
+                <!--                    style="@style/Widget.Yocabulary.TextInputLayout"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:hint="@string/translation">-->
 
-<!--                    <com.google.android.material.textfield.TextInputEditText-->
-<!--                        android:id="@+id/translation_edit_text"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:inputType="text" />-->
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/translation_edit_text"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:inputType="text" />-->
 
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
 
-<!--                <com.google.android.material.textfield.TextInputLayout-->
-<!--                    android:id="@+id/meaning"-->
-<!--                    style="@style/Widget.Yocabulary.TextInputLayout"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:hint="@string/meaning">-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:id="@+id/meaning"-->
+                <!--                    style="@style/Widget.Yocabulary.TextInputLayout"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:hint="@string/meaning">-->
 
-<!--                    <com.google.android.material.textfield.TextInputEditText-->
-<!--                        android:id="@+id/meaning_edit_text"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:inputType="text" />-->
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/meaning_edit_text"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:inputType="text" />-->
 
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
 
-<!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
 
-<!--                    android:id="@+id/example"-->
-<!--                    style="@style/Widget.Yocabulary.TextInputLayout"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:hint="@string/example">-->
+                <!--                    android:id="@+id/example"-->
+                <!--                    style="@style/Widget.Yocabulary.TextInputLayout"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:hint="@string/example">-->
 
-<!--                    <com.google.android.material.textfield.TextInputEditText-->
-<!--                        android:id="@+id/example_edit_text"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:inputType="text" />-->
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/example_edit_text"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:inputType="text" />-->
 
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
 
             </LinearLayout>
 
-<!--            <Button-->
-<!--                android:id="@+id/add_meaning"-->
-<!--                style="@style/Widget.Yocabulary.AddButton"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="45dp"-->
-<!--                android:text="@string/add_meaning"-->
-<!--                app:icon="@drawable/ic_add_24" />-->
+            <!--            <Button-->
+            <!--                android:id="@+id/add_meaning"-->
+            <!--                style="@style/Widget.Yocabulary.AddButton"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="45dp"-->
+            <!--                android:text="@string/add_meaning"-->
+            <!--                app:icon="@drawable/ic_add_24" />-->
 
             <Button
                 android:id="@+id/add_part_of_speech"
@@ -187,7 +188,8 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/save_word"
-        android:src="@drawable/ic_check_24"
-        app:maxImageSize="32dp" />
+        app:maxImageSize="32dp"
+        app:srcCompat="@drawable/ic_check_24"
+        app:tint="@color/color_black" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

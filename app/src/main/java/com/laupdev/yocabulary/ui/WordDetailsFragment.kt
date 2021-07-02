@@ -7,6 +7,7 @@ import android.view.ViewGroup.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.allViews
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,10 @@ import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
 import com.laupdev.yocabulary.network.WordFromDictionary
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -56,8 +61,6 @@ class WordDetailsFragment : Fragment() {
     private var partOfSpeechCount = 1
     private var meaningsCount = 1
 
-    private var translations = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -82,33 +85,10 @@ class WordDetailsFragment : Fragment() {
 
         if (wordToSearch != "0") {
             addWordDetailsFromDictionary()
-            // TODO: 30.06.2021 Adding word from dictionary
         } else {
             //Add word details and callbacks for word from vocabulary
-            addWordDetailsFromVocabulary(view)
+            addWordDetailsFromVocabulary()
         }
-
-        // TODO: 02.06.2021 Add icon for "delete word" menu item
-        binding.topAppBar.setNavigationOnClickListener {
-            findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
-        }
-
-
-        // TODO: 01.06.2021 Complete button selector
-
-//        binding.searchTranslationBtn.setOnClickListener {
-//            searchWordTranslationInWeb()z
-//        }
-
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun addWordDetailsFromVocabulary(view: View) {
-        viewModel.getWordWithPosAndMeaningsById(currWordId).observe(viewLifecycleOwner, {
-            it?.let {
-                addWordMainDetails(it)
-            }
-        })
 
         binding.editWordBtn.setOnClickListener {
             if (currWordId != 0L) {
@@ -123,20 +103,70 @@ class WordDetailsFragment : Fragment() {
                     .show()
             }
         }
+
+        binding.addToFavorite.setOnClickListener {
+            GlobalScope.launch(Dispatchers.IO) {
+                if (viewModel.updateWordIsFavorite(currWordId, !binding.addToFavorite.isSelected)) {
+                    binding.addToFavorite.isSelected = !binding.addToFavorite.isSelected
+                }
+            }
+        }
+
+        // TODO: 02.06.2021 Add icon for "delete word" menu item
+        binding.topAppBar.setNavigationOnClickListener {
+            viewModel.isAdded.observe(viewLifecycleOwner, {
+                if (it) {
+                    findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
+                } else {
+                    findNavController().popBackStack()
+                }
+            })
+        }
+
+
+        viewModel.status.observe(viewLifecycleOwner, {
+            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
+        })
+
+
+        // TODO: 01.06.2021 Complete button selector for AddToFav btn and PronounceWord btn
+
+//        binding.searchTranslationBtn.setOnClickListener {
+//            searchWordTranslationInWeb()
+//        }
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun addWordDetailsFromVocabulary() {
+        viewModel.getWordWithPosAndMeaningsById(currWordId).observe(viewLifecycleOwner, {
+            addWordMainDetails(it)
+            binding.addToFavorite.visibility = VISIBLE
+            binding.pronounceWord.visibility = VISIBLE
+        })
     }
 
     private fun addWordDetailsFromDictionary() {
-        binding.addToFavorite.visibility = GONE
-        binding.editWordBtn.visibility = GONE
-        binding.addToVocabulary.visibility = VISIBLE
+        viewModel.isAdded.observe(viewLifecycleOwner, {
+            binding.addToVocabulary.visibility = if (it) GONE else VISIBLE
+            binding.addToFavorite.visibility = if (it) VISIBLE else GONE
+            binding.editWordBtn.visibility = if (it) VISIBLE else GONE
+        })
+        binding.pronounceWord.visibility = VISIBLE
+
+        lateinit var formattedWord: WordWithPartsOfSpeechAndMeanings
         viewModel.getWordFromDictionary(wordToSearch)
         viewModel.wordFromDictionary.observe(viewLifecycleOwner, {
-            val formattedWord = dictionaryWordToVocabularyFormat(it)
+            formattedWord = dictionaryWordToVocabularyFormat(it)
             addWordMainDetails(formattedWord)
         })
-        viewModel.status.observe(viewLifecycleOwner, {
-            println("---------------------STATUS------------------ " + it)
+
+        viewModel.wordId.observe(viewLifecycleOwner, {
+            currWordId = it
         })
+        binding.addToVocabulary.setOnClickListener {
+            viewModel.insertWordWithPartsOfSpeechAndMeanings(formattedWord)
+        }
     }
 
     private fun dictionaryWordToVocabularyFormat(wordFromDictionary: WordFromDictionary): WordWithPartsOfSpeechAndMeanings {
@@ -155,9 +185,7 @@ class WordDetailsFragment : Fragment() {
                                 posId = 0,
                                 meaning = meaning.definition,
                                 example = meaning.example,
-                                synonyms = meaning.synonyms.let { synonyms ->
-                                    synonyms.joinToString(separator = ", ")
-                                }
+                                synonyms = meaning.synonyms.joinToString(separator = ", ")
                         ))
                     }
                     newMeaningsList
@@ -184,6 +212,12 @@ class WordDetailsFragment : Fragment() {
         } else {
             binding.transcription.visibility = GONE
         }
+        binding.addToFavorite.isSelected = wordWithPartsOfSpeechAndMeanings.word.isFavourite == 1
+
+        binding.wordDetails.removeAllViews()
+        partOfSpeechCount = 1
+        binding.translation.text = ""
+        binding.translation.visibility = GONE
 
         wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
             addPartOfSpeech(partOfSpeechWithMeanings)
@@ -218,31 +252,13 @@ class WordDetailsFragment : Fragment() {
 
             else -> super.onOptionsItemSelected(item)
         }
-
     }
 
     private fun removeWord() {
+        // TODO: 03.07.2021 FIX REMOVE: Add query for removing whole object chain
         viewModel.removeWord(currWordId)
-        requireView().findNavController().popBackStack()
+        findNavController().popBackStack()
     }
-
-//    private fun addPartOfSpeech(partOfSpeechWithMeanings: PartOfSpeechWithMeanings) {
-//
-//        val wordDetailsLinearLayout = LinearLayout(requireContext())
-//        wordDetailsLinearLayout.layoutParams = LayoutParams(
-//            LayoutParams.MATCH_PARENT,
-//            LayoutParams.WRAP_CONTENT
-//        )
-//        wordDetailsLinearLayout.orientation = LinearLayout.VERTICAL
-//
-//        wordDetailsLinearLayout.addView(addPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech))
-//
-//        partOfSpeechWithMeanings.meanings.forEach {
-//            wordDetailsLinearLayout.addView(addDefinition(it))
-//        }
-//
-//        binding.wordBody.addView(wordDetailsLinearLayout)
-//    }
 
     @SuppressLint("SetTextI18n")
     private fun addPartOfSpeech(partOfSpeechWithMeanings: PartOfSpeechWithMeanings) {
@@ -282,24 +298,29 @@ class WordDetailsFragment : Fragment() {
             R.style.TextAppearance_Yocabulary_PartOfSpeech
         )
 
-        if (translations.isNotEmpty()) {
-            translations += ", ${partOfSpeech.translation}"
-        } else {
-            translations = partOfSpeech.translation
+        binding.translation.text = binding.translation.text.let {
+            if (it.isNotEmpty()) {
+                toString() + ", ${partOfSpeech.translation}"
+            } else {
+                partOfSpeech.translation.also { trans ->
+                    if (trans.isNotEmpty()) {
+                        binding.translation.visibility = VISIBLE
+                    }
+                }
+            }
         }
-
-        binding.translation.text = translations
 
         partOfSpeechCount++
 
         wordDetailsLinearLayout.addView(partOfSpeechTextView)
 
+        // TODO: 03.07.2021 FIX IDS
         meaningsCount = 1
         partOfSpeechWithMeanings.meanings.forEach {
             wordDetailsLinearLayout.addView(addDefinition(it))
         }
 
-        binding.wordBody.addView(wordDetailsLinearLayout)
+        binding.wordDetails.addView(wordDetailsLinearLayout)
 
     }
 

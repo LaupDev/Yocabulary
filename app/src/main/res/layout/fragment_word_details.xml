@@ -35,16 +35,16 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="25dp">
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:orientation="vertical"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/buttons"
-                    android:layout_marginEnd="16dp">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/word"
@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:textAppearance="@style/TextAppearance.Yocabulary.Transcription"
-                        tools:text="[ˈækˌsɛs]"/>
+                        tools:text="[ˈækˌsɛs]" />
 
                     <TextView
                         android:id="@+id/translation"
@@ -91,7 +91,8 @@
                         android:contentDescription="@string/add_word_to_favorite"
                         android:elevation="2dp"
                         android:src="@drawable/ic_star_24"
-                        app:tint="@color/color_white" />
+                        app:tint="@color/color_state_btn_icon_add_to_fav"
+                        android:visibility="invisible"/>
 
                     <ImageButton
                         android:id="@+id/add_to_vocabulary"
@@ -103,8 +104,8 @@
                         android:contentDescription="@string/add_word_to_vocabulary"
                         android:elevation="2dp"
                         android:src="@drawable/ic_add_24"
-                        app:tint="@color/color_white"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        app:tint="@color/color_white" />
 
                     <ImageButton
                         android:id="@+id/pronounce_word"
@@ -114,59 +115,68 @@
                         android:contentDescription="@string/add_word_to_favorite"
                         android:elevation="2dp"
                         android:src="@drawable/ic_volume_up_24"
-                        app:tint="@color/color_white" />
+                        app:tint="@color/color_white"
+                        android:visibility="invisible"/>
 
 
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
+            <LinearLayout
+                android:id="@+id/word_details"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-<!--                <TextView-->
-<!--                    android:id="@+id/part_of_speech"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:textAppearance="@style/TextAppearance.Yocabulary.PartOfSpeech"-->
-<!--                    tools:text="- transitive verb (отримати доступ)" />-->
+            </LinearLayout>
 
-<!--                <TextView-->
-<!--                    android:id="@+id/meaning"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:textAppearance="@style/TextAppearance.Yocabulary.Meaning"-->
-<!--                    tools:text="1. Approach or enter (a place)" />-->
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:orientation="vertical">-->
 
-<!--                <TextView-->
-<!--                    android:id="@+id/example"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:textAppearance="@style/TextAppearance.Yocabulary.Example"-->
-<!--                    tools:text="Single rooms have private baths accessed via the balcony" />-->
+            <!--                <TextView-->
+            <!--                    android:id="@+id/part_of_speech"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:textAppearance="@style/TextAppearance.Yocabulary.PartOfSpeech"-->
+            <!--                    tools:text="- transitive verb (отримати доступ)" />-->
 
-<!--                <TextView-->
-<!--                    android:id="@+id/synonyms_header"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:text="@string/synonyms_header"-->
-<!--                    android:textAppearance="@style/TextAppearance.Yocabulary.PartOfSpeech"-->
-<!--                    android:textSize="16sp" />-->
+            <!--                <TextView-->
+            <!--                    android:id="@+id/meaning"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginTop="4dp"-->
+            <!--                    android:textAppearance="@style/TextAppearance.Yocabulary.Meaning"-->
+            <!--                    tools:text="1. Approach or enter (a place)" />-->
 
-<!--                <TextView-->
-<!--                    android:id="@+id/synonym_words"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:textAppearance="@style/TextAppearance.Yocabulary.SynonymWords"-->
-<!--                    tools:text="retrieve, gain, gain access to, acquire, obtain" />-->
+            <!--                <TextView-->
+            <!--                    android:id="@+id/example"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginTop="8dp"-->
+            <!--                    android:textAppearance="@style/TextAppearance.Yocabulary.Example"-->
+            <!--                    tools:text="Single rooms have private baths accessed via the balcony" />-->
 
-<!--            </LinearLayout>-->
+            <!--                <TextView-->
+            <!--                    android:id="@+id/synonyms_header"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginTop="8dp"-->
+            <!--                    android:text="@string/synonyms_header"-->
+            <!--                    android:textAppearance="@style/TextAppearance.Yocabulary.PartOfSpeech"-->
+            <!--                    android:textSize="16sp" />-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/synonym_words"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginTop="4dp"-->
+            <!--                    android:textAppearance="@style/TextAppearance.Yocabulary.SynonymWords"-->
+            <!--                    tools:text="retrieve, gain, gain access to, acquire, obtain" />-->
+
+            <!--            </LinearLayout>-->
 
         </LinearLayout>
     </ScrollView>
@@ -178,6 +188,7 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/edit_word"
-        android:src="@drawable/ic_edit_24" />
+        app:srcCompat="@drawable/ic_edit_24"
+        app:tint="@color/color_black" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

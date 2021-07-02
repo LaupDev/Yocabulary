@@ -5,7 +5,7 @@
 
         <item name="colorPrimary">@color/color_grey</item>
         <item name="colorPrimaryVariant">@color/color_grey_lighter</item>
-        <item name="colorOnPrimary">@color/color_white</item>
+        <item name="colorOnPrimary">@color/color_black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/color_orange</item>
         <item name="colorSecondaryVariant">@color/color_orange_lighter</item>
@@ -214,6 +214,17 @@
     <style name="ShapeAppearanceOverlay.Yocabulary.TextInputLayout" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
+    </style>
+    
+    <!-- Common styles -->
+    
+    <style name="Widget.Yocabulary.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.FloatingActionButton</item>
+    </style>
+
+    <style name="ThemeOverlay.Yocabulary.FloatingActionButton" parent="">
+        <item name="colorAccent">@color/color_black</item>
+        <item name="colorOnSecondary">@color/color_black</item>
     </style>
 
 <!--    <style name="CustomHintDisabled" parent="TextAppearance.MaterialComponents.Caption">-->
