@@ -8,7 +8,8 @@ import androidx.room.*
         ForeignKey(
             entity = PartOfSpeech::class,
             parentColumns = ["id"],
-            childColumns = ["pos_id"]
+            childColumns = ["pos_id"],
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index("pos_id")]

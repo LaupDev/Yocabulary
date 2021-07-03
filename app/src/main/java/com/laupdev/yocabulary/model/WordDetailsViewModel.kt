@@ -40,6 +40,7 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
 
     fun removeWord(wordId: Long) = viewModelScope.launch {
         repository.removeWordById(wordId)
+        _isAdded.value = false
     }
 
     fun getWordFromDictionary(word: String) {

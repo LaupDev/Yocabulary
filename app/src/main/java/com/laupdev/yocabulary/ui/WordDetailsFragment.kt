@@ -7,7 +7,7 @@ import android.view.ViewGroup.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.allViews
+import androidx.core.view.forEach
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -24,7 +24,6 @@ import com.laupdev.yocabulary.network.WordFromDictionary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -38,7 +37,7 @@ class WordDetailsFragment : Fragment() {
     companion object {
         const val WORD_ID = "word_id"
         const val WORD_NAME = "word_name"
-        const val SEARCH_PREFIX = "https://www.google.com/search?q="
+//        const val SEARCH_PREFIX = "https://www.google.com/search?q="
     }
 
     private var _binding: FragmentWordDetailsBinding? = null
@@ -82,6 +81,9 @@ class WordDetailsFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // TODO: 04.07.2021 Add some properties to savedInstanceState
 
         if (wordToSearch != "0") {
             addWordDetailsFromDictionary()
@@ -114,13 +116,11 @@ class WordDetailsFragment : Fragment() {
 
         // TODO: 02.06.2021 Add icon for "delete word" menu item
         binding.topAppBar.setNavigationOnClickListener {
-            viewModel.isAdded.observe(viewLifecycleOwner, {
-                if (it) {
-                    findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
-                } else {
-                    findNavController().popBackStack()
-                }
-            })
+            if (viewModel.isAdded.value == true) {
+                findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
+            } else {
+                findNavController().popBackStack()
+            }
         }
 
 
@@ -140,9 +140,11 @@ class WordDetailsFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun addWordDetailsFromVocabulary() {
         viewModel.getWordWithPosAndMeaningsById(currWordId).observe(viewLifecycleOwner, {
-            addWordMainDetails(it)
-            binding.addToFavorite.visibility = VISIBLE
-            binding.pronounceWord.visibility = VISIBLE
+            it?.let {
+                addWordMainDetails(it)
+                binding.addToFavorite.visibility = VISIBLE
+                binding.pronounceWord.visibility = VISIBLE
+            }
         })
     }
 
@@ -157,8 +159,10 @@ class WordDetailsFragment : Fragment() {
         lateinit var formattedWord: WordWithPartsOfSpeechAndMeanings
         viewModel.getWordFromDictionary(wordToSearch)
         viewModel.wordFromDictionary.observe(viewLifecycleOwner, {
-            formattedWord = dictionaryWordToVocabularyFormat(it)
-            addWordMainDetails(formattedWord)
+            it?.let {
+                formattedWord = dictionaryWordToVocabularyFormat(it)
+                addWordMainDetails(formattedWord)
+            }
         })
 
         viewModel.wordId.observe(viewLifecycleOwner, {
@@ -186,7 +190,8 @@ class WordDetailsFragment : Fragment() {
                                 meaning = meaning.definition,
                                 example = meaning.example,
                                 synonyms = meaning.synonyms.joinToString(separator = ", ")
-                        ))
+                            )
+                        )
                     }
                     newMeaningsList
                 }
@@ -199,7 +204,8 @@ class WordDetailsFragment : Fragment() {
                 wordId = 0,
                 word = wordFromDictionary.word,
                 transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text else "",
-                audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].audio else ""),
+                audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].audio else ""
+            ),
             partsOfSpeechWithMeanings
         )
     }
@@ -236,8 +242,11 @@ class WordDetailsFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if (wordToSearch == "0") {
-            inflater.inflate(R.menu.word_details_menu, menu)
+        inflater.inflate(R.menu.word_details_menu, menu)
+        viewModel.isAdded.observe(viewLifecycleOwner) {
+            binding.topAppBar.menu.forEach { menuItem ->
+                menuItem.isVisible = it
+            }
         }
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -255,9 +264,10 @@ class WordDetailsFragment : Fragment() {
     }
 
     private fun removeWord() {
-        // TODO: 03.07.2021 FIX REMOVE: Add query for removing whole object chain
         viewModel.removeWord(currWordId)
-        findNavController().popBackStack()
+        if (wordToSearch == "0") {
+            findNavController().popBackStack()
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -273,9 +283,10 @@ class WordDetailsFragment : Fragment() {
 
         val partOfSpeechTextView = TextView(requireContext())
 
-        partOfSpeechTextView.id = R.id.part_of_speech + UniqueIdAddition.PART_OF_SPEECH.idAddition + partOfSpeechCount
+        partOfSpeechTextView.id =
+            R.id.part_of_speech + UniqueIdAddition.PART_OF_SPEECH.idAddition + partOfSpeechCount
 
-        val paramsMargin = ViewGroup.MarginLayoutParams(
+        val paramsMargin = MarginLayoutParams(
             LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
@@ -337,7 +348,7 @@ class WordDetailsFragment : Fragment() {
             val meaningTextView = TextView(requireContext())
             meaningTextView.id = R.id.meaning + UniqueIdAddition.MEANING.idAddition + meaningsCount
 
-            val paramsMargin = ViewGroup.MarginLayoutParams(
+            val paramsMargin = MarginLayoutParams(
                 LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT
@@ -363,7 +374,7 @@ class WordDetailsFragment : Fragment() {
             val exampleTextView = TextView(requireContext())
             exampleTextView.id = R.id.example + UniqueIdAddition.EXAMPLE.idAddition + meaningsCount
 
-            val paramsWithMargin = ViewGroup.MarginLayoutParams(
+            val paramsWithMargin = MarginLayoutParams(
                 LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT
@@ -388,7 +399,7 @@ class WordDetailsFragment : Fragment() {
         if (meaning.synonyms.isNotEmpty()) {
             val synonymsHeaderTextView = TextView(requireContext())
 
-            val paramsWithMargin = ViewGroup.MarginLayoutParams(
+            val paramsWithMargin = MarginLayoutParams(
                 LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT
@@ -407,7 +418,8 @@ class WordDetailsFragment : Fragment() {
             definitionLinearLayout.addView(synonymsHeaderTextView)
 
             val synonymsWordsTextView = TextView(requireContext())
-            synonymsWordsTextView.id = R.id.synonym_words + UniqueIdAddition.SYNONYM_WORDS.idAddition + meaningsCount
+            synonymsWordsTextView.id =
+                R.id.synonym_words + UniqueIdAddition.SYNONYM_WORDS.idAddition + meaningsCount
 
             paramsWithMargin.topMargin = AddNewWordFragment.convertDpToPixel(4)
             synonymsWordsTextView.layoutParams = paramsWithMargin
