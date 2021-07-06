@@ -18,9 +18,9 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     val isAdded: LiveData<Boolean>
         get() = _isAdded
 
-    private val _wordFromDictionary = MutableLiveData<WordFromDictionary>()
-    val wordFromDictionary: LiveData<WordFromDictionary>
-        get() = _wordFromDictionary
+    private val _wordWithPosAndMeanings = MutableLiveData<WordWithPartsOfSpeechAndMeanings>()
+    val wordWithPosAndMeanings: LiveData<WordWithPartsOfSpeechAndMeanings>
+        get() = _wordWithPosAndMeanings
 
     private val _wordId = MutableLiveData<Long>()
     val wordId: LiveData<Long>
@@ -30,13 +30,20 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     val status: LiveData<String>
         get() = _status
 
-//    private val _isFavourite = MutableLiveData(false)
-//    val isFavourite: LiveData<Boolean>
-//        get() = _isFavourite
+    private val _isFavourite = MutableLiveData(false)
+    val isFavourite: LiveData<Boolean>
+        get() = _isFavourite
 
     val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
 
-    fun getWordWithPosAndMeaningsById(wordId: Long) = repository.getWordWithPosAndMeaningsById(wordId).asLiveData()
+    fun getWordWithPosAndMeaningsById(wordId: Long) = Transformations.map(repository.getWordWithPosAndMeaningsById(wordId).asLiveData()) {
+        it?.let {
+            _wordWithPosAndMeanings.value = it
+            _wordId.value = it.word.wordId
+            _isFavourite.value = it.word.isFavourite == 1
+            return@map it
+        }
+    }
 
     fun removeWord(wordId: Long) = viewModelScope.launch {
         repository.removeWordById(wordId)
@@ -44,14 +51,17 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     }
 
     fun getWordFromDictionary(word: String) {
-        _isAdded.value = false
+        if (wordWithPosAndMeanings.value == null) {
+            _isAdded.value = false
+        }
         viewModelScope.launch {
             try {
-                _wordFromDictionary.value = repository.getWordFromDictionary(word)
+                _wordWithPosAndMeanings.value = repository.getWordFromDictionary(word)
             } catch (error: Exception) {
                 _status.value = "Failure: ${error.message}"
             }
         }
+
     }
 
     fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
@@ -61,7 +71,8 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
                 _wordId.value = newWordId
                 wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
                     partOfSpeechWithMeanings.partOfSpeech.wordId = newWordId
-                    val newPosId = repository.insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
+                    val newPosId =
+                        repository.insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
                     partOfSpeechWithMeanings.meanings.forEach { meaning ->
                         meaning.posId = newPosId
                         repository.insertMeaning(meaning)
@@ -74,16 +85,19 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
         }
     }
 
-    suspend fun updateWordIsFavorite(wordId: Long, isFavourite: Boolean) =
+    suspend fun updateWordIsFavorite(wordId: Long/*, isFavourite: Boolean*/) =
         viewModelScope.async {
             try {
                 if (wordId == 0L) {
                     throw Exception("Failure: System error")
                 }
-                repository.updateWordIsFavorite(WordIsFavorite(
-                    wordId,
-                    if (isFavourite) 1 else 0
-                ))
+                repository.updateWordIsFavorite(
+                    WordIsFavorite(
+                        wordId,
+                        if (isFavourite.value == true) 0 else 1
+                    )
+                )
+                _isFavourite.value = isFavourite.value == false
                 return@async true
             } catch (error: Exception) {
                 _status.value = error.message

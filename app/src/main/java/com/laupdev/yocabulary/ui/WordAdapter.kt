@@ -23,6 +23,8 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
         val addWordToFavorite: ImageView? = view.findViewById(R.id.add_to_favorite)
     }
 
+    // TODO: 07.07.2021 Fix bug! Recreation: 1. Add at least 3 words to vocabulary 2. Remove 1st word 3. Click on the last word in vocabulary
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val layout = LayoutInflater
             .from(parent.context)
