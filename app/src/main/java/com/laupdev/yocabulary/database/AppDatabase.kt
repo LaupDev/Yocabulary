@@ -52,9 +52,6 @@ abstract class AppDatabase : RoomDatabase() {
             newPosId = partOfSpeechDao.insert(partOfSpeech)
             meaning = Meaning(0, newPosId, "", "He took a bite out of the apple")
             meaningDao.insert(meaning)
-
-            // TODO: 14.06.2021 Populate database, change AddNewWordFragment to store new data and WordDetailsFragment to use data
-
         }
     }
 

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -17,13 +18,19 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
 ) {
 
     class WordViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        lateinit var word: Word
         val wordContainer: View? = view.findViewById(R.id.word_container)
         val wordTextView: TextView? = view.findViewById(R.id.word)
         val transTextView: TextView? = view.findViewById(R.id.translation)
         val addWordToFavorite: ImageView? = view.findViewById(R.id.add_to_favorite)
-    }
 
-    // TODO: 07.07.2021 Fix bug! Recreation: 1. Add at least 3 words to vocabulary 2. Remove 1st word 3. Click on the last word in vocabulary
+        init {
+            view.findViewById<RelativeLayout>(R.id.word_container).setOnClickListener {
+                val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = word.wordId)
+                view.findNavController().navigate(action)
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val layout = LayoutInflater
@@ -34,12 +41,15 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         holder.wordTextView?.text = currentList[position].word
+        holder.word = currentList[position]
 //        holder.transTextView?.text = currentList[position].translation
 //        holder.addWordToFavorite?.contentDescription = holder.view.context.getString(R.string.add_word_to_favorite, currentList[position].word) // Check how it works
-        holder.wordContainer?.setOnClickListener {
-            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].wordId)
-            holder.view.findNavController().navigate(action)
-        }
+
+//        println("----WORD: " + currentList[position].word + " -- Pos: " + position + " ------------")
+//        holder.wordContainer?.setOnClickListener {
+//            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].wordId)
+//            holder.view.findNavController().navigate(action)
+//        }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<Word>() {

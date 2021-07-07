@@ -232,6 +232,7 @@ class WordDetailsFragment : Fragment() {
         binding.addToFavorite.isSelected = false
         if (wordToSearch == "0") {
             findNavController().popBackStack()
+//            findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
         }
     }
 

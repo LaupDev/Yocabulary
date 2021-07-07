@@ -71,8 +71,11 @@ class WordListFragment : Fragment() {
         }
 
 //        if (letterId == "recent") {
-        viewModel.allWords.observe(viewLifecycleOwner) {
-            adapter.submitList(it.sortedByDescending { word -> word.wordId })
+        viewModel.allWords.observe(viewLifecycleOwner) { words ->
+            words?.let {
+                println("--------------submitList-----------: " + it.size)
+                adapter.submitList(it.sortedByDescending { word -> word.wordId })
+            }
         }
 //        } else {
 //            viewModel.allWords.observe(viewLifecycleOwner, { words ->
