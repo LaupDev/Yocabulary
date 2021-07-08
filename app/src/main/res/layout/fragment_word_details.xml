@@ -115,7 +115,7 @@
                         android:contentDescription="@string/add_word_to_favorite"
                         android:elevation="2dp"
                         android:src="@drawable/ic_volume_up_24"
-                        app:tint="@color/color_white"
+                        app:tint="@color/color_state_btn_icon_add_to_fav"
                         android:visibility="invisible"/>
 
 

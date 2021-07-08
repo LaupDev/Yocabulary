@@ -187,33 +187,31 @@ class AddNewWordFragment : Fragment() {
 
             val newWord = Word(
                 wordId = wordId,
-                word = binding.newWordEditText.text.toString(),
-                transcription = binding.transcriptionEditText.text.toString()
+                word = trimInputField(binding.newWordEditText.text.toString()),
+                transcription = trimInputField(binding.transcriptionEditText.text.toString())
 
                 // TODO: 17.06.2021 Add audioUrl
             )
-            // TODO: 29.06.2021 Trim redundant spaces
             // TODO: 17.06.2021 Add functionality for word updating
             val dataMap = mutableMapOf<PartOfSpeech, MutableList<Meaning>>()
 
             for (pair in partsOfSpeechIdsWithMeaningsIdsMap) {
                 if (requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.isNotEmpty()) {
-                    val currTrans = requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString()
-
+//                    val currTrans = trimInputField(requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString())
                     val newPartOfSpeech = PartOfSpeech(
                         posId = 0L,
                         wordId = wordId,
                         partOfSpeech = requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.toString(),
-                        translation = currTrans
+                        translation = trimInputField(requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString())
                     )
                     dataMap[newPartOfSpeech] = mutableListOf()
                     for (meaning in pair.value) {
                         val meaningText =
-                            requireView().findViewById<TextInputEditText>(meaning + 2000).text.toString()
+                            trimInputField(requireView().findViewById<TextInputEditText>(meaning + 2000).text.toString())
                         val exampleText =
-                            requireView().findViewById<TextInputEditText>(meaning + 4000).text.toString()
+                            trimInputField(requireView().findViewById<TextInputEditText>(meaning + 4000).text.toString())
                         val synonymsText =
-                            requireView().findViewById<TextInputEditText>(meaning + 7000).text.toString()
+                            trimInputField(requireView().findViewById<TextInputEditText>(meaning + 7000).text.toString())
                         if (meaningText.isNotEmpty() || exampleText.isNotEmpty() || synonymsText.isNotEmpty()) {
                             val newMeaning = Meaning(
                                 meaningId = 0L,
@@ -248,6 +246,10 @@ class AddNewWordFragment : Fragment() {
 //            }
 
         }
+    }
+
+    private fun trimInputField(text: String): String {
+        return text.trim().replace("\\s+".toRegex(), " ")
     }
 
     private fun isFieldsRight(): Boolean {

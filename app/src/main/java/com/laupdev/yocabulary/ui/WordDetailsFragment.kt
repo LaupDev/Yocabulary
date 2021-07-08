@@ -1,6 +1,8 @@
 package com.laupdev.yocabulary.ui
 
 import android.annotation.SuppressLint
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.*
 import android.view.ViewGroup.*
@@ -58,6 +60,8 @@ class WordDetailsFragment : Fragment() {
 
     private var partOfSpeechCount = 1
     private var meaningsCount = 1
+
+    private var pronounceWordMediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,9 +134,6 @@ class WordDetailsFragment : Fragment() {
             Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
         })
 
-
-        // TODO: 01.06.2021 Complete button selector for AddToFav btn and PronounceWord btn
-
 //        binding.searchTranslationBtn.setOnClickListener {
 //            searchWordTranslationInWeb()
 //        }
@@ -184,14 +185,48 @@ class WordDetailsFragment : Fragment() {
         }
 //        binding.addToFavorite.isSelected = wordWithPartsOfSpeechAndMeanings.word.isFavourite == 1
 
-        binding.wordDetails.removeAllViews()
-        partOfSpeechCount = 1
-        binding.translation.text = ""
-        binding.translation.visibility = GONE
+        if (wordWithPartsOfSpeechAndMeanings.word.audioUrl.isNotEmpty()) {
+            binding.pronounceWord.setOnClickListener {
+                playWordPronunciation(wordWithPartsOfSpeechAndMeanings.word.audioUrl)
+            }
+        }
+
+        clearWordDetails()
 
         wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
             addPartOfSpeech(partOfSpeechWithMeanings)
         }
+    }
+
+    private fun playWordPronunciation(audioUrl: String) {
+        pronounceWordMediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            setDataSource(audioUrl)
+            isLooping = false
+            setOnPreparedListener {
+                it.start()
+            }
+            setOnCompletionListener {
+                if (_binding != null) {
+                    binding.pronounceWord.isSelected = false
+                }
+                it.release()
+            }
+            prepareAsync()
+            binding.pronounceWord.isSelected = true
+        }
+    }
+
+    private fun clearWordDetails() {
+        binding.wordDetails.removeAllViews()
+        partOfSpeechCount = 1
+        binding.translation.text = ""
+        binding.translation.visibility = GONE
     }
 
 //    private fun searchWordTranslationInWeb() {
@@ -203,6 +238,8 @@ class WordDetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        pronounceWordMediaPlayer?.release()
+        pronounceWordMediaPlayer = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

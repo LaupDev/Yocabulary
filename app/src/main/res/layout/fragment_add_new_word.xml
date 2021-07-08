@@ -47,7 +47,8 @@
                         android:id="@+id/new_word_edit_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"
+                        android:inputType="textMultiLine"
+                        android:maxLines="3"
                         tools:text="access" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -70,7 +71,8 @@
                             android:id="@+id/transcription_edit_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text" />
+                            android:inputType="textMultiLine"
+                            android:maxLines="2" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,8 +85,8 @@
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:text="@string/search_in_dictionary"
-                        android:textSize="12sp"
                         android:textColor="@color/color_white"
+                        android:textSize="12sp"
                         app:cornerRadius="12dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -16,7 +16,7 @@ import com.laupdev.yocabulary.database.Word
 class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback
 ) {
-
+    // TODO: 08.07.2021 When word is too long -> add three dots
     class WordViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         lateinit var word: Word
         val wordContainer: View? = view.findViewById(R.id.word_container)
