@@ -190,6 +190,13 @@ class WordDetailsFragment : Fragment() {
                 playWordPronunciation(wordWithPartsOfSpeechAndMeanings.word.audioUrl)
             }
         }
+        wordWithPartsOfSpeechAndMeanings.word.translations.let {
+            if (it.isEmpty()) {
+                binding.translation.visibility = GONE
+            } else {
+                binding.translation.text = it
+            }
+        }
 
         clearWordDetails()
 
@@ -225,8 +232,6 @@ class WordDetailsFragment : Fragment() {
     private fun clearWordDetails() {
         binding.wordDetails.removeAllViews()
         partOfSpeechCount = 1
-        binding.translation.text = ""
-        binding.translation.visibility = GONE
     }
 
 //    private fun searchWordTranslationInWeb() {
@@ -312,17 +317,17 @@ class WordDetailsFragment : Fragment() {
             R.style.TextAppearance_Yocabulary_PartOfSpeech
         )
 
-        binding.translation.text = binding.translation.text.let {
-            if (it.isNotEmpty()) {
-                toString() + ", ${partOfSpeech.translation}"
-            } else {
-                partOfSpeech.translation.also { trans ->
-                    if (trans.isNotEmpty()) {
-                        binding.translation.visibility = VISIBLE
-                    }
-                }
-            }
-        }
+//        binding.translation.text = binding.translation.text.let {
+//            if (it.isNotEmpty()) {
+//                it.toString() + ", ${partOfSpeech.translation}"
+//            } else {
+//                partOfSpeech.translation.also { trans ->
+//                    if (trans.isNotEmpty()) {
+//                        binding.translation.visibility = VISIBLE
+//                    }
+//                }
+//            }
+//        }
 
         partOfSpeechCount++
 

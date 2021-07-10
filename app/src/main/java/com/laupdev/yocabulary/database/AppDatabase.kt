@@ -32,21 +32,21 @@ abstract class AppDatabase : RoomDatabase() {
             // Delete all content here.
             wordDao.deleteAll()
 
-            var word = Word(wordId = 0, word = "Hello", transcription = "həˈləʊ", audioUrl = "https://lex-audio.useremarkable.com/mp3/hello_us_1_rr.mp3")
+            var word = Word(wordId = 0, word = "Hello", transcription = "həˈləʊ", translations = "Привіт", audioUrl = "https://lex-audio.useremarkable.com/mp3/hello_us_1_rr.mp3")
             var newWordId = wordDao.insert(word)
             var partOfSpeech = PartOfSpeech(0, newWordId, "Interjection", "Привіт")
             var newPosId = partOfSpeechDao.insert(partOfSpeech)
             var meaning = Meaning(0, newPosId, "Used when meeting or greeting someone", "Hello, John! How are you?")
             meaningDao.insert(meaning)
 
-            word = Word(wordId = 0, word = "Hi", transcription = "haɪ")
+            word = Word(wordId = 0, word = "Hi", transcription = "haɪ", translations = "Привіт")
             newWordId = wordDao.insert(word)
             partOfSpeech = PartOfSpeech(0, newWordId, "Interjection", "Привіт")
             newPosId = partOfSpeechDao.insert(partOfSpeech)
             meaning = Meaning(0, newPosId, "Used as an informal greeting, usually to people who you know", "Hi, there!", "Hello")
             meaningDao.insert(meaning)
 
-            word = Word(wordId = 0, word = "Apple", audioUrl = "https://lex-audio.useremarkable.com/mp3/apple_us_1.mp3")
+            word = Word(wordId = 0, word = "Apple", translations = "Яблуко", audioUrl = "https://lex-audio.useremarkable.com/mp3/apple_us_1.mp3")
             newWordId = wordDao.insert(word)
             partOfSpeech = PartOfSpeech(0, newWordId, "Noun", "Яблуко")
             newPosId = partOfSpeechDao.insert(partOfSpeech)

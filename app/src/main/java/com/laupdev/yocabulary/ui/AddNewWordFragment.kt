@@ -185,25 +185,32 @@ class AddNewWordFragment : Fragment() {
         if (isFieldsRight()) {
             binding.newWord.error = null
 
-            val newWord = Word(
-                wordId = wordId,
-                word = trimInputField(binding.newWordEditText.text.toString()),
-                transcription = trimInputField(binding.transcriptionEditText.text.toString())
 
-                // TODO: 17.06.2021 Add audioUrl
-            )
             // TODO: 17.06.2021 Add functionality for word updating
             val dataMap = mutableMapOf<PartOfSpeech, MutableList<Meaning>>()
 
+            var translations = ""
+
             for (pair in partsOfSpeechIdsWithMeaningsIdsMap) {
                 if (requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.isNotEmpty()) {
-//                    val currTrans = trimInputField(requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString())
+                    val currTrans = trimInputField(requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString())
                     val newPartOfSpeech = PartOfSpeech(
                         posId = 0L,
                         wordId = wordId,
                         partOfSpeech = requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.toString(),
-                        translation = trimInputField(requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString())
+                        translation = currTrans
                     )
+
+                    if (currTrans.isNotEmpty()) {
+                        if (translations.isNotEmpty()) {
+                            translations += ", ${currTrans.replaceFirstChar { it.lowercase() }}"
+                        } else {
+                            translations = currTrans.replaceFirstChar { it.uppercase() }
+                        }
+                    }
+
+                    println(translations)
+
                     dataMap[newPartOfSpeech] = mutableListOf()
                     for (meaning in pair.value) {
                         val meaningText =
@@ -225,6 +232,13 @@ class AddNewWordFragment : Fragment() {
                     }
                 }
             }
+
+            val newWord = Word(
+                wordId = wordId,
+                word = trimInputField(binding.newWordEditText.text.toString()),
+                transcription = trimInputField(binding.transcriptionEditText.text.toString()),
+                translations = translations
+            )
 
             try {
                 val wordAddingJob = viewModel.insertWordWithPartsOfSpeechWithMeanings(newWord, dataMap)

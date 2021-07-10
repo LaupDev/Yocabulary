@@ -41,6 +41,9 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         holder.wordTextView?.text = currentList[position].word
+//        holder.addWordToFavorite?.setOnClickListener {
+//
+//        }
         holder.word = currentList[position]
 //        holder.transTextView?.text = currentList[position].translation
 //        holder.addWordToFavorite?.contentDescription = holder.view.context.getString(R.string.add_word_to_favorite, currentList[position].word) // Check how it works
