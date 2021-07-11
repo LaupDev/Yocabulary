@@ -11,6 +11,6 @@ class DictionaryApplication : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob())
 
     val database by lazy { AppDatabase.getDatabase(this, applicationScope) }
-    private val network by lazy { DictionaryNet.retrofitService }
+    private val network = DictionaryNet.retrofitService
     val repository by lazy { AppRepository(network, database.wordDao(), database.partOfSpeechDao(), database.meaningDao()) }
 }

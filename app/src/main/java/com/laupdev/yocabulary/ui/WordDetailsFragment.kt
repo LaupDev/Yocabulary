@@ -159,6 +159,7 @@ class WordDetailsFragment : Fragment() {
         }
         binding.pronounceWord.visibility = VISIBLE
 
+        println()
         viewModel.getWordFromDictionary(wordToSearch)
         viewModel.wordWithPosAndMeanings.observe(viewLifecycleOwner) {
             it?.let {
@@ -172,6 +173,7 @@ class WordDetailsFragment : Fragment() {
         binding.addToVocabulary.setOnClickListener {
             viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)
         }
+        // TODO: 12.07.2021 Fix long loading when getting first word from dictionary
     }
 
     @SuppressLint("SetTextI18n")
@@ -194,7 +196,7 @@ class WordDetailsFragment : Fragment() {
             if (it.isEmpty()) {
                 binding.translation.visibility = GONE
             } else {
-                binding.translation.text = it
+                binding.translation.text = it.replace("|", ",")
             }
         }
 

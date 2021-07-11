@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.database.Word
 
-class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
+class WordAdapter : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback
 ) {
     // TODO: 08.07.2021 When word is too long -> add three dots
     class WordViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         lateinit var word: Word
-        val wordContainer: View? = view.findViewById(R.id.word_container)
+//        val wordContainer: View? = view.findViewById(R.id.word_container)
         val wordTextView: TextView? = view.findViewById(R.id.word)
         val transTextView: TextView? = view.findViewById(R.id.translation)
         val addWordToFavorite: ImageView? = view.findViewById(R.id.add_to_favorite)
@@ -40,11 +40,10 @@ class WordAdapter() : ListAdapter<Word, WordAdapter.WordViewHolder>(
     }
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
-        holder.wordTextView?.text = currentList[position].word
-//        holder.addWordToFavorite?.setOnClickListener {
-//
-//        }
         holder.word = currentList[position]
+        holder.wordTextView?.text = currentList[position].word
+        holder.transTextView?.text = currentList[position].translations.split("|")[0]
+        holder.addWordToFavorite?.isSelected = currentList[position].isFavourite == 1
 //        holder.transTextView?.text = currentList[position].translation
 //        holder.addWordToFavorite?.contentDescription = holder.view.context.getString(R.string.add_word_to_favorite, currentList[position].word) // Check how it works
 

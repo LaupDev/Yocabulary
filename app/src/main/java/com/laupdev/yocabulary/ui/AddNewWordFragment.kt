@@ -203,7 +203,7 @@ class AddNewWordFragment : Fragment() {
 
                     if (currTrans.isNotEmpty()) {
                         if (translations.isNotEmpty()) {
-                            translations += ", ${currTrans.replaceFirstChar { it.lowercase() }}"
+                            translations += "| ${currTrans.replaceFirstChar { it.lowercase() }}"
                         } else {
                             translations = currTrans.replaceFirstChar { it.uppercase() }
                         }
