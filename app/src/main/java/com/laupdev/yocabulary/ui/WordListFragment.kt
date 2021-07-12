@@ -1,7 +1,5 @@
 package com.laupdev.yocabulary.ui
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -10,9 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.databinding.FragmentWordListBinding
+import com.laupdev.yocabulary.model.VocabularyViewModel
+import com.laupdev.yocabulary.model.VocabularyViewModelFactory
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
 
@@ -28,15 +29,15 @@ class WordListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var letterId: String
 
-    private val viewModel: WordDetailsViewModel by lazy {
+    private val viewModel: VocabularyViewModel by lazy {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
         ViewModelProvider(
             this,
-            WordDetailsViewModelFactory((activity.application as DictionaryApplication).repository)
+            VocabularyViewModelFactory((activity.application as DictionaryApplication).repository)
         )
-            .get(WordDetailsViewModel::class.java)
+            .get(VocabularyViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +63,7 @@ class WordListFragment : Fragment() {
 
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val adapter = WordAdapter()
+        val adapter = WordAdapter(viewModel)
         recyclerView.adapter = adapter
 
         binding.addNewWordBtn.setOnClickListener {
@@ -77,6 +78,10 @@ class WordListFragment : Fragment() {
                 adapter.submitList(it.sortedByDescending { word -> word.wordId })
             }
         }
+
+        viewModel.status.observe(viewLifecycleOwner, {
+            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
+        })
 //        } else {
 //            viewModel.allWords.observe(viewLifecycleOwner, { words ->
 //                words?.let {

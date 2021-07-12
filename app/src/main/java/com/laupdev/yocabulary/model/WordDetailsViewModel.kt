@@ -34,8 +34,6 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     val isFavourite: LiveData<Boolean>
         get() = _isFavourite
 
-    val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
-
     fun getWordWithPosAndMeaningsById(wordId: Long) = Transformations.map(repository.getWordWithPosAndMeaningsById(wordId).asLiveData()) {
         it?.let {
             _wordWithPosAndMeanings.value = it
@@ -85,8 +83,8 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
         }
     }
 
-    suspend fun updateWordIsFavorite(wordId: Long/*, isFavourite: Boolean*/) =
-        viewModelScope.async {
+    suspend fun updateWordIsFavorite(wordId: Long) =
+        viewModelScope.launch {
             try {
                 if (wordId == 0L) {
                     throw Exception("Failure: System error")
@@ -98,12 +96,12 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
                     )
                 )
                 _isFavourite.value = isFavourite.value == false
-                return@async true
+//                return@async true
             } catch (error: Exception) {
                 _status.value = error.message
-                return@async false
+//                return@async false
             }
-        }.await()
+        }
 
 }
 

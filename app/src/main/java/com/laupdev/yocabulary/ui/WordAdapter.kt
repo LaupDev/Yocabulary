@@ -4,25 +4,28 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.database.Word
+import com.laupdev.yocabulary.model.VocabularyViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class WordAdapter : ListAdapter<Word, WordAdapter.WordViewHolder>(
+class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback
 ) {
-    // TODO: 08.07.2021 When word is too long -> add three dots
     class WordViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         lateinit var word: Word
-//        val wordContainer: View? = view.findViewById(R.id.word_container)
         val wordTextView: TextView? = view.findViewById(R.id.word)
         val transTextView: TextView? = view.findViewById(R.id.translation)
         val addWordToFavorite: ImageButton? = view.findViewById(R.id.add_to_favorite)
@@ -53,6 +56,15 @@ class WordAdapter : ListAdapter<Word, WordAdapter.WordViewHolder>(
         if (currentList[position].audioUrl.isNotEmpty()) {
             holder.pronounceWordBtn?.setOnClickListener {
                 playWordPronunciation(holder, currentList[position].audioUrl)
+            }
+        } else {
+            holder.pronounceWordBtn?.isEnabled = false
+        }
+        holder.addWordToFavorite?.setOnClickListener {
+            GlobalScope.launch(Dispatchers.IO) {
+                if (viewModel.updateWordIsFavorite(currentList[position].wordId, it.isSelected)) {
+                    it.isSelected = !it.isSelected
+                }
             }
         }
 //        holder.transTextView?.text = currentList[position].translation
