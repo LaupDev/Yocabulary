@@ -15,38 +15,43 @@
         android:id="@+id/word_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/add_to_favorite"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@id/pronounce_word"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/word"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:ellipsize="end"
             android:fontFamily="@font/poppins_bold"
+            android:maxLines="1"
             android:textColor="@color/color_white"
             android:textSize="16sp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
             tools:text="access" />
 
         <TextView
             android:id="@+id/translation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:ellipsize="end"
             android:fontFamily="@font/roboto_regular"
+            android:maxLines="1"
             android:textColor="@color/color_white"
             android:textSize="14sp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
             tools:text="доступ" />
 
     </RelativeLayout>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/add_to_favorite"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="#00000000"
         android:contentDescription="@string/add_word_to_favorite"
         android:src="@drawable/ic_star_24"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -54,17 +59,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/color_state_btn_icon_add_to_fav" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/pronounce_word"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:contentDescription="@string/pronounce_word"-->
-<!--        android:src="@drawable/ic_volume_up_24"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toStartOf="@id/add_to_favorite"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:tint="@color/color_white" />-->
+    <ImageButton
+        android:id="@+id/pronounce_word"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="18dp"
+        android:background="#00000000"
+        android:contentDescription="@string/pronounce_word"
+        android:src="@drawable/ic_volume_up_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/add_to_favorite"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/color_state_btn_icon_add_to_fav" />
 
     <!--    <Button-->
 

@@ -158,14 +158,15 @@ class WordDetailsFragment : Fragment() {
             binding.editWordBtn.visibility = if (it) VISIBLE else GONE
         }
         binding.pronounceWord.visibility = VISIBLE
+        binding.buttons.visibility = INVISIBLE
 
-        println()
-        viewModel.getWordFromDictionary(wordToSearch)
         viewModel.wordWithPosAndMeanings.observe(viewLifecycleOwner) {
             it?.let {
                 addWordMainDetails(it)
+                binding.buttons.visibility = VISIBLE
             }
         }
+        viewModel.getWordFromDictionary(wordToSearch)
 
         viewModel.wordId.observe(viewLifecycleOwner, {
             currWordId = it
