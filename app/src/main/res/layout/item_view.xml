@@ -8,7 +8,7 @@
     android:background="@drawable/rounded_corners"
     android:paddingStart="16dp"
     android:paddingTop="5dp"
-    android:paddingEnd="16dp"
+    android:paddingEnd="10dp"
     android:paddingBottom="8dp">
 
     <RelativeLayout
@@ -57,20 +57,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/color_state_btn_icon_add_to_fav" />
+        app:tint="@color/color_state_btn_icon_add_to_fav"
+        android:padding="6dp"/>
 
     <ImageButton
         android:id="@+id/pronounce_word"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="18dp"
+        android:layout_marginEnd="10dp"
         android:background="#00000000"
         android:contentDescription="@string/pronounce_word"
         android:src="@drawable/ic_volume_up_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/add_to_favorite"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/color_state_btn_icon_add_to_fav" />
+        app:tint="@color/color_state_btn_icon_add_to_fav"
+        android:padding="6dp"/>
 
     <!--    <Button-->
 

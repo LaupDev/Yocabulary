@@ -109,9 +109,6 @@ class WordDetailsFragment : Fragment() {
 
         binding.addToFavorite.setOnClickListener {
             GlobalScope.launch(Dispatchers.IO) {
-//                if (viewModel.updateWordIsFavorite(currWordId, !binding.addToFavorite.isSelected)) {
-//                    binding.addToFavorite.isSelected = !binding.addToFavorite.isSelected
-//                }
                 viewModel.updateWordIsFavorite(currWordId)
             }
         }
