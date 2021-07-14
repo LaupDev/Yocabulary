@@ -22,13 +22,14 @@ import com.google.android.material.textfield.TextInputLayout
 import com.laupdev.yocabulary.AdapterForDropdown
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
-import com.laupdev.yocabulary.database.Meaning
-import com.laupdev.yocabulary.database.PartOfSpeech
-import com.laupdev.yocabulary.database.Word
+import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddWordViewModel
 import com.laupdev.yocabulary.model.AddWordViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import kotlin.math.roundToInt
 
 /*** ABBREVIATIONS:
@@ -187,20 +188,12 @@ class AddNewWordFragment : Fragment() {
 
 
             // TODO: 17.06.2021 Add functionality for word updating
-            val dataMap = mutableMapOf<PartOfSpeech, MutableList<Meaning>>()
-
+            val partsOfSpeechWithMeanings = mutableListOf<PartOfSpeechWithMeanings>()
             var translations = ""
-
-            for (pair in partsOfSpeechIdsWithMeaningsIdsMap) {
-                if (requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.isNotEmpty()) {
-                    val currTrans = trimInputField(requireView().findViewById<TextInputEditText>(pair.key + 5000).text.toString())
-                    val newPartOfSpeech = PartOfSpeech(
-                        posId = 0L,
-                        wordId = wordId,
-                        partOfSpeech = requireView().findViewById<AutoCompleteTextView>(pair.key + 2000).text.toString(),
-                        translation = currTrans
-                    )
-
+            partsOfSpeechIdsWithMeaningsIdsMap.forEach { (posId, meaningIds) ->
+                if (requireView().findViewById<AutoCompleteTextView>(posId + 2000).text.isNotEmpty()) {
+                    val currTrans =
+                        trimInputField(requireView().findViewById<TextInputEditText>(posId + 5000).text.toString())
                     if (currTrans.isNotEmpty()) {
                         if (translations.isNotEmpty()) {
                             translations += "| ${currTrans.replaceFirstChar { it.lowercase() }}"
@@ -208,47 +201,69 @@ class AddNewWordFragment : Fragment() {
                             translations = currTrans.replaceFirstChar { it.uppercase() }
                         }
                     }
-
-                    println(translations)
-
-                    dataMap[newPartOfSpeech] = mutableListOf()
-                    for (meaning in pair.value) {
-                        val meaningText =
-                            trimInputField(requireView().findViewById<TextInputEditText>(meaning + 2000).text.toString())
-                        val exampleText =
-                            trimInputField(requireView().findViewById<TextInputEditText>(meaning + 4000).text.toString())
-                        val synonymsText =
-                            trimInputField(requireView().findViewById<TextInputEditText>(meaning + 7000).text.toString())
-                        if (meaningText.isNotEmpty() || exampleText.isNotEmpty() || synonymsText.isNotEmpty()) {
-                            val newMeaning = Meaning(
-                                meaningId = 0L,
-                                posId = 0, //Change it later for update functionality
-                                meaning = meaningText,
-                                example = exampleText,
-                                synonyms = synonymsText
-                            )
-                            dataMap[newPartOfSpeech]?.add(newMeaning)
+                    partsOfSpeechWithMeanings.add(PartOfSpeechWithMeanings(
+                        PartOfSpeech(
+                            posId = 0,
+                            wordId = wordId,
+                            partOfSpeech = requireView().findViewById<AutoCompleteTextView>(
+                                posId + 2000
+                            ).text.toString().lowercase(),
+                            translation = currTrans
+                        ),
+                        meaningIds.let {
+                            val newMeaningsList = mutableListOf<Meaning>()
+                            it.forEach { meaningId ->
+                                val meaningText =
+                                    trimInputField(
+                                        requireView().findViewById<TextInputEditText>(
+                                            meaningId + 2000
+                                        ).text.toString()
+                                    )
+                                val exampleText =
+                                    trimInputField(
+                                        requireView().findViewById<TextInputEditText>(
+                                            meaningId + 4000
+                                        ).text.toString()
+                                    )
+                                val synonymsText =
+                                    trimInputField(
+                                        requireView().findViewById<TextInputEditText>(
+                                            meaningId + 7000
+                                        ).text.toString()
+                                    )
+                                if (meaningText.isNotEmpty() || exampleText.isNotEmpty() || synonymsText.isNotEmpty()) {
+                                    newMeaningsList.add(
+                                        Meaning(
+                                            meaningId = 0L,
+                                            posId = 0, //Change it later for update functionality
+                                            meaning = meaningText,
+                                            example = exampleText,
+                                            synonyms = synonymsText
+                                        )
+                                    )
+                                }
+                            }
+                            newMeaningsList
                         }
-                    }
+                    ))
                 }
             }
-
-            val newWord = Word(
-                wordId = wordId,
-                word = trimInputField(binding.newWordEditText.text.toString()),
-                transcription = trimInputField(binding.transcriptionEditText.text.toString()),
-                translations = translations
-            )
-
-            try {
-                val wordAddingJob = viewModel.insertWordWithPartsOfSpeechWithMeanings(newWord, dataMap)
-//                while (!wordAddingJob.isCompleted) {
-//                    // TODO: 28.06.2021 Add loading screen with spinner
-//                }
-//                requireView().findNavController().popBackStack()
-            } finally {
+            // TODO: 28.06.2021 Add loading screen with spinner
+            GlobalScope.launch(Dispatchers.IO) {
+                if (viewModel.insertWordWithPartsOfSpeechWithMeanings(
+                    WordWithPartsOfSpeechAndMeanings(
+                        Word(
+                            wordId = wordId,
+                            word = trimInputField(binding.newWordEditText.text.toString()),
+                            transcription = trimInputField(binding.transcriptionEditText.text.toString()),
+                            translations = translations
+                        ),
+                        partsOfSpeechWithMeanings
+                    )
+                )) {
+                    findNavController().popBackStack() // TODO: 14.07.2021 FIX
+                }
             }
-
 
 //            if (wordId == 0) {
 //                viewModel.insert(newWord)
@@ -391,10 +406,12 @@ class AddNewWordFragment : Fragment() {
         val meaningsCount = meaningsCountMap[partsOfSpeechCount] ?: 1
 
         val newMeaningView = layoutInflater.inflate(R.layout.view_meaning, parentView, false)
-        newMeaningView.id = R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_BLOCK.idAddition + totalMeaningCount
+        newMeaningView.id =
+            R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_BLOCK.idAddition + totalMeaningCount
 
         val meaningTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.meaning)
-        meaningTextInputLayout.id = R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_TIL.idAddition + totalMeaningCount
+        meaningTextInputLayout.id =
+            R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_TIL.idAddition + totalMeaningCount
         meaningTextInputLayout.isEnabled = isFieldsEnabled
         meaningTextInputLayout.hint =
             resources.getString(R.string.meaning, "$partsOfSpeechCount.$meaningsCount.")
@@ -402,7 +419,8 @@ class AddNewWordFragment : Fragment() {
             R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_TIET.idAddition + totalMeaningCount
 
         val exampleTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.example)
-        exampleTextInputLayout.id = R.id.meaning_block + UniqueIdAdditionAddWord.EXAMPLE_TIL.idAddition + totalMeaningCount
+        exampleTextInputLayout.id =
+            R.id.meaning_block + UniqueIdAdditionAddWord.EXAMPLE_TIL.idAddition + totalMeaningCount
         exampleTextInputLayout.isEnabled = isFieldsEnabled
         exampleTextInputLayout.hint =
             resources.getString(R.string.example, "$partsOfSpeechCount.$meaningsCount.")
@@ -410,7 +428,8 @@ class AddNewWordFragment : Fragment() {
             R.id.meaning_block + UniqueIdAdditionAddWord.EXAMPLE_TIET.idAddition + totalMeaningCount
 
         val synonymsTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.synonyms)
-        synonymsTextInputLayout.id = R.id.meaning_block + UniqueIdAdditionAddWord.SYNONYMS_TIL.idAddition + totalMeaningCount
+        synonymsTextInputLayout.id =
+            R.id.meaning_block + UniqueIdAdditionAddWord.SYNONYMS_TIL.idAddition + totalMeaningCount
         synonymsTextInputLayout.isEnabled = isFieldsEnabled
         synonymsTextInputLayout.hint =
             resources.getString(R.string.synonyms, "$partsOfSpeechCount.$meaningsCount.")
@@ -418,7 +437,8 @@ class AddNewWordFragment : Fragment() {
             R.id.meaning_block + UniqueIdAdditionAddWord.SYNONYMS_TIET.idAddition + totalMeaningCount
 
         val meaningRemoveButton = newMeaningView.findViewById<ImageButton>(R.id.remove_meaning)
-        meaningRemoveButton.id = R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_RB.idAddition + totalMeaningCount
+        meaningRemoveButton.id =
+            R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_RB.idAddition + totalMeaningCount
         meaningRemoveButton.isEnabled = isFieldsEnabled
 
         meaningRemoveButton.setOnClickListener {

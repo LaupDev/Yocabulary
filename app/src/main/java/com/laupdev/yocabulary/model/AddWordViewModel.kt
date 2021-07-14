@@ -1,18 +1,23 @@
 package com.laupdev.yocabulary.model
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.laupdev.yocabulary.database.Meaning
 import com.laupdev.yocabulary.database.PartOfSpeech
 import com.laupdev.yocabulary.database.Word
+import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.repository.AppRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.lang.IllegalArgumentException
 
 class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
+
+    // TODO: 14.07.2021 Add live data to observe the insert status
+
+    private val _status = MutableLiveData<String>()
+    val status: LiveData<String>
+        get() = _status
 
     fun insertWord(word: Word) = viewModelScope.launch {
         repository.insertWord(word)
@@ -32,20 +37,21 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
     fun getWordById(wordId: Int) = repository.getWordById(wordId).asLiveData()
 
-    fun insertWordWithPartsOfSpeechWithMeanings(
-        newWord: Word,
-        posWithMeanings: MutableMap<PartOfSpeech, MutableList<Meaning>>
-    ): Job {
-       return viewModelScope.launch {
-            val newWordId = repository.insertWord(newWord)
-            for ((pos, meanings) in posWithMeanings) {
+    suspend fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings): Boolean {
+        return try {
+            val newWordId = repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
+            wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
                 pos.wordId = newWordId
                 val newPosId = repository.insertPartOfSpeech(pos)
-                for (meaning in meanings) {
-                    meaning.posId = newPosId
-                    repository.insertMeaning(meaning)
+                meanings.forEach {
+                    it.posId = newPosId
+                    repository.insertMeaning(it)
                 }
             }
+            true
+        } catch (error: Exception) {
+            _status.value = error.message
+            false
         }
     }
 

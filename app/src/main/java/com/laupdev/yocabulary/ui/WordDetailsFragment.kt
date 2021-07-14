@@ -1,6 +1,7 @@
 package com.laupdev.yocabulary.ui
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -311,6 +312,8 @@ class WordDetailsFragment : Fragment() {
         } else {
             "- ${partOfSpeech.partOfSpeech}"
         }
+
+        partOfSpeechTextView.paintFlags = partOfSpeechTextView.paintFlags + Paint.UNDERLINE_TEXT_FLAG
 
         TextViewCompat.setTextAppearance(
             partOfSpeechTextView,
