@@ -21,6 +21,14 @@ class AppRepository(
 
     fun getWordWithPosAndMeaningsById(wordId: Long) = wordDao.getWordWithPosAndMeaningsById(wordId)
 
+    suspend fun getWordWithPosAndMeaningsByIdSuspend(wordId: Long) = wordDao.getWordWithPosAndMeaningsByIdSuspend(wordId)
+
+    suspend fun updateWord(word: Word) = wordDao.update(word)
+
+    suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = posDao.update(partOfSpeech)
+
+    suspend fun updateMeaning(meaning: Meaning) = meaningDao.update(meaning)
+
     suspend fun getWordFromDictionary(word: String): WordWithPartsOfSpeechAndMeanings {
         return dictionaryWordToVocabularyFormat(network.getWordFromDictionary(word)[0])
     }
@@ -39,8 +47,8 @@ class AppRepository(
                             Meaning(
                                 meaningId = 0,
                                 posId = 0,
-                                meaning = meaning.definition,
-                                example = meaning.example,
+                                meaning = meaning.definition.replaceFirstChar { firstChar -> firstChar.uppercase() },
+                                example = meaning.example.replaceFirstChar { firstChar -> firstChar.uppercase() },
                                 synonyms = meaning.synonyms.joinToString(separator = ", ")
                             )
                         )
@@ -55,7 +63,7 @@ class AppRepository(
             Word(
                 wordId = 0,
                 word = wordFromDictionary.word,
-                transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text else "",
+                transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text.replace("/", "") else "",
                 audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].audio else ""
             ),
             partsOfSpeechWithMeanings
@@ -76,10 +84,6 @@ class AppRepository(
 
     suspend fun removeWordById(wordId: Long) {
         wordDao.removeWordById(wordId)
-    }
-
-    suspend fun update(word: Word) {
-        wordDao.update(word)
     }
 
     suspend fun updateWordIsFavorite(word: WordIsFavorite) {

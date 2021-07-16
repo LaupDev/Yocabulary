@@ -17,9 +17,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.laupdev.yocabulary.AdapterForDropdown
+import com.laupdev.yocabulary.ProcessState
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.database.*
@@ -115,6 +117,10 @@ class AddNewWordFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        viewModel.status.observe(viewLifecycleOwner) {
+            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
+        }
+
         binding.newWordEditText.addTextChangedListener(
             object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -139,28 +145,38 @@ class AddNewWordFragment : Fragment() {
                 }
             })
 
-        binding.saveWord.setOnClickListener {
-            addWordToDatabase()
-        }
-
         binding.addPartOfSpeech.setOnClickListener {
             addPartOfSpeech()
         }
 
-        binding.searchInDictionary.setOnClickListener {
-            if (binding.newWordEditText.text.toString().isNotEmpty()) {
-                binding.newWord.error = null
+        binding.saveWord.setOnClickListener {
+            addWordToDatabase()
+        }
 
-                val action =
-                    AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
-                        wordName = binding.newWordEditText.text.toString()
-                    )
-                view.findNavController().navigate(action)
-            } else {
-                binding.newWord.isErrorEnabled = true
-                binding.newWord.error = getString(R.string.word_error_message)
+        if (wordId == 0L) {
+
+            binding.searchInDictionary.setOnClickListener {
+                if (binding.newWordEditText.text.toString().isNotEmpty()) {
+                    binding.newWord.error = null
+
+                    val action =
+                        AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
+                            wordName = binding.newWordEditText.text.toString()
+                        )
+                    view.findNavController().navigate(action)
+                } else {
+                    binding.newWord.isErrorEnabled = true
+                    binding.newWord.error = getString(R.string.word_error_message)
+                }
+            }
+        } else {
+            viewModel.getWordWithPosAndMeaningsById(wordId).observe(viewLifecycleOwner) {
+                it?.let {
+                    populateFieldsWithData(it)
+                }
             }
         }
+
 
 //        if (wordId != 0L) {
 //            viewModel.getWordById(wordId).observe(viewLifecycleOwner, {
@@ -175,6 +191,21 @@ class AddNewWordFragment : Fragment() {
 //        }
     }
 
+    private fun populateFieldsWithData(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+        wordWithPartsOfSpeechAndMeanings.word.let {
+            binding.newWordEditText.setText(it.word)
+            binding.transcriptionEditText.setText(it.transcription)
+        }
+
+        wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach {
+            val tempPartOfSpeechCount = partsOfSpeechCount
+            val posBlockLinearLayout = addPartOfSpeech(it.partOfSpeech)
+            it.meanings.forEach { meaning ->
+                addMeaning(posBlockLinearLayout, true, tempPartOfSpeechCount, meaning)
+            }
+        }
+    }
+
     /***
      * This function has two use cases:
      * 1. If a user click on the btn for adding new words
@@ -186,8 +217,6 @@ class AddNewWordFragment : Fragment() {
         if (isFieldsRight()) {
             binding.newWord.error = null
 
-
-            // TODO: 17.06.2021 Add functionality for word updating
             val partsOfSpeechWithMeanings = mutableListOf<PartOfSpeechWithMeanings>()
             var translations = ""
             partsOfSpeechIdsWithMeaningsIdsMap.forEach { (posId, meaningIds) ->
@@ -203,7 +232,7 @@ class AddNewWordFragment : Fragment() {
                     }
                     partsOfSpeechWithMeanings.add(PartOfSpeechWithMeanings(
                         PartOfSpeech(
-                            posId = 0,
+                            posId = if (wordId == 0L) 0 else requireView().findViewById<LinearLayout>(posId).tag?.toString()?.toLong() ?: 0,
                             wordId = wordId,
                             partOfSpeech = requireView().findViewById<AutoCompleteTextView>(
                                 posId + 2000
@@ -234,8 +263,8 @@ class AddNewWordFragment : Fragment() {
                                 if (meaningText.isNotEmpty() || exampleText.isNotEmpty() || synonymsText.isNotEmpty()) {
                                     newMeaningsList.add(
                                         Meaning(
-                                            meaningId = 0L,
-                                            posId = 0, //Change it later for update functionality
+                                            meaningId = if (wordId == 0L) 0 else requireView().findViewById<LinearLayout>(meaningId).tag?.toString()?.toLong() ?: 0,
+                                            posId = if (wordId == 0L) 0 else requireView().findViewById<LinearLayout>(posId).tag?.toString()?.toLong() ?: 0, //Change it later for update functionality
                                             meaning = meaningText,
                                             example = exampleText,
                                             synonyms = synonymsText
@@ -248,22 +277,36 @@ class AddNewWordFragment : Fragment() {
                     ))
                 }
             }
-            // TODO: 28.06.2021 Add loading screen with spinner
-            GlobalScope.launch(Dispatchers.IO) {
-                if (viewModel.insertWordWithPartsOfSpeechWithMeanings(
-                    WordWithPartsOfSpeechAndMeanings(
-                        Word(
-                            wordId = wordId,
-                            word = trimInputField(binding.newWordEditText.text.toString()),
-                            transcription = trimInputField(binding.transcriptionEditText.text.toString()),
-                            translations = translations
-                        ),
-                        partsOfSpeechWithMeanings
-                    )
-                )) {
-                    findNavController().popBackStack() // TODO: 14.07.2021 FIX
+
+            viewModel.addingProcess.observe(viewLifecycleOwner) {
+                when (it) {
+                    ProcessState.PROCESSING -> {
+
+                    }
+                    ProcessState.COMPLETED -> {
+                        findNavController().popBackStack()
+                    }
+                    ProcessState.FAILED -> {
+
+                    }
+                    else -> {
+
+                    }
                 }
             }
+
+            // TODO: 28.06.2021 Add loading screen with spinner
+            viewModel.insertWordWithPartsOfSpeechWithMeanings(
+                WordWithPartsOfSpeechAndMeanings(
+                    Word(
+                        wordId = wordId,
+                        word = trimInputField(binding.newWordEditText.text.toString()),
+                        transcription = trimInputField(binding.transcriptionEditText.text.toString()),
+                        translations = translations
+                    ),
+                    partsOfSpeechWithMeanings
+                )
+            )
 
 //            if (wordId == 0) {
 //                viewModel.insert(newWord)
@@ -292,7 +335,7 @@ class AddNewWordFragment : Fragment() {
         }
     }
 
-    private fun addPartOfSpeech() {
+    private fun addPartOfSpeech(partOfSpeech: PartOfSpeech? = null): ViewGroup {
         val newPartOfSpeechView = layoutInflater.inflate(
             R.layout.view_part_of_speech,
             binding.addWordFields,
@@ -360,22 +403,34 @@ class AddNewWordFragment : Fragment() {
             newPartOfSpeechView.findViewById<TextInputLayout>(R.id.translation)
         translationTextInputLayout.id =
             R.id.part_of_speech_block + UniqueIdAdditionAddWord.TRANSLATION_TIL.idAddition + partsOfSpeechCount
-        translationTextInputLayout.isEnabled = false
+        if (partOfSpeech == null) {
+            translationTextInputLayout.isEnabled = false
+        }
         translationTextInputLayout.hint =
             resources.getString(R.string.translation, "$partsOfSpeechCount.")
-        newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text).id =
+        val translationTextInputEditText = newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text)
+        translationTextInputEditText.id =
             R.id.part_of_speech_block + UniqueIdAdditionAddWord.TRANSLATION_TIET.idAddition + partsOfSpeechCount
 
         val addMeaningButton = newPartOfSpeechView.findViewById<Button>(R.id.add_meaning)
         addMeaningButton.id =
             R.id.part_of_speech_block + UniqueIdAdditionAddWord.ADD_MEANING_BTN.idAddition + partsOfSpeechCount
-        addMeaningButton.isEnabled = false
+        if (partOfSpeech == null) {
+            addMeaningButton.isEnabled = false
+        }
 
-        addMeaning(newPartOfSpeechView, false, partsOfSpeechCount)
-
+        if (partOfSpeech == null) {
+            addMeaning(newPartOfSpeechView, false, partsOfSpeechCount)
+        }
         val tempValue = partsOfSpeechCount
         addMeaningButton.setOnClickListener {
             addMeaning(newPartOfSpeechView, true, tempValue)
+        }
+
+        partOfSpeech?.let {
+            newPartOfSpeechView.tag = it.posId
+            partOfSpeechAutoCompleteTextView.setText(it.partOfSpeech)
+            translationTextInputEditText.setText(it.translation)
         }
 
         partsOfSpeechCount++
@@ -383,6 +438,7 @@ class AddNewWordFragment : Fragment() {
         meaningsCountMap[partsOfSpeechCount] = 1
         binding.addWordFields.addView(newPartOfSpeechView)
         // TODO: 09.06.2021 Fix bug with disappearing of programmatically added views when turning phone
+        return newPartOfSpeechView
     }
 
 //    private fun removePartOfSpeech(partOfSpeechPosition: Int) {
@@ -398,7 +454,8 @@ class AddNewWordFragment : Fragment() {
     private fun addMeaning(
         parentView: ViewGroup,
         isFieldsEnabled: Boolean,
-        partsOfSpeechCount: Int
+        partsOfSpeechCount: Int,
+        meaning: Meaning? = null
     ) {
 
 //        val meaningsCount = partsOfSpeechIdsWithMeaningsIdsMap[parentView.id]?.size?.plus(1) ?: 1
@@ -415,7 +472,8 @@ class AddNewWordFragment : Fragment() {
         meaningTextInputLayout.isEnabled = isFieldsEnabled
         meaningTextInputLayout.hint =
             resources.getString(R.string.meaning, "$partsOfSpeechCount.$meaningsCount.")
-        newMeaningView.findViewById<TextInputEditText>(R.id.meaning_edit_text).id =
+        val meaningTextInputEditText = newMeaningView.findViewById<TextInputEditText>(R.id.meaning_edit_text)
+        meaningTextInputEditText.id =
             R.id.meaning_block + UniqueIdAdditionAddWord.MEANING_TIET.idAddition + totalMeaningCount
 
         val exampleTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.example)
@@ -424,7 +482,8 @@ class AddNewWordFragment : Fragment() {
         exampleTextInputLayout.isEnabled = isFieldsEnabled
         exampleTextInputLayout.hint =
             resources.getString(R.string.example, "$partsOfSpeechCount.$meaningsCount.")
-        newMeaningView.findViewById<TextInputEditText>(R.id.example_edit_text).id =
+        val exampleTextInputEditText = newMeaningView.findViewById<TextInputEditText>(R.id.example_edit_text)
+        exampleTextInputEditText.id =
             R.id.meaning_block + UniqueIdAdditionAddWord.EXAMPLE_TIET.idAddition + totalMeaningCount
 
         val synonymsTextInputLayout = newMeaningView.findViewById<TextInputLayout>(R.id.synonyms)
@@ -433,7 +492,8 @@ class AddNewWordFragment : Fragment() {
         synonymsTextInputLayout.isEnabled = isFieldsEnabled
         synonymsTextInputLayout.hint =
             resources.getString(R.string.synonyms, "$partsOfSpeechCount.$meaningsCount.")
-        newMeaningView.findViewById<TextInputEditText>(R.id.synonyms_edit_text).id =
+        val synonymsTextInputEditText = newMeaningView.findViewById<TextInputEditText>(R.id.synonyms_edit_text)
+        synonymsTextInputEditText.id =
             R.id.meaning_block + UniqueIdAdditionAddWord.SYNONYMS_TIET.idAddition + totalMeaningCount
 
         val meaningRemoveButton = newMeaningView.findViewById<ImageButton>(R.id.remove_meaning)
@@ -465,10 +525,12 @@ class AddNewWordFragment : Fragment() {
                                 .isEnabled =
                                 false
                             parentView.findViewById<Button>(R.id.part_of_speech_block + UniqueIdAdditionAddWord.ADD_MEANING_BTN.idAddition + partsOfSpeechCount)
+                                .isEnabled = false
                             meaningTextInputLayout.isEnabled = false
                             exampleTextInputLayout.isEnabled = false
                             synonymsTextInputLayout.isEnabled = false
                             meaningRemoveButton.isEnabled = false
+// TODO: 16.07.2021 FIX BUG. Recreation: 1. Add "Part of speech" block. 2. Remove "Meaning" block. 3. Add "Meaning" block. 4. Set "Part of speech" field to "None"
                         }
                         else -> {
                             parentView.findViewById<TextInputLayout>(R.id.part_of_speech_block + UniqueIdAdditionAddWord.TRANSLATION_TIL.idAddition + partsOfSpeechCount)
@@ -483,6 +545,13 @@ class AddNewWordFragment : Fragment() {
                         }
                     }
                 }
+        }
+
+        meaning?.let {
+            newMeaningView.tag = it.meaningId
+            meaningTextInputEditText.setText(it.meaning)
+            exampleTextInputEditText.setText(it.example)
+            synonymsTextInputEditText.setText(it.synonyms)
         }
 
         totalMeaningCount++

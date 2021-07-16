@@ -1,6 +1,7 @@
 package com.laupdev.yocabulary.model
 
 import androidx.lifecycle.*
+import com.laupdev.yocabulary.ProcessState
 import com.laupdev.yocabulary.database.Meaning
 import com.laupdev.yocabulary.database.PartOfSpeech
 import com.laupdev.yocabulary.database.Word
@@ -13,7 +14,9 @@ import java.lang.IllegalArgumentException
 
 class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
-    // TODO: 14.07.2021 Add live data to observe the insert status
+    private val _addingProcess = MutableLiveData(ProcessState.INACTIVE)
+    val addingProcess: LiveData<ProcessState>
+        get() = _addingProcess
 
     private val _status = MutableLiveData<String>()
     val status: LiveData<String>
@@ -31,27 +34,50 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
         repository.insertMeaning(meaning)
     }
 
-    fun update(word: Word) = viewModelScope.launch {
-        repository.update(word)
-    }
+    suspend fun updateWord(word: Word) = repository.updateWord(word)
+
+    suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = repository.updatePartOfSpeech(partOfSpeech)
+
+    suspend fun updateMeaning(meaning: Meaning) = repository.updateMeaning(meaning)
 
     fun getWordById(wordId: Int) = repository.getWordById(wordId).asLiveData()
 
-    suspend fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings): Boolean {
-        return try {
-            val newWordId = repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
-            wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
-                pos.wordId = newWordId
-                val newPosId = repository.insertPartOfSpeech(pos)
-                meanings.forEach {
-                    it.posId = newPosId
-                    repository.insertMeaning(it)
+    fun getWordWithPosAndMeaningsById(wordId: Long) =
+        repository.getWordWithPosAndMeaningsById(wordId).asLiveData()
+
+    fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+        viewModelScope.launch {
+            try {
+                _addingProcess.value = ProcessState.PROCESSING
+
+                val newWordId = if (wordWithPartsOfSpeechAndMeanings.word.wordId == 0L) {
+                    repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
+                } else {
+                    updateWord(wordWithPartsOfSpeechAndMeanings.word)
+                    wordWithPartsOfSpeechAndMeanings.word.wordId
                 }
+                wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
+                    val newPosId = if (pos.posId == 0L) {
+                        pos.wordId = newWordId
+                        repository.insertPartOfSpeech(pos)
+                    } else {
+                        updatePartOfSpeech(pos)
+                        pos.posId
+                    }
+                    meanings.forEach {
+                        if (it.meaningId == 0L) {
+                            it.posId = newPosId
+                            repository.insertMeaning(it)
+                        } else {
+                            updateMeaning(it)
+                        }
+                    }
+                }
+                _addingProcess.value = ProcessState.COMPLETED
+            } catch (error: Exception) {
+                _addingProcess.value = ProcessState.FAILED
+                _status.value = error.message
             }
-            true
-        } catch (error: Exception) {
-            _status.value = error.message
-            false
         }
     }
 
