@@ -1,17 +1,20 @@
 package com.laupdev.yocabulary.ui
 
 import android.content.res.Resources
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -281,7 +284,10 @@ class AddNewWordFragment : Fragment() {
             viewModel.addingProcess.observe(viewLifecycleOwner) {
                 when (it) {
                     ProcessState.PROCESSING -> {
-
+                        binding.loadingScreen.visibility = VISIBLE
+                        val loadingAnim: AnimatedVectorDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.anim_loading) as AnimatedVectorDrawable
+                        binding.loadingImg.setImageDrawable(loadingAnim)
+                        loadingAnim.start()
                     }
                     ProcessState.COMPLETED -> {
                         findNavController().popBackStack()
@@ -295,7 +301,6 @@ class AddNewWordFragment : Fragment() {
                 }
             }
 
-            // TODO: 28.06.2021 Add loading screen with spinner
             viewModel.insertWordWithPartsOfSpeechWithMeanings(
                 WordWithPartsOfSpeechAndMeanings(
                     Word(

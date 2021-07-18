@@ -33,6 +33,7 @@
     <string name="add_part_of_speech">Add Part of speech</string>
     <string name="remove_part_of_speech">Remove Part of speech</string>
     <string name="remove_meaning">Remove Meaning</string>
+    <string name="loading_word">Loading</string>
 
 
     <!--Vocabulary fragments -->

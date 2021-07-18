@@ -194,4 +194,24 @@
         app:srcCompat="@drawable/ic_check_24"
         app:tint="@color/color_black" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loading_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_loading_screen"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/loading_img"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="@string/loading_word"
+            android:src="@drawable/ic_loading"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
