@@ -49,7 +49,8 @@
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
                         android:maxLines="3"
-                        tools:text="access" />
+                        tools:text="access"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

@@ -99,7 +99,6 @@ class WordDetailsFragment : Fragment() {
                 val action =
                     WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
                         currWordId
-                        // TODO: 16.06.2021 Update edit word functionality
                     )
                 view.findNavController().navigate(action)
             } else {

@@ -25,8 +25,9 @@
                 android:id="@+id/part_of_speech_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:dropDownHeight="300dp"
-                android:inputType="none" />
+                android:dropDownHeight="200dp"
+                android:inputType="text"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

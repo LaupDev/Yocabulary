@@ -16,16 +16,16 @@
     <string name="search_word_btn">Search translation</string>
 
     <!--fragment_add_new_word-->
-    <string name="new_word">Word</string>
+    <string name="new_word">Word *</string>
     <string name="transcription">Transcription</string>
-    <string name="part_of_speech">%s Part of speech</string>
+    <string name="part_of_speech">%s Part of speech *</string>
     <string name="translation">%s Translation</string>
     <string name="meaning">%s Meaning</string>
     <string name="example">%s Example</string>
     <string name="synonyms">%s Synonyms</string>
     <string name="save_word">Save word</string>
     <string name="button_cancel">Cancel</string>
-    <string name="word_error_message">Enter a new word</string>
+    <string name="required_error">* Required</string>
     <string name="new_word_added">Added new word</string>
     <string name="word_updated_success">Successfully updated</string>
     <string name="search_in_dictionary">Search in<br> dictionary</br></string>
