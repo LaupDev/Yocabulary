@@ -1,5 +1,6 @@
 package com.laupdev.yocabulary.ui
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.AnimatedVectorDrawable
@@ -8,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +37,7 @@ import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddWordViewModel
 import com.laupdev.yocabulary.model.AddWordViewModelFactory
+import kotlin.math.log
 import kotlin.math.roundToInt
 
 /*** ABBREVIATIONS:
@@ -137,9 +140,6 @@ class AddNewWordFragment : Fragment() {
         if (wordId == 0L) {
 
             binding.searchInDictionary.setOnClickListener {
-//                if (checkNetworkConnection) {
-//
-//                }
                 // TODO: 19.07.2021 Check network connection
                 if (binding.newWordEditText.text.toString().isNotEmpty()) {
                     binding.newWord.error = null
@@ -161,19 +161,6 @@ class AddNewWordFragment : Fragment() {
                 }
             }
         }
-
-
-//        if (wordId != 0L) {
-//            viewModel.getWordById(wordId).observe(viewLifecycleOwner, {
-//                it?.let {
-//                    binding.newWordEditText.setText(it.word)
-//                    binding.transcriptionEditText.setText(it.transcription)
-//                    binding.translationEditText.setText(it.translation)
-//                    binding.meaningEditText.setText(it.meaning)
-//                    binding.exampleEditText.setText(it.example)
-//                }
-//            })
-//        }
     }
 
 //    private fun checkNetworkConnection(): Boolean {

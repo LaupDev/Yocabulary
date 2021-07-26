@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.ViewGroup.*
 import android.widget.LinearLayout
@@ -16,16 +17,21 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
+import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.lang.Exception
+import java.net.UnknownHostException
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -127,9 +133,9 @@ class WordDetailsFragment : Fragment() {
         }
 
 
-        viewModel.status.observe(viewLifecycleOwner, {
-            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
-        })
+//        viewModel.status.observe(viewLifecycleOwner, {
+//            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
+//        })
 
 //        binding.searchTranslationBtn.setOnClickListener {
 //            searchWordTranslationInWeb()
@@ -164,6 +170,38 @@ class WordDetailsFragment : Fragment() {
             }
         }
         viewModel.getWordFromDictionary(wordToSearch)
+        viewModel.error.observe(viewLifecycleOwner) {
+            when(it) {
+                ErrorType.NO_SUCH_WORD -> {
+                    createAlertDialog(resources.getString(R.string.no_such_word))
+                }
+                ErrorType.UNKNOWN_HOST -> {
+                    createAlertDialog(resources.getString(R.string.check_internet_connection))
+                }
+                ErrorType.OTHER -> {
+                    createAlertDialog(resources.getString(R.string.unknown_error))
+                }
+                else -> {}
+            }
+        }
+//        GlobalScope.launch(Dispatchers.IO) {
+//            try {
+//                viewModel.getWordFromDictionaryTry(wordToSearch)
+//            } catch (error: Exception) {
+//                Log.e("PP." + this.toString(), error.message.toString())
+//                when(error) {
+//                    is UnknownHostException -> {
+//                        MaterialAlertDialogBuilder(requireContext())
+//                            .show()
+//                    }
+//                    is HttpException -> {
+//                        MaterialAlertDialogBuilder(requireContext())
+//                            .show()
+//                    }
+//                }
+//            }
+//
+//        }
 
         viewModel.wordId.observe(viewLifecycleOwner, {
             currWordId = it
@@ -276,6 +314,17 @@ class WordDetailsFragment : Fragment() {
             findNavController().popBackStack()
 //            findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
         }
+    }
+
+    private fun createAlertDialog(message: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(message)
+            .setCancelable(false)
+            .setPositiveButton(resources.getString(R.string.got_it)) { dialog, which ->
+                findNavController().popBackStack()
+                // TODO: 22.07.2021 Complete it!
+            }
+            .show()
     }
 
     @SuppressLint("SetTextI18n")

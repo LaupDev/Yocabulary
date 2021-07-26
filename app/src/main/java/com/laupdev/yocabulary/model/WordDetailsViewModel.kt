@@ -1,5 +1,6 @@
 package com.laupdev.yocabulary.model
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.database.WordIsFavorite
@@ -8,9 +9,17 @@ import com.laupdev.yocabulary.network.WordFromDictionary
 import com.laupdev.yocabulary.repository.AppRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.lang.NullPointerException
+import java.net.UnknownHostException
+
+enum class ErrorType {
+    NO_SUCH_WORD,
+    UNKNOWN_HOST,
+    OTHER
+}
 
 class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() {
 
@@ -29,6 +38,10 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     private val _status = MutableLiveData<String>()
     val status: LiveData<String>
         get() = _status
+
+    private val _error = MutableLiveData<ErrorType>()
+    val error: LiveData<ErrorType>
+        get() = _error
 
     private val _isFavourite = MutableLiveData(false)
     val isFavourite: LiveData<Boolean>
@@ -56,11 +69,30 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
             try {
                 _wordWithPosAndMeanings.value = repository.getWordFromDictionary(word)
             } catch (error: Exception) {
+                when(error) {
+                    is UnknownHostException -> {
+                        _error.value = ErrorType.UNKNOWN_HOST
+                    }
+                    is HttpException -> {
+                        _error.value = ErrorType.NO_SUCH_WORD
+                    }
+                    else -> {
+                        _error.value = ErrorType.OTHER
+                    }
+                }
+                Log.e(this.toString(), error.toString())
                 _status.value = "Failure: ${error.message}"
             }
         }
 
     }
+//
+//    suspend fun getWordFromDictionaryTry(word: String) {
+//        if (wordWithPosAndMeanings.value == null) {
+//            _isAdded.value = false
+//        }
+//        _wordWithPosAndMeanings.value = repository.getWordFromDictionary(word)
+//    }
 
     fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
         viewModelScope.launch {
