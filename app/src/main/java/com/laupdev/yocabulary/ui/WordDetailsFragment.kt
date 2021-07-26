@@ -184,24 +184,6 @@ class WordDetailsFragment : Fragment() {
                 else -> {}
             }
         }
-//        GlobalScope.launch(Dispatchers.IO) {
-//            try {
-//                viewModel.getWordFromDictionaryTry(wordToSearch)
-//            } catch (error: Exception) {
-//                Log.e("PP." + this.toString(), error.message.toString())
-//                when(error) {
-//                    is UnknownHostException -> {
-//                        MaterialAlertDialogBuilder(requireContext())
-//                            .show()
-//                    }
-//                    is HttpException -> {
-//                        MaterialAlertDialogBuilder(requireContext())
-//                            .show()
-//                    }
-//                }
-//            }
-//
-//        }
 
         viewModel.wordId.observe(viewLifecycleOwner, {
             currWordId = it
@@ -298,7 +280,15 @@ class WordDetailsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.delete_word -> {
-                removeWord()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(R.string.are_you_sure)
+                    .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                        removeWord()
+                    }
+                    .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ ->
+                        dialog.cancel()
+                    }
+                    .show()
 
                 return true
             }
@@ -306,6 +296,8 @@ class WordDetailsFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    // TODO: 27.07.2021 Style Material alert dialog
 
     private fun removeWord() {
         viewModel.removeWord(currWordId)
@@ -320,9 +312,8 @@ class WordDetailsFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(resources.getString(R.string.got_it)) { dialog, which ->
+            .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
                 findNavController().popBackStack()
-                // TODO: 22.07.2021 Complete it!
             }
             .show()
     }

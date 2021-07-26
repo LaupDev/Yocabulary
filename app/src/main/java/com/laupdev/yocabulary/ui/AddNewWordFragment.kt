@@ -140,7 +140,6 @@ class AddNewWordFragment : Fragment() {
         if (wordId == 0L) {
 
             binding.searchInDictionary.setOnClickListener {
-                // TODO: 19.07.2021 Check network connection
                 if (binding.newWordEditText.text.toString().isNotEmpty()) {
                     binding.newWord.error = null
 

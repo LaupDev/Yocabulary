@@ -38,7 +38,11 @@
     <string name="no_such_word">No such word in dictionary</string>
     <string name="check_internet_connection">Check your internet connection</string>
     <string name="unknown_error">Unknown error. Please try again later</string>
+    <string name="are_you_sure">Do you want to delete this word?</string>
     <string name="got_it">Got it</string>
+
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 
     <!--Vocabulary fragments -->
     <string name="vocabulary_tab">Vocabulary</string>

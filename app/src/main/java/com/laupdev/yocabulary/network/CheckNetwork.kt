@@ -21,17 +21,17 @@ class CheckNetwork(val context: Context) {
             connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network : Network) {
                     Log.e(TAG, "The default network is now: " + network)
-                    MainActivity.isConnected = true
+//                    MainActivity.isConnected = true
                 }
 
                 override fun onLost(network : Network) {
                     Log.e(TAG, "The application no longer has a default network. The last default network was " + network)
-                    MainActivity.isConnected = false
+//                    MainActivity.isConnected = false
                 }
 
                 override fun onCapabilitiesChanged(network : Network, networkCapabilities : NetworkCapabilities) {
                     Log.e(TAG, "The default network changed capabilities: " + networkCapabilities)
-                    MainActivity.isConnected = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//                    MainActivity.isConnected = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 }
 
                 override fun onLinkPropertiesChanged(network : Network, linkProperties : LinkProperties) {
@@ -39,7 +39,7 @@ class CheckNetwork(val context: Context) {
                 }
             })
         } catch (error: Exception) {
-            MainActivity.isConnected = false
+//            MainActivity.isConnected = false
         }
     }
 }

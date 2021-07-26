@@ -8,23 +8,12 @@ import com.laupdev.yocabulary.network.CheckNetwork
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        var isConnected = false
-    }
-
 //    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-//        val checkNetwork = CheckNetwork(applicationContext)
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            checkNetwork.registerNetworkCallback()
-//        } else {
-//            isConnected = true
-//        }
 //        applicationContext.deleteDatabase("yocabulary_database")
 
 //        val navHostFragment = supportFragmentManager

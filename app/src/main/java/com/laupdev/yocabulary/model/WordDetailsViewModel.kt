@@ -86,13 +86,6 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
         }
 
     }
-//
-//    suspend fun getWordFromDictionaryTry(word: String) {
-//        if (wordWithPosAndMeanings.value == null) {
-//            _isAdded.value = false
-//        }
-//        _wordWithPosAndMeanings.value = repository.getWordFromDictionary(word)
-//    }
 
     fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
         viewModelScope.launch {

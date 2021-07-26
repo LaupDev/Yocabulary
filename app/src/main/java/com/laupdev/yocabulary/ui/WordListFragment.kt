@@ -82,6 +82,9 @@ class WordListFragment : Fragment() {
         viewModel.status.observe(viewLifecycleOwner, {
             Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
         })
+
+        // TODO: 27.07.2021 Complete search functionality
+        // TODO: 27.07.2021 Filter words
 //        } else {
 //            viewModel.allWords.observe(viewLifecycleOwner, { words ->
 //                words?.let {
