@@ -4,12 +4,8 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.RelativeLayout
-import android.widget.TextView
-import androidx.core.view.isVisible
+import android.widget.*
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -23,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback
-) {
+), Filterable {
     class WordViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         lateinit var word: Word
         val wordTextView: TextView? = view.findViewById(R.id.word)
@@ -40,6 +36,8 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
     }
 
     private var pronounceWordMediaPlayer: MediaPlayer? = null
+    private var initialList = currentList
+    private var filteredList = currentList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val layout = LayoutInflater
@@ -48,33 +46,38 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
         return WordViewHolder(layout)
     }
 
+    override fun getItemCount(): Int {
+        return filteredList.size
+    }
+
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
-        holder.word = currentList[position]
-        holder.wordTextView?.text = currentList[position].word
-        holder.transTextView?.text = currentList[position].translations.split("|")[0]
-        holder.addWordToFavorite?.isSelected = currentList[position].isFavourite == 1
-        if (currentList[position].audioUrl.isNotEmpty()) {
+        holder.word = filteredList[position]
+        holder.wordTextView?.text = filteredList[position].word
+        holder.transTextView?.text = filteredList[position].translations.split("|")[0]
+        holder.addWordToFavorite?.isSelected = filteredList[position].isFavourite == 1
+        if (filteredList[position].audioUrl.isNotEmpty()) {
             holder.pronounceWordBtn?.setOnClickListener {
-                playWordPronunciation(holder, currentList[position].audioUrl)
+                playWordPronunciation(holder, filteredList[position].audioUrl)
             }
         } else {
             holder.pronounceWordBtn?.isEnabled = false
         }
         holder.addWordToFavorite?.setOnClickListener {
             GlobalScope.launch(Dispatchers.IO) {
-                if (viewModel.updateWordIsFavorite(currentList[position].wordId, it.isSelected)) {
+                if (viewModel.updateWordIsFavorite(filteredList[position].wordId, it.isSelected)) {
                     it.isSelected = !it.isSelected
                 }
             }
         }
-//        holder.transTextView?.text = currentList[position].translation
-//        holder.addWordToFavorite?.contentDescription = holder.view.context.getString(R.string.add_word_to_favorite, currentList[position].word) // Check how it works
+    }
 
-//        println("----WORD: " + currentList[position].word + " -- Pos: " + position + " ------------")
-//        holder.wordContainer?.setOnClickListener {
-//            val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = currentList[position].wordId)
-//            holder.view.findNavController().navigate(action)
-//        }
+    override fun submitList(list: MutableList<Word>?) {
+        super.submitList(list)
+        if (!list.isNullOrEmpty()) {
+            filteredList = list
+            initialList = list
+            filter.filter("")
+        }
     }
 
     private fun playWordPronunciation(holder: WordViewHolder, audioUrl: String) {
@@ -110,6 +113,30 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
             return oldItem == newItem
         }
 
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                var resultList = initialList
+                if (charSearch.isNotEmpty()) {
+                    resultList = resultList.filter {
+                        it.word.lowercase().contains(charSearch.lowercase())
+                    }
+                }
+                val filterResults = FilterResults()
+                filterResults.values = resultList
+                return filterResults
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredList = results?.values as List<Word>
+                notifyDataSetChanged()
+            }
+
+        }
     }
 
 }

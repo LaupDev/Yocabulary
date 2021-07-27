@@ -195,6 +195,7 @@ class AddNewWordFragment : Fragment() {
         wordWithPartsOfSpeechAndMeanings.word.let {
             binding.newWordEditText.setText(it.word)
             binding.transcriptionEditText.setText(it.transcription)
+            binding.audioUrl.text = it.audioUrl
         }
 
         wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach {
@@ -314,7 +315,8 @@ class AddNewWordFragment : Fragment() {
                         wordId = wordId,
                         word = trimInputField(binding.newWordEditText.text.toString()),
                         transcription = trimInputField(binding.transcriptionEditText.text.toString()),
-                        translations = translations
+                        translations = translations,
+                        audioUrl = binding.audioUrl.text.toString()
                     ),
                     partsOfSpeechWithMeanings
                 )
