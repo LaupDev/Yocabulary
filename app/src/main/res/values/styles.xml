@@ -48,6 +48,7 @@
     <style name="Widget.Yocabulary.ToolBar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.Toolbar</item>
         <item name="titleTextAppearance">@style/TextAppearance.Yocabulary.Headline6</item>
+<!--        <item name="subtitleTextAppearance">@style/TextAppearance.Yocabulary.MenuItem</item>-->
     </style>
 
     <style name="ThemeOverlay.Yocabulary.Toolbar" parent="">
@@ -61,6 +62,10 @@
         <item name="android:letterSpacing">0</item>
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextAppearance.Yocabulary.MenuItem" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/color_red</item>
     </style>
 
     <!-- Word details fragment styles -->

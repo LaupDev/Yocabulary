@@ -2,6 +2,8 @@ package com.laupdev.yocabulary.ui
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.VISIBLE
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -28,6 +30,9 @@ class WordListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var letterId: String
+    private lateinit var adapter: WordAdapter
+
+    private var sortMode = 0 // 0 -> Date added; 1 -> Word; 2 -> Favorite
 
     private val viewModel: VocabularyViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -63,7 +68,7 @@ class WordListFragment : Fragment() {
 
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val adapter = WordAdapter(viewModel)
+        adapter = WordAdapter(viewModel)
         recyclerView.adapter = adapter
 
 //        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -81,7 +86,8 @@ class WordListFragment : Fragment() {
         viewModel.allWords.observe(viewLifecycleOwner) { words ->
             words?.let {
                 println("--------------submitList-----------: " + it.size)
-                adapter.submitList(it.sortedByDescending { word -> word.wordId } as MutableList<Word>)
+                sortWords(it, sortMode)
+//                adapter.submitList(it.sortedByDescending { word -> word.wordId } as MutableList<Word>)
             }
         }
 
@@ -103,23 +109,47 @@ class WordListFragment : Fragment() {
 
             })
         }
-
-
-        // TODO: 27.07.2021 Filter words
-//        } else {
-//            viewModel.allWords.observe(viewLifecycleOwner, { words ->
-//                words?.let {
-//                    adapter.submitList(it.filter { word ->
-//                        word.word.first().toString().equals(letterId, true)
-//                    }.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { word -> word.word }))
-//                }
-//            })
-//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.sort_words_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.sort_by_date -> {
+                item.isChecked = true
+                sortWords(viewModel.allWords.value?: listOf(), 0)
+                return true
+            }
+            R.id.sort_by_word -> {
+                item.isChecked = true
+                sortWords(viewModel.allWords.value?: listOf(), 1)
+                return true
+            }
+            R.id.sort_by_favorite -> {
+                item.isChecked = true
+                sortWords(viewModel.allWords.value?: listOf(), 2)
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun sortWords(words: List<Word>, sortMode: Int) {
+        when(sortMode) {
+            0 -> {
+                adapter.submitList(words.sortedByDescending { word -> word.wordId } as MutableList<Word>)
+            }
+            1 -> {
+                adapter.submitList(words.sortedBy { word -> word.word.lowercase() } as MutableList<Word>)
+            }
+            2 -> {
+                adapter.submitList(words.filter { word -> word.isFavourite == 1 } as MutableList<Word>)
+            }
+        }
+    }
+    // TODO: 30.07.2021 Highlight chosen sort option
 
 }
