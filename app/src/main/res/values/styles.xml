@@ -21,6 +21,7 @@
         <item name="tabStyle">@style/Widget.Yocabulary.TabLayout</item>
         <!-- Customize your theme here. -->
         <item name="android:colorBackground">@color/color_grey</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Yocabulary.MaterialAlertDialog</item>
     </style>
 
     <!--  Tabs Style  -->
@@ -222,14 +223,56 @@
     </style>
     
     <!-- Common styles -->
+    <style name="ThemeOverlay.Yocabulary.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog.Centered">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.Yocabulary</item>
+<!--        <item name="materialAlertDialogTitlePanelStyle">@style/MaterialAlertDialog.Yocabulary.Title.Panel</item>-->
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Yocabulary.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Yocabulary.Body.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Yocabulary.PositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.Yocabulary.NegativeButton</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Yocabulary" parent="MaterialAlertDialog.MaterialComponents">
+        <item name="shapeAppearance">@style/ShapeAppearance.Yocabulary.AlertDialog</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Yocabulary.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAlignment" tools:ignore="NewApi">center</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+<!--    <style name="MaterialAlertDialog.Yocabulary.Title.Panel" parent="MaterialAlertDialog.MaterialComponents.Title.Panel">-->
+<!--        <item name="android:gravity">center_horizontal</item>-->
+<!--        <item name="android:textColor">@color/color_orange_text</item>-->
+<!--    </style>-->
+
+    <style name="MaterialAlertDialog.Yocabulary.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
     
     <style name="Widget.Yocabulary.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.FloatingActionButton</item>
     </style>
 
+    <style name="Widget.Yocabulary.PositiveButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/color_orange_text</item>
+    </style>
+
+    <style name="Widget.Yocabulary.NegativeButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/color_white_60percent</item>
+    </style>
+
     <style name="ThemeOverlay.Yocabulary.FloatingActionButton" parent="">
         <item name="colorAccent">@color/color_black</item>
         <item name="colorOnSecondary">@color/color_black</item>
+    </style>
+
+    <style name="ShapeAppearance.Yocabulary.AlertDialog" parent="ShapeAppearance.MaterialComponents">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
 
 <!--    <style name="CustomHintDisabled" parent="TextAppearance.MaterialComponents.Caption">-->

@@ -150,6 +150,5 @@ class WordListFragment : Fragment() {
             }
         }
     }
-    // TODO: 30.07.2021 Highlight chosen sort option
 
 }

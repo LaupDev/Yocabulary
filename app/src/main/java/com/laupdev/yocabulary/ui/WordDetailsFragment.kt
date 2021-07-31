@@ -310,6 +310,7 @@ class WordDetailsFragment : Fragment() {
 
     private fun createAlertDialog(message: String) {
         MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.error))
             .setMessage(message)
             .setCancelable(false)
             .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
