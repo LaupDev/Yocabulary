@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:icon="@drawable/ic_sets_24"
-                android:text="@string/my_sets_tab"/>
+                android:text="@string/my_sets_tab" />
 
         </com.google.android.material.tabs.TabLayout>
 
@@ -62,9 +62,28 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             tools:listitem="@layout/item_view" />
+
+        <Button
+            android:id="@+id/search_in_dictionary"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_corners"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingStart="16dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="8dp"
+            android:text="@string/search_in_dictionary_inline"
+            android:textAllCaps="false"
+            android:textColor="@color/color_white"
+            android:textSize="15sp"
+            android:visibility="invisible"
+            app:backgroundTint="@null" />
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -75,6 +94,6 @@
         android:layout_margin="16dp"
         android:contentDescription="@string/submit"
         app:srcCompat="@drawable/ic_add_24"
-        app:tint="@color/color_black"/>
+        app:tint="@color/color_black" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

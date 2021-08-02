@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.database.WordIsFavorite
+import com.laupdev.yocabulary.database.WordTranslation
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.network.WordFromDictionary
 import com.laupdev.yocabulary.repository.AppRepository
@@ -108,7 +109,7 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
         }
     }
 
-    suspend fun updateWordIsFavorite(wordId: Long) =
+    fun updateWordIsFavorite(wordId: Long) =
         viewModelScope.launch {
             try {
                 if (wordId == 0L) {
@@ -121,10 +122,25 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
                     )
                 )
                 _isFavourite.value = isFavourite.value == false
-//                return@async true
             } catch (error: Exception) {
                 _status.value = error.message
-//                return@async false
+            }
+        }
+
+    fun updateWordTranslation(wordId: Long, translation: String) =
+        viewModelScope.launch {
+            try {
+                if (wordId == 0L) {
+                    throw Exception("Failure: System error")
+                }
+                repository.updateWordTranslation(
+                    WordTranslation(
+                        wordId,
+                        translation
+                    )
+                )
+            } catch (error: Exception) {
+                _status.value = error.message
             }
         }
 

@@ -5,6 +5,8 @@ import android.graphics.Paint
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.ViewGroup.*
@@ -114,9 +116,7 @@ class WordDetailsFragment : Fragment() {
         }
 
         binding.addToFavorite.setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) {
-                viewModel.updateWordIsFavorite(currWordId)
-            }
+            viewModel.updateWordIsFavorite(currWordId)
         }
 
         viewModel.isFavourite.observe(viewLifecycleOwner) {
@@ -130,6 +130,38 @@ class WordDetailsFragment : Fragment() {
             } else {
                 findNavController().popBackStack()
             }
+        }
+
+        binding.addTranslation.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    binding.saveTranslation.visibility = VISIBLE
+                } else {
+                    binding.saveTranslation.visibility = GONE
+                }
+            }
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+            }
+        })
+
+        binding.saveTranslation.setOnClickListener {
+            viewModel.updateWordTranslation(currWordId, binding.addTranslation.text.toString())
+            binding.addTranslation.isEnabled = false
+            it.visibility = GONE
         }
 
 
@@ -159,6 +191,7 @@ class WordDetailsFragment : Fragment() {
             binding.addToVocabulary.visibility = if (it) GONE else VISIBLE
             binding.addToFavorite.visibility = if (it) VISIBLE else GONE
             binding.editWordBtn.visibility = if (it) VISIBLE else GONE
+            binding.addTranslationBox.visibility = if (it) VISIBLE else GONE
         }
         binding.pronounceWord.visibility = VISIBLE
         binding.buttons.visibility = INVISIBLE
@@ -213,7 +246,16 @@ class WordDetailsFragment : Fragment() {
         wordWithPartsOfSpeechAndMeanings.word.translations.let {
             if (it.isEmpty()) {
                 binding.translation.visibility = GONE
+                if (wordToSearch == "0") {
+                    binding.addTranslationBox.visibility = VISIBLE
+                    if (binding.addTranslation.text.toString().isNotEmpty()) {
+                        binding.addTranslation.isEnabled = false
+                        binding.saveTranslation.visibility = GONE
+                    }
+                }
             } else {
+                binding.addTranslationBox.visibility = GONE
+                binding.translation.visibility = VISIBLE
                 binding.translation.text = it.replace("|", ",")
             }
         }
@@ -297,11 +339,14 @@ class WordDetailsFragment : Fragment() {
         }
     }
 
-    // TODO: 27.07.2021 Style Material alert dialog
-
     private fun removeWord() {
         viewModel.removeWord(currWordId)
         binding.addToFavorite.isSelected = false
+        binding.addTranslation.apply {
+            this.isEnabled = true
+            this.setText("")
+        }
+
         if (wordToSearch == "0") {
             findNavController().popBackStack()
 //            findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)

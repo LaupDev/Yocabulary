@@ -90,4 +90,8 @@ class AppRepository(
         wordDao.updateIsFavorite(word)
     }
 
+    suspend fun updateWordTranslation(word: WordTranslation) {
+        wordDao.updateWordTranslation(word)
+    }
+
 }

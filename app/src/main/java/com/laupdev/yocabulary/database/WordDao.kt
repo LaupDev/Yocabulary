@@ -27,6 +27,9 @@ interface WordDao {
     @Update(entity = Word::class)
     suspend fun updateIsFavorite(word: WordIsFavorite)
 
+    @Update(entity = Word::class)
+    suspend fun updateWordTranslation(word: WordTranslation)
+
     @Query("DELETE FROM words WHERE id = :wordId")
     suspend fun removeWordById(wordId: Long)
 

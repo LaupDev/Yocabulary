@@ -2,8 +2,8 @@ package com.laupdev.yocabulary.ui
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -82,6 +82,16 @@ class WordListFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
+        binding.searchInDictionary.setOnClickListener {
+            val action =
+                WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(
+                    wordName = binding.wordSearch.query.toString()
+                )
+            view.findNavController().navigate(action)
+        }
+
+        // TODO: 02.08.2021 Fix bug. Recreation: 1. Enter some word in search 2. Move to another fragment 3. Go back
+
 //        if (letterId == "recent") {
         viewModel.allWords.observe(viewLifecycleOwner) { words ->
             words?.let {
@@ -102,8 +112,13 @@ class WordListFragment : Fragment() {
                     return false
                 }
 
-                override fun onQueryTextChange(p0: String?): Boolean {
-                    adapter.filter.filter(p0)
+                override fun onQueryTextChange(searchQuery: String?): Boolean {
+                    binding.searchInDictionary.visibility = if (searchQuery?.isNotEmpty() == true) {
+                        VISIBLE
+                    } else {
+                        INVISIBLE
+                    }
+                    adapter.filter.filter(searchQuery)
                     return false
                 }
 

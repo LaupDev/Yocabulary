@@ -70,6 +70,42 @@
                         android:layout_marginTop="12dp"
                         android:textAppearance="@style/TextAppearance.Yocabulary.Translation"
                         tools:text="Яблуко" />
+
+                    <LinearLayout
+                        android:id="@+id/add_translation_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <EditText
+                            android:id="@+id/add_translation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="@string/add_translation"
+                            android:importantForAutofill="no"
+                            android:inputType="textMultiLine"
+                            android:maxWidth="250dp"
+                            android:maxLength="40"
+                            android:maxLines="3"
+                            android:textColor="@color/color_white"
+                            android:textColorHint="@color/color_white_60percent"
+                            android:textSize="17sp" />
+
+                        <ImageButton
+                            android:id="@+id/save_translation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:background="@null"
+                            android:contentDescription="@string/save_translation"
+                            android:src="@drawable/ic_check_24"
+                            android:visibility="gone"
+                            app:tint="@color/color_orange" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -91,8 +127,8 @@
                         android:contentDescription="@string/add_word_to_favorite"
                         android:elevation="2dp"
                         android:src="@drawable/ic_star_24"
-                        app:tint="@color/color_state_btn_icon_add_to_fav"
-                        android:visibility="invisible"/>
+                        android:visibility="invisible"
+                        app:tint="@color/color_state_btn_icon_add_to_fav" />
 
                     <ImageButton
                         android:id="@+id/add_to_vocabulary"
@@ -115,8 +151,8 @@
                         android:contentDescription="@string/add_word_to_favorite"
                         android:elevation="2dp"
                         android:src="@drawable/ic_volume_up_24"
-                        app:tint="@color/color_state_btn_icon_add_to_fav"
-                        android:visibility="invisible"/>
+                        android:visibility="invisible"
+                        app:tint="@color/color_state_btn_icon_add_to_fav" />
 
 
                 </LinearLayout>
@@ -125,9 +161,9 @@
 
             <LinearLayout
                 android:id="@+id/word_details"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
             </LinearLayout>
 

@@ -34,3 +34,11 @@ data class WordIsFavorite(
     @ColumnInfo(name = "is_favorite")
     val isFavourite: Int
 )
+
+@Entity
+data class WordTranslation(
+    @ColumnInfo(name = "id")
+    val wordId: Long,
+    @ColumnInfo(name = "translations")
+    val translations: String = ""
+)

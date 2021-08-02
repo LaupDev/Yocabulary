@@ -207,6 +207,8 @@ class AddNewWordFragment : Fragment() {
         }
     }
 
+    // TODO: 03.08.2021 Fix bug with translation added in WordDetailsFragment. Translation disappears when updating word
+
     /***
      * This function has two use cases:
      * 1. If a user click on the btn for adding new words
