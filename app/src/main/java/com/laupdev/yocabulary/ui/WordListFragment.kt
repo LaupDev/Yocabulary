@@ -90,14 +90,10 @@ class WordListFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
-        // TODO: 02.08.2021 Fix bug. Recreation: 1. Enter some word in search 2. Move to another fragment 3. Go back
-
-//        if (letterId == "recent") {
         viewModel.allWords.observe(viewLifecycleOwner) { words ->
             words?.let {
                 println("--------------submitList-----------: " + it.size)
                 sortWords(it, sortMode)
-//                adapter.submitList(it.sortedByDescending { word -> word.wordId } as MutableList<Word>)
             }
         }
 
@@ -113,6 +109,7 @@ class WordListFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(searchQuery: String?): Boolean {
+                    println("----------------SEARCH----------------: " + searchQuery + " -- " + adapter.currentList.size)
                     binding.searchInDictionary.visibility = if (searchQuery?.isNotEmpty() == true) {
                         VISIBLE
                     } else {

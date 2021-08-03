@@ -21,8 +21,6 @@ class AppRepository(
 
     fun getWordWithPosAndMeaningsById(wordId: Long) = wordDao.getWordWithPosAndMeaningsById(wordId)
 
-    suspend fun getWordWithPosAndMeaningsByIdSuspend(wordId: Long) = wordDao.getWordWithPosAndMeaningsByIdSuspend(wordId)
-
     suspend fun updateWord(word: Word) = wordDao.update(word)
 
     suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = posDao.update(partOfSpeech)

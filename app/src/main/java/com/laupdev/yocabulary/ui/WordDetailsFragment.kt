@@ -123,9 +123,8 @@ class WordDetailsFragment : Fragment() {
             binding.addToFavorite.isSelected = it
         }
 
-        // TODO: 02.06.2021 Add icon for "delete word" menu item
         binding.topAppBar.setNavigationOnClickListener {
-            if (viewModel.isAdded.value == true) {
+            if (viewModel.isAdded.value == true && currWordId == 0L) {
                 findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
             } else {
                 findNavController().popBackStack()
@@ -421,7 +420,6 @@ class WordDetailsFragment : Fragment() {
 
         wordDetailsLinearLayout.addView(partOfSpeechTextView)
 
-        // TODO: 03.07.2021 FIX IDS
         meaningsCount = 1
         partOfSpeechWithMeanings.meanings.forEach {
             wordDetailsLinearLayout.addView(addDefinition(it))

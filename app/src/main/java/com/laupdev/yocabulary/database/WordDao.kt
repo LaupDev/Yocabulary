@@ -44,8 +44,4 @@ interface WordDao {
     @Query("SELECT * FROM words WHERE id = :wordId")
     fun getWordWithPosAndMeaningsById(wordId: Long): Flow<WordWithPartsOfSpeechAndMeanings>
 
-    @Transaction
-    @Query("SELECT * FROM words WHERE id = :wordId")
-    suspend fun getWordWithPosAndMeaningsByIdSuspend(wordId: Long): WordWithPartsOfSpeechAndMeanings
-
 }

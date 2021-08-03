@@ -38,6 +38,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
     private var pronounceWordMediaPlayer: MediaPlayer? = null
     private var initialList = currentList
     private var filteredList = currentList
+    private var lastQuery = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val layout = LayoutInflater
@@ -76,7 +77,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
         if (!list.isNullOrEmpty()) {
             filteredList = list
             initialList = list
-            filter.filter("")
+            filter.filter(lastQuery)
         }
     }
 
@@ -118,11 +119,12 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val charSearch = constraint.toString()
+                println("--------------FILTER---------------")
+                lastQuery = constraint.toString()
                 var resultList = initialList
-                if (charSearch.isNotEmpty()) {
+                if (lastQuery.isNotEmpty()) {
                     resultList = resultList.filter {
-                        it.word.lowercase().contains(charSearch.lowercase())
+                        it.word.lowercase().contains(lastQuery.lowercase())
                     }
                 }
                 val filterResults = FilterResults()
@@ -132,6 +134,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                println("--------------PUBLISH---------------")
                 filteredList = results?.values as List<Word>
                 notifyDataSetChanged()
             }
