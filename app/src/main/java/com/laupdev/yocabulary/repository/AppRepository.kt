@@ -1,6 +1,5 @@
 package com.laupdev.yocabulary.repository
 
-import androidx.annotation.WorkerThread
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.network.DictionaryNetwork
 import com.laupdev.yocabulary.network.WordFromDictionary
@@ -15,11 +14,9 @@ class AppRepository(
 
     val allWords: Flow<List<Word>> = wordDao.getAllWords()
 
-    fun getWord(word: String) = wordDao.getWordByName(word)
+    fun getWordById(word: String) = wordDao.getWordByName(word)
 
-    fun getWordById(wordId: Int) = wordDao.getWordById(wordId)
-
-    fun getWordWithPosAndMeaningsById(wordId: Long) = wordDao.getWordWithPosAndMeaningsById(wordId)
+    fun getWordWithPosAndMeaningsByName(word: String) = wordDao.getWordWithPosAndMeaningsByName(word)
 
     suspend fun updateWord(word: Word) = wordDao.update(word)
 
@@ -37,7 +34,7 @@ class AppRepository(
 
         wordFromDictionary.meanings.forEach {
             val newPartOfSpeechWithMeanings = PartOfSpeechWithMeanings(
-                PartOfSpeech(posId = 0, wordId = 0, partOfSpeech = it.partOfSpeech),
+                PartOfSpeech(posId = 0, word = wordFromDictionary.word, partOfSpeech = it.partOfSpeech),
                 it.definitions.let { meanings ->
                     val newMeaningsList = mutableListOf<Meaning>()
                     meanings.forEach { meaning ->
@@ -59,7 +56,6 @@ class AppRepository(
 
         return WordWithPartsOfSpeechAndMeanings(
             Word(
-                wordId = 0,
                 word = wordFromDictionary.word,
                 transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text.replace("/", "") else "",
                 audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].audio else ""
@@ -80,8 +76,8 @@ class AppRepository(
         meaningDao.insert(meaning)
     }
 
-    suspend fun removeWordById(wordId: Long) {
-        wordDao.removeWordById(wordId)
+    suspend fun removeWordByName(word: String) {
+        wordDao.removeWordById(word)
     }
 
     suspend fun updateWordIsFavorite(word: WordIsFavorite) {

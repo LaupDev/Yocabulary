@@ -10,9 +10,7 @@ import java.util.*
 
 @Entity(tableName = "words")
 data class Word(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    val wordId: Long,
+    @PrimaryKey
     @ColumnInfo(name = "word")
     val word: String,
     @ColumnInfo(name = "transcription")
@@ -29,16 +27,16 @@ data class Word(
 
 @Entity
 data class WordIsFavorite(
-    @ColumnInfo(name = "id")
-    val wordId: Long,
+    @ColumnInfo(name = "word")
+    val word: String,
     @ColumnInfo(name = "is_favorite")
     val isFavourite: Int
 )
 
 @Entity
 data class WordTranslation(
-    @ColumnInfo(name = "id")
-    val wordId: Long,
+    @ColumnInfo(name = "word")
+    val word: String,
     @ColumnInfo(name = "translations")
     val translations: String = ""
 )

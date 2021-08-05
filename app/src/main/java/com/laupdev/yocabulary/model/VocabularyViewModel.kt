@@ -16,15 +16,15 @@ class VocabularyViewModel(private val repository: AppRepository) : ViewModel() {
 
     val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
 
-    suspend fun updateWordIsFavorite(wordId: Long, isFavourite: Boolean) =
+    suspend fun updateWordIsFavorite(word: String, isFavourite: Boolean) =
         viewModelScope.async {
             try {
-                if (wordId == 0L) {
+                if (word.isEmpty()) {
                     throw Exception("Failure: System error")
                 }
                 repository.updateWordIsFavorite(
                     WordIsFavorite(
-                        wordId,
+                        word,
                         if (isFavourite) 0 else 1
                     )
                 )

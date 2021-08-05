@@ -2,18 +2,14 @@ package com.laupdev.yocabulary.model
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.database.WordIsFavorite
 import com.laupdev.yocabulary.database.WordTranslation
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
-import com.laupdev.yocabulary.network.WordFromDictionary
 import com.laupdev.yocabulary.repository.AppRepository
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
 import java.lang.IllegalArgumentException
-import java.lang.NullPointerException
 import java.net.UnknownHostException
 
 enum class ErrorType {
@@ -32,10 +28,6 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     val wordWithPosAndMeanings: LiveData<WordWithPartsOfSpeechAndMeanings>
         get() = _wordWithPosAndMeanings
 
-    private val _wordId = MutableLiveData<Long>()
-    val wordId: LiveData<Long>
-        get() = _wordId
-
     private val _status = MutableLiveData<String>()
     val status: LiveData<String>
         get() = _status
@@ -48,17 +40,18 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     val isFavourite: LiveData<Boolean>
         get() = _isFavourite
 
-    fun getWordWithPosAndMeaningsById(wordId: Long) = Transformations.map(repository.getWordWithPosAndMeaningsById(wordId).asLiveData()) {
+    fun getWordWithPosAndMeaningsByName(word: String) = Transformations.map(repository.getWordWithPosAndMeaningsByName(word).asLiveData()) {
+        println("-------------GET----------------")
         it?.let {
+            println("------------------WORD--------------: " + it.word.word)
             _wordWithPosAndMeanings.value = it
-            _wordId.value = it.word.wordId
             _isFavourite.value = it.word.isFavourite == 1
             return@map it
         }
     }
 
-    fun removeWord(wordId: Long) = viewModelScope.launch {
-        repository.removeWordById(wordId)
+    fun removeWord(word: String) = viewModelScope.launch {
+        repository.removeWordByName(word)
         _isAdded.value = false
     }
 
@@ -91,10 +84,9 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
     fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
         viewModelScope.launch {
             try {
-                val newWordId = repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
-                _wordId.value = newWordId
+                repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
                 wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
-                    partOfSpeechWithMeanings.partOfSpeech.wordId = newWordId
+                    partOfSpeechWithMeanings.partOfSpeech.word = wordWithPartsOfSpeechAndMeanings.word.word
                     val newPosId =
                         repository.insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
                     partOfSpeechWithMeanings.meanings.forEach { meaning ->
@@ -109,15 +101,15 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
         }
     }
 
-    fun updateWordIsFavorite(wordId: Long) =
+    fun updateWordIsFavorite(word: String) =
         viewModelScope.launch {
             try {
-                if (wordId == 0L) {
+                if (word.isEmpty()) {
                     throw Exception("Failure: System error")
                 }
                 repository.updateWordIsFavorite(
                     WordIsFavorite(
-                        wordId,
+                        word,
                         if (isFavourite.value == true) 0 else 1
                     )
                 )
@@ -127,15 +119,15 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
             }
         }
 
-    fun updateWordTranslation(wordId: Long, translation: String) =
+    fun updateWordTranslation(word: String, translation: String) =
         viewModelScope.launch {
             try {
-                if (wordId == 0L) {
+                if (word.isEmpty()) {
                     throw Exception("Failure: System error")
                 }
                 repository.updateWordTranslation(
                     WordTranslation(
-                        wordId,
+                        word,
                         translation
                     )
                 )

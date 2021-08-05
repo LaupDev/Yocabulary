@@ -29,7 +29,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
 
         init {
             view.findViewById<RelativeLayout>(R.id.word_container).setOnClickListener {
-                val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(wordId = word.wordId)
+                val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(word = word.word)
                 view.findNavController().navigate(action)
             }
         }
@@ -65,7 +65,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
         }
         holder.addWordToFavorite?.setOnClickListener {
             GlobalScope.launch(Dispatchers.IO) {
-                if (viewModel.updateWordIsFavorite(filteredList[position].wordId, it.isSelected)) {
+                if (viewModel.updateWordIsFavorite(filteredList[position].word, it.isSelected)) {
                     it.isSelected = !it.isSelected
                 }
             }
@@ -107,7 +107,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
 
     companion object DiffCallback : DiffUtil.ItemCallback<Word>() {
         override fun areItemsTheSame(oldItem: Word, newItem: Word): Boolean {
-            return oldItem.wordId == newItem.wordId
+            return oldItem.word == newItem.word
         }
 
         override fun areContentsTheSame(oldItem: Word, newItem: Word): Boolean {

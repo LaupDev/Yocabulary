@@ -7,7 +7,6 @@ import com.laupdev.yocabulary.database.PartOfSpeech
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.repository.AppRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalArgumentException
@@ -40,25 +39,25 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
     suspend fun updateMeaning(meaning: Meaning) = repository.updateMeaning(meaning)
 
-    fun getWordById(wordId: Int) = repository.getWordById(wordId).asLiveData()
+    fun getWordByName(word: String) = repository.getWordById(word).asLiveData()
 
-    fun getWordWithPosAndMeaningsById(wordId: Long) =
-        repository.getWordWithPosAndMeaningsById(wordId).asLiveData()
+    fun getWordWithPosAndMeaningsByName(word: String) =
+        repository.getWordWithPosAndMeaningsByName(word).asLiveData()
 
     fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
         viewModelScope.launch {
             try {
                 _addingProcess.value = ProcessState.PROCESSING
 
-                val newWordId = if (wordWithPartsOfSpeechAndMeanings.word.wordId == 0L) {
-                    repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
-                } else {
+                // TODO: 05.08.2021 Disable user to change word or check it
+
+                if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
                     updateWord(wordWithPartsOfSpeechAndMeanings.word)
-                    wordWithPartsOfSpeechAndMeanings.word.wordId
                 }
+
                 wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
                     val newPosId = if (pos.posId == 0L) {
-                        pos.wordId = newWordId
+                        pos.word = wordWithPartsOfSpeechAndMeanings.word.word
                         repository.insertPartOfSpeech(pos)
                     } else {
                         updatePartOfSpeech(pos)

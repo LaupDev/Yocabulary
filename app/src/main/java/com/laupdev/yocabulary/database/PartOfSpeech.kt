@@ -8,18 +8,18 @@ import org.jetbrains.annotations.NotNull
     foreignKeys = [
         ForeignKey(
             entity = Word::class,
-            parentColumns = ["id"],
-            childColumns = ["word_id"],
+            parentColumns = ["word"],
+            childColumns = ["word"],
             onDelete = ForeignKey.CASCADE
         )],
-    indices = [Index("word_id")]
+    indices = [Index("word")]
 )
 data class PartOfSpeech(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val posId: Long,
-    @ColumnInfo(name = "word_id")
-    var wordId: Long,
+    @ColumnInfo(name = "word")
+    var word: String,
     @ColumnInfo(name = "part_of_speech")
     val partOfSpeech: String,
     @ColumnInfo(name = "translation")

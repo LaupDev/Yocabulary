@@ -1,27 +1,20 @@
 package com.laupdev.yocabulary.ui
 
-import android.content.ContentValues.TAG
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -37,7 +30,6 @@ import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddWordViewModel
 import com.laupdev.yocabulary.model.AddWordViewModelFactory
-import kotlin.math.log
 import kotlin.math.roundToInt
 
 /*** ABBREVIATIONS:
@@ -72,7 +64,7 @@ enum class UniqueIdAdditionAddWord(val idAddition: Int) {
 class AddNewWordFragment : Fragment() {
 
     companion object {
-        const val WORD_ID = "word_id"
+        const val WORD = "word"
         fun convertDpToPixel(dp: Int): Int {
             return (dp * (Resources.getSystem().displayMetrics.densityDpi / 160f)).roundToInt()
         }
@@ -92,7 +84,7 @@ class AddNewWordFragment : Fragment() {
             .get(AddWordViewModel::class.java)
     }
 
-    private var wordId = 0L
+    private var word = ""
     private var partsOfSpeechCount = 1
     private var currentPartOfSpeechCount = 0
     private var totalMeaningCount = 1
@@ -103,7 +95,7 @@ class AddNewWordFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            wordId = it.getLong(WORD_ID)
+            word = it.getString(WORD, "")
         }
     }
 
@@ -137,7 +129,7 @@ class AddNewWordFragment : Fragment() {
             addWordToDatabase()
         }
 
-        if (wordId == 0L) {
+        if (word == "") {
 
             binding.searchInDictionary.setOnClickListener {
                 if (binding.newWordEditText.text.toString().isNotEmpty()) {
@@ -145,7 +137,8 @@ class AddNewWordFragment : Fragment() {
 
                     val action =
                         AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
-                            wordName = binding.newWordEditText.text.toString()
+                            word = binding.newWordEditText.text.toString(),
+                            isInVocabulary = false
                         )
                     view.findNavController().navigate(action)
                 } else {
@@ -154,7 +147,7 @@ class AddNewWordFragment : Fragment() {
                 }
             }
         } else {
-            viewModel.getWordWithPosAndMeaningsById(wordId).observe(viewLifecycleOwner) {
+            viewModel.getWordWithPosAndMeaningsByName(word).observe(viewLifecycleOwner) {
                 it?.let {
                     populateFieldsWithData(it)
                 }
@@ -235,10 +228,10 @@ class AddNewWordFragment : Fragment() {
                     }
                     partsOfSpeechWithMeanings.add(PartOfSpeechWithMeanings(
                         PartOfSpeech(
-                            posId = if (wordId == 0L) 0 else requireView().findViewById<LinearLayout>(
+                            posId = if (word == "") 0 else requireView().findViewById<LinearLayout>(
                                 posId
                             ).tag?.toString()?.toLong() ?: 0,
-                            wordId = wordId,
+                            word = trimInputField(binding.newWordEditText.text.toString()),
                             partOfSpeech = requireView().findViewById<AutoCompleteTextView>(
                                 posId + 2000
                             ).text.toString().lowercase(),
@@ -268,10 +261,10 @@ class AddNewWordFragment : Fragment() {
                                 if (meaningText.isNotEmpty() || exampleText.isNotEmpty() || synonymsText.isNotEmpty()) {
                                     newMeaningsList.add(
                                         Meaning(
-                                            meaningId = if (wordId == 0L) 0 else requireView().findViewById<LinearLayout>(
+                                            meaningId = if (word == "") 0 else requireView().findViewById<LinearLayout>(
                                                 meaningId
                                             ).tag?.toString()?.toLong() ?: 0,
-                                            posId = if (wordId == 0L) 0 else requireView().findViewById<LinearLayout>(
+                                            posId = if (word == "") 0 else requireView().findViewById<LinearLayout>(
                                                 posId
                                             ).tag?.toString()?.toLong()
                                                 ?: 0, //Change it later for update functionality
@@ -314,7 +307,6 @@ class AddNewWordFragment : Fragment() {
             viewModel.insertWordWithPartsOfSpeechWithMeanings(
                 WordWithPartsOfSpeechAndMeanings(
                     Word(
-                        wordId = wordId,
                         word = trimInputField(binding.newWordEditText.text.toString()),
                         transcription = trimInputField(binding.transcriptionEditText.text.toString()),
                         translations = translations,

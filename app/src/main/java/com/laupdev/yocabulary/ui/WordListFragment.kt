@@ -22,14 +22,13 @@ import com.laupdev.yocabulary.model.VocabularyViewModelFactory
 class WordListFragment : Fragment() {
 
     companion object {
-        const val LETTER = "letter"
+//        const val LETTER = "letter"
     }
 
     private var _binding: FragmentWordListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var letterId: String
     private lateinit var adapter: WordAdapter
 
     private var sortMode = 0 // 0 -> Date added; 1 -> Word; 2 -> Favorite
@@ -48,9 +47,6 @@ class WordListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        arguments?.let {
-            letterId = it.getString(LETTER).toString()
-        }
     }
 
     override fun onCreateView(
@@ -78,14 +74,15 @@ class WordListFragment : Fragment() {
 //        }
 
         binding.addNewWordBtn.setOnClickListener {
-            val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment()
+            val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment("")
             view.findNavController().navigate(action)
         }
 
         binding.searchInDictionary.setOnClickListener {
             val action =
                 WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(
-                    wordName = binding.wordSearch.query.toString()
+                    word = binding.wordSearch.query.toString(),
+                    isInVocabulary = false
                 )
             view.findNavController().navigate(action)
         }
@@ -152,7 +149,7 @@ class WordListFragment : Fragment() {
     private fun sortWords(words: List<Word>, sortMode: Int) {
         when(sortMode) {
             0 -> {
-                adapter.submitList(words.sortedByDescending { word -> word.wordId } as MutableList<Word>)
+                adapter.submitList(words.sortedByDescending { word -> word.dateAdded } as MutableList<Word>)
             }
             1 -> {
                 adapter.submitList(words.sortedBy { word -> word.word.lowercase() } as MutableList<Word>)

@@ -15,10 +15,7 @@ interface WordDao {
     @Query("SELECT * FROM words WHERE word = :word")
     fun getWordByName(word: String): Flow<Word>
 
-    @Query("SELECT * FROM words WHERE id = :wordId")
-    fun getWordById(wordId: Int): Flow<Word>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(word: Word): Long
 
     @Update
@@ -30,18 +27,14 @@ interface WordDao {
     @Update(entity = Word::class)
     suspend fun updateWordTranslation(word: WordTranslation)
 
-    @Query("DELETE FROM words WHERE id = :wordId")
-    suspend fun removeWordById(wordId: Long)
+    @Query("DELETE FROM words WHERE word = :word")
+    suspend fun removeWordById(word: String)
 
     @Query("DELETE FROM words")
     suspend fun deleteAll()
 
-//    @Transaction
-//    @Query("SELECT * FROM words WHERE word = :word")
-//    fun getWordWithPosAndMeaningsByWord(word: String): Flow<WordWithPartsOfSpeechAndMeanings>
-
     @Transaction
-    @Query("SELECT * FROM words WHERE id = :wordId")
-    fun getWordWithPosAndMeaningsById(wordId: Long): Flow<WordWithPartsOfSpeechAndMeanings>
+    @Query("SELECT * FROM words WHERE word = :word")
+    fun getWordWithPosAndMeaningsByName(word: String): Flow<WordWithPartsOfSpeechAndMeanings>
 
 }

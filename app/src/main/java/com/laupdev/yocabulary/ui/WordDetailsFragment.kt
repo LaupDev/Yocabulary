@@ -7,7 +7,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.view.ViewGroup.*
 import android.widget.LinearLayout
@@ -28,12 +27,6 @@ import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.lang.Exception
-import java.net.UnknownHostException
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -45,8 +38,8 @@ enum class UniqueIdAddition(val idAddition: Int) {
 class WordDetailsFragment : Fragment() {
 
     companion object {
-        const val WORD_ID = "word_id"
-        const val WORD_NAME = "word_name"
+        const val WORD = "word"
+        const val IS_IN_VOCABULARY = "is_in_vocabulary"
 //        const val SEARCH_PREFIX = "https://www.google.com/search?q="
     }
 
@@ -64,8 +57,9 @@ class WordDetailsFragment : Fragment() {
             .get(WordDetailsViewModel::class.java)
     }
 
-    private var currWordId: Long = 0
-    private var wordToSearch: String = ""
+    private var currWord: String = ""
+//    private var wordToSearch: String = ""
+    private var isInVocabulary = true
 
     private var partOfSpeechCount = 1
     private var meaningsCount = 1
@@ -76,8 +70,8 @@ class WordDetailsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            currWordId = it.getLong(WORD_ID)
-            wordToSearch = it.getString(WORD_NAME).toString()
+            currWord = it.getString(WORD).toString()
+            isInVocabulary = it.getBoolean(IS_IN_VOCABULARY)
         }
     }
 
@@ -95,18 +89,18 @@ class WordDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (wordToSearch != "0") {
-            addWordDetailsFromDictionary()
-        } else {
+        if (isInVocabulary) {
             //Add word details and callbacks for word from vocabulary
             addWordDetailsFromVocabulary()
+        } else {
+            addWordDetailsFromDictionary()
         }
 
         binding.editWordBtn.setOnClickListener {
-            if (currWordId != 0L) {
+            if (viewModel.isAdded.value == true) {
                 val action =
                     WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
-                        currWordId
+                        currWord
                     )
                 view.findNavController().navigate(action)
             } else {
@@ -116,7 +110,7 @@ class WordDetailsFragment : Fragment() {
         }
 
         binding.addToFavorite.setOnClickListener {
-            viewModel.updateWordIsFavorite(currWordId)
+            viewModel.updateWordIsFavorite(currWord)
         }
 
         viewModel.isFavourite.observe(viewLifecycleOwner) {
@@ -124,7 +118,7 @@ class WordDetailsFragment : Fragment() {
         }
 
         binding.topAppBar.setNavigationOnClickListener {
-            if (viewModel.isAdded.value == true && currWordId == 0L) {
+            if (viewModel.isAdded.value == true && !isInVocabulary) {
                 findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
             } else {
                 findNavController().popBackStack()
@@ -158,7 +152,7 @@ class WordDetailsFragment : Fragment() {
         })
 
         binding.saveTranslation.setOnClickListener {
-            viewModel.updateWordTranslation(currWordId, binding.addTranslation.text.toString())
+            viewModel.updateWordTranslation(currWord, binding.addTranslation.text.toString())
             binding.addTranslation.isEnabled = false
             it.visibility = GONE
         }
@@ -176,7 +170,7 @@ class WordDetailsFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun addWordDetailsFromVocabulary() {
-        viewModel.getWordWithPosAndMeaningsById(currWordId).observe(viewLifecycleOwner, {
+        viewModel.getWordWithPosAndMeaningsByName(currWord).observe(viewLifecycleOwner, {
             it?.let {
                 addWordMainDetails(it)
                 binding.addToFavorite.visibility = VISIBLE
@@ -201,7 +195,7 @@ class WordDetailsFragment : Fragment() {
                 binding.buttons.visibility = VISIBLE
             }
         }
-        viewModel.getWordFromDictionary(wordToSearch)
+        viewModel.getWordFromDictionary(currWord)
         viewModel.error.observe(viewLifecycleOwner) {
             when(it) {
                 ErrorType.NO_SUCH_WORD -> {
@@ -217,9 +211,8 @@ class WordDetailsFragment : Fragment() {
             }
         }
 
-        viewModel.wordId.observe(viewLifecycleOwner, {
-            currWordId = it
-        })
+        // TODO: 05.08.2021 Check whether word is already added to vocabulary
+
         binding.addToVocabulary.setOnClickListener {
             viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)
         }
@@ -245,7 +238,7 @@ class WordDetailsFragment : Fragment() {
         wordWithPartsOfSpeechAndMeanings.word.translations.let {
             if (it.isEmpty()) {
                 binding.translation.visibility = GONE
-                if (wordToSearch == "0") {
+                if (isInVocabulary) {
                     binding.addTranslationBox.visibility = VISIBLE
                     if (binding.addTranslation.text.toString().isNotEmpty()) {
                         binding.addTranslation.isEnabled = false
@@ -339,14 +332,14 @@ class WordDetailsFragment : Fragment() {
     }
 
     private fun removeWord() {
-        viewModel.removeWord(currWordId)
+        viewModel.removeWord(currWord)
         binding.addToFavorite.isSelected = false
         binding.addTranslation.apply {
             this.isEnabled = true
             this.setText("")
         }
 
-        if (wordToSearch == "0") {
+        if (isInVocabulary) {
             findNavController().popBackStack()
 //            findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
         }

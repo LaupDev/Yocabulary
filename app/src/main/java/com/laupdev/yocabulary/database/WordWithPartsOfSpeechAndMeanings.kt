@@ -8,8 +8,8 @@ data class WordWithPartsOfSpeechAndMeanings(
     val word: Word,
     @Relation(
         entity = PartOfSpeech::class,
-        parentColumn = "id",
-        entityColumn = "word_id"
+        parentColumn = "word",
+        entityColumn = "word"
     )
     val partsOfSpeechWithMeanings: List<PartOfSpeechWithMeanings>
 )
