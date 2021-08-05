@@ -21,6 +21,10 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     val status: LiveData<String>
         get() = _status
 
+    private val _isTranslationGeneral = MutableLiveData(true)
+    val isTranslationGeneral: LiveData<Boolean>
+        get() = _isTranslationGeneral
+
     fun insertWord(word: Word) = viewModelScope.launch {
         repository.insertWord(word)
     }
@@ -31,6 +35,10 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
     fun insertMeaning(meaning: Meaning) = viewModelScope.launch {
         repository.insertMeaning(meaning)
+    }
+
+    fun setIsTranslationGeneral(isTranslationGeneral: Boolean) {
+        _isTranslationGeneral.value = isTranslationGeneral
     }
 
     suspend fun updateWord(word: Word) = repository.updateWord(word)

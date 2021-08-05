@@ -17,6 +17,8 @@ data class Word(
     val transcription: String = "",
     @ColumnInfo(name = "translations")
     val translations: String = "",
+    @ColumnInfo(name = "is_trans_general")
+    val isTranslationGeneral: Int = 1,
     @ColumnInfo(name = "date_added")
     val dateAdded: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Calendar.getInstance().time),
     @ColumnInfo(name = "is_favorite")

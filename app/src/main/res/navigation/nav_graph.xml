@@ -49,5 +49,9 @@
         <action
             android:id="@+id/action_addNewWordFragment_to_wordDetailsFragment"
             app:destination="@id/wordDetailsFragment" />
+        <action
+            android:id="@+id/action_addNewWordFragment_to_wordDetailsFragmentAfterEditing"
+            app:destination="@id/wordDetailsFragment"
+            app:popUpTo="@id/wordListFragment" />
     </fragment>
 </navigation>

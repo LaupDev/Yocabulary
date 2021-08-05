@@ -147,15 +147,17 @@ class WordListFragment : Fragment() {
     }
 
     private fun sortWords(words: List<Word>, sortMode: Int) {
-        when(sortMode) {
-            0 -> {
-                adapter.submitList(words.sortedByDescending { word -> word.dateAdded } as MutableList<Word>)
-            }
-            1 -> {
-                adapter.submitList(words.sortedBy { word -> word.word.lowercase() } as MutableList<Word>)
-            }
-            2 -> {
-                adapter.submitList(words.filter { word -> word.isFavourite == 1 } as MutableList<Word>)
+        if (words.isNotEmpty()) {
+            when (sortMode) {
+                0 -> {
+                    adapter.submitList(words.sortedByDescending { word -> word.dateAdded } as MutableList<Word>)
+                }
+                1 -> {
+                    adapter.submitList(words.sortedBy { word -> word.word.lowercase() } as MutableList<Word>)
+                }
+                2 -> {
+                    adapter.submitList(words.filter { word -> word.isFavourite == 1 } as MutableList<Word>)
+                }
             }
         }
     }

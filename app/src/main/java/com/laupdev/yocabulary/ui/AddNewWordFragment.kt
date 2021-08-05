@@ -84,7 +84,7 @@ class AddNewWordFragment : Fragment() {
             .get(AddWordViewModel::class.java)
     }
 
-    private var word = ""
+    private var wordName = ""
     private var partsOfSpeechCount = 1
     private var currentPartOfSpeechCount = 0
     private var totalMeaningCount = 1
@@ -95,7 +95,7 @@ class AddNewWordFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            word = it.getString(WORD, "")
+            wordName = it.getString(WORD, "")
         }
     }
 
@@ -129,7 +129,12 @@ class AddNewWordFragment : Fragment() {
             addWordToDatabase()
         }
 
-        if (word == "") {
+        binding.generalTranslationSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setIsTranslationGeneral(isChecked)
+            binding.generalTranslation.isEnabled = isChecked
+        }
+// TODO: 06.08.2021 Help button for general translation
+        if (wordName == "") {
 
             binding.searchInDictionary.setOnClickListener {
                 if (binding.newWordEditText.text.toString().isNotEmpty()) {
@@ -147,7 +152,7 @@ class AddNewWordFragment : Fragment() {
                 }
             }
         } else {
-            viewModel.getWordWithPosAndMeaningsByName(word).observe(viewLifecycleOwner) {
+            viewModel.getWordWithPosAndMeaningsByName(wordName).observe(viewLifecycleOwner) {
                 it?.let {
                     populateFieldsWithData(it)
                 }
@@ -189,6 +194,15 @@ class AddNewWordFragment : Fragment() {
             binding.newWordEditText.setText(it.word)
             binding.transcriptionEditText.setText(it.transcription)
             binding.audioUrl.text = it.audioUrl
+            wordWithPartsOfSpeechAndMeanings.word.isTranslationGeneral.let { isGeneral ->
+                binding.generalTranslationSwitch.isChecked = if (isGeneral == 0) {
+                    binding.generalTranslation.isEnabled = false
+                    false
+                } else {
+                    binding.generalTranslationEditText.setText(wordWithPartsOfSpeechAndMeanings.word.translations)
+                    true
+                }
+            }
         }
 
         wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach {
@@ -199,8 +213,6 @@ class AddNewWordFragment : Fragment() {
             }
         }
     }
-
-    // TODO: 03.08.2021 Fix bug with translation added in WordDetailsFragment. Translation disappears when updating word
 
     /***
      * This function has two use cases:
@@ -217,7 +229,7 @@ class AddNewWordFragment : Fragment() {
             var translations = ""
             partsOfSpeechIdsWithMeaningsIdsMap.forEach { (posId, meaningIds) ->
                 if (requireView().findViewById<AutoCompleteTextView>(posId + 2000).text.isNotEmpty()) {
-                    val currTrans =
+                    val currTrans = if (viewModel.isTranslationGeneral.value == true) "" else
                         trimInputField(requireView().findViewById<TextInputEditText>(posId + 5000).text.toString())
                     if (currTrans.isNotEmpty()) {
                         if (translations.isNotEmpty()) {
@@ -228,7 +240,7 @@ class AddNewWordFragment : Fragment() {
                     }
                     partsOfSpeechWithMeanings.add(PartOfSpeechWithMeanings(
                         PartOfSpeech(
-                            posId = if (word == "") 0 else requireView().findViewById<LinearLayout>(
+                            posId = if (wordName == "") 0 else requireView().findViewById<LinearLayout>(
                                 posId
                             ).tag?.toString()?.toLong() ?: 0,
                             word = trimInputField(binding.newWordEditText.text.toString()),
@@ -261,10 +273,10 @@ class AddNewWordFragment : Fragment() {
                                 if (meaningText.isNotEmpty() || exampleText.isNotEmpty() || synonymsText.isNotEmpty()) {
                                     newMeaningsList.add(
                                         Meaning(
-                                            meaningId = if (word == "") 0 else requireView().findViewById<LinearLayout>(
+                                            meaningId = if (wordName == "") 0 else requireView().findViewById<LinearLayout>(
                                                 meaningId
                                             ).tag?.toString()?.toLong() ?: 0,
-                                            posId = if (word == "") 0 else requireView().findViewById<LinearLayout>(
+                                            posId = if (wordName == "") 0 else requireView().findViewById<LinearLayout>(
                                                 posId
                                             ).tag?.toString()?.toLong()
                                                 ?: 0, //Change it later for update functionality
@@ -293,13 +305,21 @@ class AddNewWordFragment : Fragment() {
                         loadingAnim.start()
                     }
                     ProcessState.COMPLETED -> {
-                        findNavController().popBackStack()
+                        if (wordName.isEmpty()) {
+                            findNavController().popBackStack()
+                        } else {
+                            val action =
+                                AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragmentAfterEditing(
+                                    wordName,
+                                    true
+                                )
+                            findNavController().navigate(action)
+                        }
                     }
                     ProcessState.FAILED -> {
-
+                        // TODO: 05.08.2021 FAILED
                     }
                     else -> {
-
                     }
                 }
             }
@@ -309,21 +329,15 @@ class AddNewWordFragment : Fragment() {
                     Word(
                         word = trimInputField(binding.newWordEditText.text.toString()),
                         transcription = trimInputField(binding.transcriptionEditText.text.toString()),
-                        translations = translations,
+                        translations = if (viewModel.isTranslationGeneral.value == true) trimInputField(
+                            binding.generalTranslationEditText.text.toString()
+                        ) else translations,
+                        isTranslationGeneral = if (viewModel.isTranslationGeneral.value == true || translations.isEmpty()) 1 else 0,
                         audioUrl = binding.audioUrl.text.toString()
                     ),
                     partsOfSpeechWithMeanings
                 )
             )
-
-//            if (wordId == 0) {
-//                viewModel.insert(newWord)
-//                Snackbar.make(requireView(), R.string.new_word_added, Snackbar.LENGTH_SHORT).show()
-//            } else {
-//                viewModel.update(newWord)
-//                Snackbar.make(requireView(), R.string.word_updated_success, Snackbar.LENGTH_SHORT)
-//                    .show()
-//            }
 
         }
     }
@@ -388,7 +402,11 @@ class AddNewWordFragment : Fragment() {
                 null
             )
         )
-        partOfSpeechAutoCompleteTextView.addTextChangedListener(onChangeListener(partOfSpeechTextInputLayout))
+        partOfSpeechAutoCompleteTextView.addTextChangedListener(
+            onChangeListener(
+                partOfSpeechTextInputLayout
+            )
+        )
 
         val partOfSpeechRemoveButton =
             newPartOfSpeechView.findViewById<ImageButton>(R.id.remove_part_of_speech)
@@ -421,6 +439,9 @@ class AddNewWordFragment : Fragment() {
             R.id.part_of_speech_block + UniqueIdAdditionAddWord.TRANSLATION_TIL.idAddition + partsOfSpeechCount
         translationTextInputLayout.hint =
             resources.getString(R.string.translation, "$partsOfSpeechCount.")
+        viewModel.isTranslationGeneral.observe(viewLifecycleOwner) {
+            translationTextInputLayout.isEnabled = !it
+        }
         val translationTextInputEditText =
             newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text)
         translationTextInputEditText.id =

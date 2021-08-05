@@ -18,6 +18,9 @@
     <!--fragment_add_new_word-->
     <string name="new_word">Word *</string>
     <string name="transcription">Transcription</string>
+    <string name="general_translation">Translation</string>
+    <string name="general">General</string>
+    <string name="help">Help</string>
     <string name="part_of_speech">%s Part of speech *</string>
     <string name="translation">%s Translation</string>
     <string name="meaning">%s Meaning</string>
