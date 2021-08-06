@@ -19,6 +19,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -317,7 +318,14 @@ class AddNewWordFragment : Fragment() {
                         }
                     }
                     ProcessState.FAILED -> {
-                        // TODO: 05.08.2021 FAILED
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(resources.getString(R.string.error))
+                            .setMessage("Failed to add/update word. Try again")
+                            .setCancelable(false)
+                            .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
+                                findNavController().popBackStack()
+                            }
+                            .show()
                     }
                     else -> {
                     }
