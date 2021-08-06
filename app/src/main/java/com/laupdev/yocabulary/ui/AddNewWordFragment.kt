@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.laupdev.yocabulary.AdapterForDropdown
@@ -116,9 +115,10 @@ class AddNewWordFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        viewModel.status.observe(viewLifecycleOwner) {
-            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
-        }
+//        viewModel.status.observe(viewLifecycleOwner) {
+//            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
+//            Log.e(this.toString(), it)
+//        }
 
         binding.newWordEditText.addTextChangedListener(onChangeListener(binding.newWord))
 
@@ -160,11 +160,6 @@ class AddNewWordFragment : Fragment() {
             }
         }
     }
-
-//    private fun checkNetworkConnection(): Boolean {
-//        val connectionManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        val internetInfo =  connectionManager
-//    }
 
     private fun onChangeListener(textInputLayout: TextInputLayout): TextWatcher =
         object : TextWatcher {
@@ -311,7 +306,7 @@ class AddNewWordFragment : Fragment() {
                         } else {
                             val action =
                                 AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragmentAfterEditing(
-                                    wordName,
+                                    trimInputField(binding.newWordEditText.text.toString()),
                                     true
                                 )
                             findNavController().navigate(action)
@@ -332,6 +327,10 @@ class AddNewWordFragment : Fragment() {
                 }
             }
 
+            if (wordName != "" && wordName != trimInputField(binding.newWordEditText.text.toString())) {
+                viewModel.removeWordByName(wordName)
+            }
+
             viewModel.insertWordWithPartsOfSpeechWithMeanings(
                 WordWithPartsOfSpeechAndMeanings(
                     Word(
@@ -346,7 +345,6 @@ class AddNewWordFragment : Fragment() {
                     partsOfSpeechWithMeanings
                 )
             )
-
         }
     }
 

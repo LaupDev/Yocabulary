@@ -212,6 +212,7 @@ class WordDetailsFragment : Fragment() {
         }
 
         // TODO: 05.08.2021 Check whether word is already added to vocabulary
+        // TODO: 07.08.2021 Bug when adding word that was already added
 
         binding.addToVocabulary.setOnClickListener {
             viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)

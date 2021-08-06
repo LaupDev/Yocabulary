@@ -28,7 +28,7 @@ interface WordDao {
     suspend fun updateWordTranslation(word: WordTranslation)
 
     @Query("DELETE FROM words WHERE word = :word")
-    suspend fun removeWordById(word: String)
+    suspend fun removeWordByName(word: String)
 
     @Query("DELETE FROM words")
     suspend fun deleteAll()

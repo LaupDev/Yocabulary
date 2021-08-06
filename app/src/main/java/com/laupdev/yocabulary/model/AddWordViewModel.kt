@@ -2,9 +2,6 @@ package com.laupdev.yocabulary.model
 
 import androidx.lifecycle.*
 import com.laupdev.yocabulary.ProcessState
-import com.laupdev.yocabulary.database.Meaning
-import com.laupdev.yocabulary.database.PartOfSpeech
-import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.repository.AppRepository
 import kotlinx.coroutines.launch
@@ -25,29 +22,9 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     val isTranslationGeneral: LiveData<Boolean>
         get() = _isTranslationGeneral
 
-    fun insertWord(word: Word) = viewModelScope.launch {
-        repository.insertWord(word)
-    }
-
-    fun insertPartOfSpeech(partOfSpeech: PartOfSpeech) = viewModelScope.launch {
-        repository.insertPartOfSpeech(partOfSpeech)
-    }
-
-    fun insertMeaning(meaning: Meaning) = viewModelScope.launch {
-        repository.insertMeaning(meaning)
-    }
-
     fun setIsTranslationGeneral(isTranslationGeneral: Boolean) {
         _isTranslationGeneral.value = isTranslationGeneral
     }
-
-    suspend fun updateWord(word: Word) = repository.updateWord(word)
-
-    suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = repository.updatePartOfSpeech(partOfSpeech)
-
-    suspend fun updateMeaning(meaning: Meaning) = repository.updateMeaning(meaning)
-
-    fun getWordByName(word: String) = repository.getWordById(word).asLiveData()
 
     fun getWordWithPosAndMeaningsByName(word: String) =
         repository.getWordWithPosAndMeaningsByName(word).asLiveData()
@@ -57,32 +34,39 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
             try {
                 _addingProcess.value = ProcessState.PROCESSING
 
-                // TODO: 05.08.2021 Disable user to change word or check it
-
                 if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
-                    updateWord(wordWithPartsOfSpeechAndMeanings.word)
+                    repository.updateWord(wordWithPartsOfSpeechAndMeanings.word)
                 }
 
                 wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
-                    val newPosId = if (pos.posId == 0L) {
-                        pos.word = wordWithPartsOfSpeechAndMeanings.word.word
-                        repository.insertPartOfSpeech(pos)
-                    } else {
-                        updatePartOfSpeech(pos)
-                        pos.posId
+                    pos.word = wordWithPartsOfSpeechAndMeanings.word.word
+                    var newPosId = repository.insertPartOfSpeech(pos)
+                    if (newPosId == -1L) {
+                        repository.updatePartOfSpeech(pos)
+                        newPosId = pos.posId
                     }
+
                     meanings.forEach {
-                        if (it.meaningId == 0L) {
-                            it.posId = newPosId
-                            repository.insertMeaning(it)
-                        } else {
-                            updateMeaning(it)
+                        it.posId = newPosId
+                        if (repository.insertMeaning(it) == -1L) {
+                            repository.updateMeaning(it)
                         }
                     }
                 }
                 _addingProcess.value = ProcessState.COMPLETED
             } catch (error: Exception) {
                 _addingProcess.value = ProcessState.FAILED
+                _status.value = error.message
+            }
+            // TODO: 07.08.2021 BUG FIX. Remove PoS and meanings from database if they were removed while editing word
+        }
+    }
+
+    fun removeWordByName(word: String) {
+        viewModelScope.launch {
+            try {
+                repository.removeWordByName(word)
+            } catch (error: Exception) {
                 _status.value = error.message
             }
         }

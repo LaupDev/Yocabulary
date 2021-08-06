@@ -72,12 +72,12 @@ class AppRepository(
         return posDao.insert(partOfSpeech)
     }
 
-    suspend fun insertMeaning(meaning: Meaning) {
-        meaningDao.insert(meaning)
+    suspend fun insertMeaning(meaning: Meaning): Long {
+        return meaningDao.insert(meaning)
     }
 
     suspend fun removeWordByName(word: String) {
-        wordDao.removeWordById(word)
+        wordDao.removeWordByName(word)
     }
 
     suspend fun updateWordIsFavorite(word: WordIsFavorite) {
