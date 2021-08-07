@@ -4,5 +4,6 @@ enum class ProcessState {
     INACTIVE,
     PROCESSING,
     COMPLETED,
-    FAILED
+    FAILED,
+    FAILED_WORD_EXISTS
 }

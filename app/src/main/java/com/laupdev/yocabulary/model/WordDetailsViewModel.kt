@@ -6,6 +6,8 @@ import com.laupdev.yocabulary.database.WordIsFavorite
 import com.laupdev.yocabulary.database.WordTranslation
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.repository.AppRepository
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
@@ -15,6 +17,7 @@ import java.net.UnknownHostException
 enum class ErrorType {
     NO_SUCH_WORD,
     UNKNOWN_HOST,
+    WORD_EXISTS,
     OTHER
 }
 
@@ -81,25 +84,35 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
 
     }
 
-    fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+    fun replaceWord(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+        viewModelScope.launch {
+            repository.removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
+            insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings)
+        }
+    }
+
+    fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) =
         viewModelScope.launch {
             try {
-                repository.insertWord(wordWithPartsOfSpeechAndMeanings.word)
-                wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
-                    partOfSpeechWithMeanings.partOfSpeech.word = wordWithPartsOfSpeechAndMeanings.word.word
-                    val newPosId =
-                        repository.insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
-                    partOfSpeechWithMeanings.meanings.forEach { meaning ->
-                        meaning.posId = newPosId
-                        repository.insertMeaning(meaning)
+                if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
+                    _error.value = ErrorType.WORD_EXISTS
+                } else {
+                    wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
+                        partOfSpeechWithMeanings.partOfSpeech.word =
+                            wordWithPartsOfSpeechAndMeanings.word.word
+                        val newPosId =
+                            repository.insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
+                        partOfSpeechWithMeanings.meanings.forEach { meaning ->
+                            meaning.posId = newPosId
+                            repository.insertMeaning(meaning)
+                        }
                     }
+                    _isAdded.value = true
                 }
-                _isAdded.value = true
             } catch (error: Exception) {
                 _status.value = "Failure: ${error.message}"
             }
         }
-    }
 
     fun updateWordIsFavorite(word: String) =
         viewModelScope.launch {

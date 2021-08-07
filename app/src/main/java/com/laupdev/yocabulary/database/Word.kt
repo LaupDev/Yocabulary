@@ -11,7 +11,7 @@ import java.util.*
 @Entity(tableName = "words")
 data class Word(
     @PrimaryKey
-    @ColumnInfo(name = "word")
+    @ColumnInfo(name = "word", collate = 3)
     val word: String,
     @ColumnInfo(name = "transcription")
     val transcription: String = "",

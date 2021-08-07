@@ -27,6 +27,10 @@ import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -207,12 +211,20 @@ class WordDetailsFragment : Fragment() {
                 ErrorType.OTHER -> {
                     createAlertDialog(resources.getString(R.string.unknown_error))
                 }
+                ErrorType.WORD_EXISTS -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(resources.getString(R.string.error))
+                        .setMessage(resources.getString(R.string.word_already_exists))
+                        .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
+                            viewModel.replaceWord(viewModel.wordWithPosAndMeanings.value!!)
+                        }
+                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
+                        }
+                        .show()
+                }
                 else -> {}
             }
         }
-
-        // TODO: 05.08.2021 Check whether word is already added to vocabulary
-        // TODO: 07.08.2021 Bug when adding word that was already added
 
         binding.addToVocabulary.setOnClickListener {
             viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)

@@ -22,6 +22,12 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     val isTranslationGeneral: LiveData<Boolean>
         get() = _isTranslationGeneral
 
+    private lateinit var wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings
+
+    fun inactivateProcess() {
+        _addingProcess.value = ProcessState.INACTIVE
+    }
+
     fun setIsTranslationGeneral(isTranslationGeneral: Boolean) {
         _isTranslationGeneral.value = isTranslationGeneral
     }
@@ -29,31 +35,45 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     fun getWordWithPosAndMeaningsByName(word: String) =
         repository.getWordWithPosAndMeaningsByName(word).asLiveData()
 
-    fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+    fun replaceWord() {
+        removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
+        insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings, true)
+    }
+
+    fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings, isAdding: Boolean) {
+        println("-----------INSERT_WORD------------")
         viewModelScope.launch {
             try {
                 _addingProcess.value = ProcessState.PROCESSING
+                var stop = false
 
                 if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
-                    repository.updateWord(wordWithPartsOfSpeechAndMeanings.word)
-                }
-
-                wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
-                    pos.word = wordWithPartsOfSpeechAndMeanings.word.word
-                    var newPosId = repository.insertPartOfSpeech(pos)
-                    if (newPosId == -1L) {
-                        repository.updatePartOfSpeech(pos)
-                        newPosId = pos.posId
+                    if (isAdding) {
+                        stop = true
+                            this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings = wordWithPartsOfSpeechAndMeanings
+                        _addingProcess.value = ProcessState.FAILED_WORD_EXISTS
+                    } else {
+                        repository.updateWord(wordWithPartsOfSpeechAndMeanings.word)
                     }
+                }
+                if (!stop) {
+                    wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
+                        pos.word = wordWithPartsOfSpeechAndMeanings.word.word
+                        var newPosId = repository.insertPartOfSpeech(pos)
+                        if (newPosId == -1L) {
+                            repository.updatePartOfSpeech(pos)
+                            newPosId = pos.posId
+                        }
 
-                    meanings.forEach {
-                        it.posId = newPosId
-                        if (repository.insertMeaning(it) == -1L) {
-                            repository.updateMeaning(it)
+                        meanings.forEach {
+                            it.posId = newPosId
+                            if (repository.insertMeaning(it) == -1L) {
+                                repository.updateMeaning(it)
+                            }
                         }
                     }
+                    _addingProcess.value = ProcessState.COMPLETED
                 }
-                _addingProcess.value = ProcessState.COMPLETED
             } catch (error: Exception) {
                 _addingProcess.value = ProcessState.FAILED
                 _status.value = error.message

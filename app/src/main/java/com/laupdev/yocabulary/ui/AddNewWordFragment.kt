@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
@@ -99,6 +100,7 @@ class AddNewWordFragment : Fragment() {
         }
     }
 
+    // TODO: 08.08.2021 Check when updating word "Name", whether word with same "Name" exists
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -130,6 +132,58 @@ class AddNewWordFragment : Fragment() {
             addWordToDatabase()
         }
 
+        viewModel.addingProcess.observe(viewLifecycleOwner) {
+            binding.loadingScreen.visibility = GONE
+            var loadingAnim: AnimatedVectorDrawable? = null
+            loadingAnim?.stop()
+            when (it) {
+                ProcessState.PROCESSING -> {
+                    binding.loadingScreen.visibility = VISIBLE
+                    loadingAnim = ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.anim_loading
+                    ) as AnimatedVectorDrawable
+                    binding.loadingImg.setImageDrawable(loadingAnim)
+                    loadingAnim.start()
+                }
+                ProcessState.COMPLETED -> {
+                    if (wordName.isEmpty()) {
+                        findNavController().popBackStack()
+                    } else {
+                        val action =
+                            AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragmentAfterEditing(
+                                trimInputField(binding.newWordEditText.text.toString()),
+                                true
+                            )
+                        findNavController().navigate(action)
+                    }
+                }
+                ProcessState.FAILED -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(resources.getString(R.string.error))
+                        .setMessage("Failed to add/update word. Try again")
+                        .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
+                        }
+                        .show()
+                }
+                ProcessState.FAILED_WORD_EXISTS -> {
+                    println("------------FAILED_WORD_EXISTS--------")
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(resources.getString(R.string.error))
+                        .setMessage(resources.getString(R.string.word_already_exists))
+                        .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
+                            viewModel.replaceWord()
+                        }
+                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
+                            viewModel.inactivateProcess()
+                        }
+                        .show()
+                }
+                else -> {
+                }
+            }
+        }
+
         binding.generalTranslationSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setIsTranslationGeneral(isChecked)
             binding.generalTranslation.isEnabled = isChecked
@@ -137,19 +191,22 @@ class AddNewWordFragment : Fragment() {
 // TODO: 06.08.2021 Help button for general translation
         if (wordName == "") {
 
-            binding.searchInDictionary.setOnClickListener {
-                if (binding.newWordEditText.text.toString().isNotEmpty()) {
-                    binding.newWord.error = null
+            binding.searchInDictionary.apply {
+                visibility = VISIBLE
+                setOnClickListener {
+                    if (binding.newWordEditText.text.toString().isNotEmpty()) {
+                        binding.newWord.error = null
 
-                    val action =
-                        AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
-                            word = binding.newWordEditText.text.toString(),
-                            isInVocabulary = false
-                        )
-                    view.findNavController().navigate(action)
-                } else {
-                    binding.newWord.isErrorEnabled = true
-                    binding.newWord.error = getString(R.string.required_error)
+                        val action =
+                            AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
+                                word = binding.newWordEditText.text.toString(),
+                                isInVocabulary = false
+                            )
+                        view.findNavController().navigate(action)
+                    } else {
+                        binding.newWord.isErrorEnabled = true
+                        binding.newWord.error = getString(R.string.required_error)
+                    }
                 }
             }
         } else {
@@ -289,44 +346,6 @@ class AddNewWordFragment : Fragment() {
                 }
             }
 
-            viewModel.addingProcess.observe(viewLifecycleOwner) {
-                when (it) {
-                    ProcessState.PROCESSING -> {
-                        binding.loadingScreen.visibility = VISIBLE
-                        val loadingAnim: AnimatedVectorDrawable = ContextCompat.getDrawable(
-                            requireContext(),
-                            R.drawable.anim_loading
-                        ) as AnimatedVectorDrawable
-                        binding.loadingImg.setImageDrawable(loadingAnim)
-                        loadingAnim.start()
-                    }
-                    ProcessState.COMPLETED -> {
-                        if (wordName.isEmpty()) {
-                            findNavController().popBackStack()
-                        } else {
-                            val action =
-                                AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragmentAfterEditing(
-                                    trimInputField(binding.newWordEditText.text.toString()),
-                                    true
-                                )
-                            findNavController().navigate(action)
-                        }
-                    }
-                    ProcessState.FAILED -> {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(resources.getString(R.string.error))
-                            .setMessage("Failed to add/update word. Try again")
-                            .setCancelable(false)
-                            .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
-                                findNavController().popBackStack()
-                            }
-                            .show()
-                    }
-                    else -> {
-                    }
-                }
-            }
-
             if (wordName != "" && wordName != trimInputField(binding.newWordEditText.text.toString())) {
                 viewModel.removeWordByName(wordName)
             }
@@ -343,7 +362,8 @@ class AddNewWordFragment : Fragment() {
                         audioUrl = binding.audioUrl.text.toString()
                     ),
                     partsOfSpeechWithMeanings
-                )
+                ),
+                wordName == ""
             )
         }
     }
