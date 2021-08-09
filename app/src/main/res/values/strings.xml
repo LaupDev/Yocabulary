@@ -68,7 +68,7 @@
     <string name="save_translation">Save translation</string>
 
     <string name="sort_by_word">Word</string>
-    <string name="sort_by_date">Date added</string>
+    <string name="sort_by_date">Date modified</string>
     <string name="sort_by_favorite">Favorite</string>
 
 </resources>

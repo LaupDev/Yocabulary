@@ -35,9 +35,12 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     fun getWordWithPosAndMeaningsByName(word: String) =
         repository.getWordWithPosAndMeaningsByName(word).asLiveData()
 
-    fun replaceWord() {
+    fun replaceWord(oldWord: String) {
+        if (oldWord.isNotEmpty()) {
+            removeWordByName(oldWord)
+        }
         removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
-        insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings, true)
+        insertWordWithPartsOfSpeechWithMeanings(null, wordWithPartsOfSpeechAndMeanings, true)
     }
 
     fun insertWordWithPartsOfSpeechWithMeanings(
@@ -45,9 +48,12 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
         newWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
         isAdding: Boolean
     ) {
-        if (oldWordWithPartsOfSpeechAndMeanings != null) {
-            viewModelScope.launch {
-                oldWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { oldPartOfSpeechWithMeanings ->
+        viewModelScope.launch {
+            try {
+                _addingProcess.value = ProcessState.PROCESSING
+                var stop = false
+
+                oldWordWithPartsOfSpeechAndMeanings?.partsOfSpeechWithMeanings?.forEach { oldPartOfSpeechWithMeanings ->
                     val tempPartOfSpeech =
                         newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.firstOrNull {
                             it.partOfSpeech.posId == oldPartOfSpeechWithMeanings.partOfSpeech.posId
@@ -62,34 +68,26 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
                         }
                     }
                 }
-            }
-        }
-        insertWordWithPartsOfSpeechWithMeanings(newWordWithPartsOfSpeechAndMeanings, isAdding)
-    }
 
-    fun insertWordWithPartsOfSpeechWithMeanings(
-        wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
-        isAdding: Boolean
-    ) {
-        println("-----------INSERT_WORD------------")
-        viewModelScope.launch {
-            try {
-                _addingProcess.value = ProcessState.PROCESSING
-                var stop = false
-
-                if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
+                if (repository.insertWord(newWordWithPartsOfSpeechAndMeanings.word) == -1L) {
                     if (isAdding) {
                         stop = true
                         this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings =
-                            wordWithPartsOfSpeechAndMeanings
+                            newWordWithPartsOfSpeechAndMeanings
                         _addingProcess.value = ProcessState.FAILED_WORD_EXISTS
                     } else {
-                        repository.updateWord(wordWithPartsOfSpeechAndMeanings.word)
+                        if (oldWordWithPartsOfSpeechAndMeanings?.word?.word != newWordWithPartsOfSpeechAndMeanings.word.word) {
+                            stop = true
+                            this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings =
+                                newWordWithPartsOfSpeechAndMeanings
+                            _addingProcess.value = ProcessState.FAILED_WORD_EXISTS
+                        }
+                        repository.updateWord(newWordWithPartsOfSpeechAndMeanings.word)
                     }
                 }
                 if (!stop) {
-                    wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
-                        pos.word = wordWithPartsOfSpeechAndMeanings.word.word
+                    newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
+                        pos.word = newWordWithPartsOfSpeechAndMeanings.word.word
                         var newPosId = repository.insertPartOfSpeech(pos)
                         if (newPosId == -1L) {
                             repository.updatePartOfSpeech(pos)

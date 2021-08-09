@@ -234,7 +234,6 @@ class WordDetailsFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun addWordMainDetails(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
-        println("------------UPDATE------------")
         binding.word.text = wordWithPartsOfSpeechAndMeanings.word.word
         if (wordWithPartsOfSpeechAndMeanings.word.transcription.isNotEmpty()) {
             binding.transcription.text = "[${wordWithPartsOfSpeechAndMeanings.word.transcription}]"

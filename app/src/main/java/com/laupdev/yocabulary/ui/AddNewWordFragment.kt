@@ -102,7 +102,8 @@ class AddNewWordFragment : Fragment() {
         }
     }
 
-    // TODO: 08.08.2021 Check when updating word "Name", whether word with same "Name" exists
+    // TODO: 10.08.2021 Fix bug. When AddNewWordFragment recreates itself it populates fields again and add them to already existing ones
+    // TODO: 10.08.2021 Ask user whether he is sure about leaving this fragment if some fields aren't empty
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -169,12 +170,11 @@ class AddNewWordFragment : Fragment() {
                         .show()
                 }
                 ProcessState.FAILED_WORD_EXISTS -> {
-                    println("------------FAILED_WORD_EXISTS--------")
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(resources.getString(R.string.error))
                         .setMessage(resources.getString(R.string.word_already_exists))
                         .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
-                            viewModel.replaceWord()
+                            viewModel.replaceWord(wordName)
                         }
                         .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
                             viewModel.inactivateProcess()
@@ -246,6 +246,7 @@ class AddNewWordFragment : Fragment() {
         }
 
     private fun populateFieldsWithData(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+        println("--------------POPULATE------------------")
         wordWithPartsOfSpeechAndMeanings.word.let {
             binding.newWordEditText.setText(it.word)
             binding.transcriptionEditText.setText(it.transcription)
@@ -347,11 +348,6 @@ class AddNewWordFragment : Fragment() {
                         }
                     ))
                 }
-            }
-
-            if (wordName != "" && wordName != trimInputField(binding.newWordEditText.text.toString())) {
-                viewModel.removeWordByName(wordName)
-                wordWithPartsOfSpeechAndMeanings = null
             }
 
             viewModel.insertWordWithPartsOfSpeechWithMeanings(

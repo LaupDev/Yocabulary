@@ -119,7 +119,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                println("--------------FILTER---------------")
+//                println("--------------FILTER---------------")
                 lastQuery = constraint.toString()
                 var resultList = initialList
                 if (lastQuery.isNotEmpty()) {
@@ -134,7 +134,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                println("--------------PUBLISH---------------")
+//                println("--------------PUBLISH---------------")
                 filteredList = results?.values as List<Word>
                 notifyDataSetChanged()
             }

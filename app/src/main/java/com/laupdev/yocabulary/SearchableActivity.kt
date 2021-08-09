@@ -20,10 +20,8 @@ class SearchableActivity : Activity() {
     }
 
     private fun handleIntent(intent: Intent) {
-        println("-------------------INTENT-------------")
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                println("-------------------SEARCH-------------: " + query)
             }
         }
     }

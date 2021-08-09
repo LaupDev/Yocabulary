@@ -44,9 +44,7 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
         get() = _isFavourite
 
     fun getWordWithPosAndMeaningsByName(word: String) = Transformations.map(repository.getWordWithPosAndMeaningsByName(word).asLiveData()) {
-        println("-------------GET----------------")
         it?.let {
-            println("------------------WORD--------------: " + it.word.word)
             _wordWithPosAndMeanings.value = it
             _isFavourite.value = it.word.isFavourite == 1
             return@map it

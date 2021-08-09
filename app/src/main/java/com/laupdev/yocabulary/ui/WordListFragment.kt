@@ -97,7 +97,7 @@ class WordListFragment : Fragment() {
         viewModel.status.observe(viewLifecycleOwner, {
             Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
         })
-
+// TODO: 10.08.2021 BUG. When none of words is favorite each word is displayed
         binding.wordSearch.apply {
             queryHint = resources.getString(R.string.search_words_hint)
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -106,7 +106,7 @@ class WordListFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(searchQuery: String?): Boolean {
-                    println("----------------SEARCH----------------: " + searchQuery + " -- " + adapter.currentList.size)
+//                    println("----------------SEARCH----------------: " + searchQuery + " -- " + adapter.currentList.size)
                     binding.searchInDictionary.visibility = if (searchQuery?.isNotEmpty() == true) {
                         VISIBLE
                     } else {
