@@ -40,7 +40,37 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
         insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings, true)
     }
 
-    fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings, isAdding: Boolean) {
+    fun insertWordWithPartsOfSpeechWithMeanings(
+        oldWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings?,
+        newWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
+        isAdding: Boolean
+    ) {
+        if (oldWordWithPartsOfSpeechAndMeanings != null) {
+            viewModelScope.launch {
+                oldWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { oldPartOfSpeechWithMeanings ->
+                    val tempPartOfSpeech =
+                        newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.firstOrNull {
+                            it.partOfSpeech.posId == oldPartOfSpeechWithMeanings.partOfSpeech.posId
+                        }
+                    if (tempPartOfSpeech == null) {
+                        repository.deletePartOfSpeech(oldPartOfSpeechWithMeanings.partOfSpeech)
+                    } else {
+                        oldPartOfSpeechWithMeanings.meanings.forEach { oldMeaning ->
+                            if (!tempPartOfSpeech.meanings.any { it.meaningId == oldMeaning.meaningId }) {
+                                repository.deleteMeaning(oldMeaning)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        insertWordWithPartsOfSpeechWithMeanings(newWordWithPartsOfSpeechAndMeanings, isAdding)
+    }
+
+    fun insertWordWithPartsOfSpeechWithMeanings(
+        wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
+        isAdding: Boolean
+    ) {
         println("-----------INSERT_WORD------------")
         viewModelScope.launch {
             try {
@@ -50,7 +80,8 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
                 if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
                     if (isAdding) {
                         stop = true
-                            this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings = wordWithPartsOfSpeechAndMeanings
+                        this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings =
+                            wordWithPartsOfSpeechAndMeanings
                         _addingProcess.value = ProcessState.FAILED_WORD_EXISTS
                     } else {
                         repository.updateWord(wordWithPartsOfSpeechAndMeanings.word)
@@ -78,7 +109,6 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
                 _addingProcess.value = ProcessState.FAILED
                 _status.value = error.message
             }
-            // TODO: 07.08.2021 BUG FIX. Remove PoS and meanings from database if they were removed while editing word
         }
     }
 
