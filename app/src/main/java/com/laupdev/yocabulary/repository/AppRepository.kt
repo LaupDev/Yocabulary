@@ -76,6 +76,14 @@ class AppRepository(
         return meaningDao.insert(meaning)
     }
 
+    suspend fun deletePartOfSpeech(partOfSpeech: PartOfSpeech) {
+        posDao.delete(partOfSpeech)
+    }
+
+    suspend fun deleteMeaning(meaning: Meaning) {
+        meaningDao.delete(meaning)
+    }
+
     suspend fun removeWordByName(word: String) {
         wordDao.removeWordByName(word)
     }

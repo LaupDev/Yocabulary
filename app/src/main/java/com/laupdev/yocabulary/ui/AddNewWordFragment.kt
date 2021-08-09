@@ -92,6 +92,8 @@ class AddNewWordFragment : Fragment() {
     private val meaningsCountMap = mutableMapOf(partsOfSpeechCount to 1)
     private val partsOfSpeechIdsWithMeaningsIdsMap = mutableMapOf<Int, MutableSet<Int>>()
 
+    private var wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -212,6 +214,7 @@ class AddNewWordFragment : Fragment() {
         } else {
             viewModel.getWordWithPosAndMeaningsByName(wordName).observe(viewLifecycleOwner) {
                 it?.let {
+                    wordWithPartsOfSpeechAndMeanings = it
                     populateFieldsWithData(it)
                 }
             }
@@ -348,9 +351,11 @@ class AddNewWordFragment : Fragment() {
 
             if (wordName != "" && wordName != trimInputField(binding.newWordEditText.text.toString())) {
                 viewModel.removeWordByName(wordName)
+                wordWithPartsOfSpeechAndMeanings = null
             }
 
             viewModel.insertWordWithPartsOfSpeechWithMeanings(
+                wordWithPartsOfSpeechAndMeanings,
                 WordWithPartsOfSpeechAndMeanings(
                     Word(
                         word = trimInputField(binding.newWordEditText.text.toString()),
