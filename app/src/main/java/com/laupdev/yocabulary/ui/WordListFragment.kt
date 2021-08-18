@@ -67,12 +67,6 @@ class WordListFragment : Fragment() {
         adapter = WordAdapter(viewModel)
         recyclerView.adapter = adapter
 
-//        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-//        binding.wordSearch.apply {
-//            setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
-//            setIconifiedByDefault(false)
-//        }
-
         binding.addNewWordBtn.setOnClickListener {
             val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment("")
             view.findNavController().navigate(action)
@@ -89,7 +83,6 @@ class WordListFragment : Fragment() {
 
         viewModel.allWords.observe(viewLifecycleOwner) { words ->
             words?.let {
-                println("--------------submitList-----------: " + it.size)
                 sortWords(it, sortMode)
             }
         }
@@ -97,7 +90,6 @@ class WordListFragment : Fragment() {
         viewModel.status.observe(viewLifecycleOwner, {
             Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
         })
-// TODO: 10.08.2021 BUG. When none of words is favorite each word is displayed
         binding.wordSearch.apply {
             queryHint = resources.getString(R.string.search_words_hint)
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {

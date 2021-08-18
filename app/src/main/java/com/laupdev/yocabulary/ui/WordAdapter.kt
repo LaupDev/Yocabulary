@@ -16,6 +16,7 @@ import com.laupdev.yocabulary.model.VocabularyViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback
@@ -73,12 +74,16 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
     }
 
     override fun submitList(list: MutableList<Word>?) {
+//        println(Calendar.getInstance().time.time.toString() + "-------------------SUBMIT_LIST------------: " + list?.size)
         super.submitList(list)
-        if (!list.isNullOrEmpty()) {
-            filteredList = list
+        if (list != null) {
             initialList = list
-            filter.filter(lastQuery)
+            filteredList = list
+        } else {
+            initialList = mutableListOf()
+            filteredList = mutableListOf()
         }
+            filter.filter(lastQuery)
     }
 
     private fun playWordPronunciation(holder: WordViewHolder, audioUrl: String) {
@@ -119,7 +124,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-//                println("--------------FILTER---------------")
+//                println(Calendar.getInstance().time.time.toString() + "--------------FILTER---------------" + initialList.size)
                 lastQuery = constraint.toString()
                 var resultList = initialList
                 if (lastQuery.isNotEmpty()) {
