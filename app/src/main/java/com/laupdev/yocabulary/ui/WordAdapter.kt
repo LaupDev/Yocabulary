@@ -58,10 +58,12 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
         holder.transTextView?.text = filteredList[position].translations.split("|")[0]
         holder.addWordToFavorite?.isSelected = filteredList[position].isFavourite == 1
         if (filteredList[position].audioUrl.isNotEmpty()) {
+            holder.pronounceWordBtn?.isEnabled = true
             holder.pronounceWordBtn?.setOnClickListener {
                 playWordPronunciation(holder, filteredList[position].audioUrl)
             }
         } else {
+            pronounceWordMediaPlayer = null
             holder.pronounceWordBtn?.isEnabled = false
         }
         holder.addWordToFavorite?.setOnClickListener {

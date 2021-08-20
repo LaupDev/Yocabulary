@@ -58,7 +58,15 @@ class AppRepository(
             Word(
                 word = wordFromDictionary.word,
                 transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text.replace("/", "") else "",
-                audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].audio else ""
+                audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) {
+                    wordFromDictionary.phonetics[0].audio.let {
+                        if (it.startsWith("//")) {
+                            "https:$it"
+                        } else {
+                            it
+                        }
+                    }
+                } else ""
             ),
             partsOfSpeechWithMeanings
         )
