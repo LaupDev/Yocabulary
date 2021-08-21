@@ -7,22 +7,20 @@ import kotlinx.coroutines.flow.Flow
 
 class AppRepository(
     private val network: DictionaryNetwork,
-    private val wordDao: WordDao,
-    private val posDao: PartOfSpeechDao,
-    private val meaningDao: MeaningDao
+    private val database: AppDatabase
 ) {
 
-    val allWords: Flow<List<Word>> = wordDao.getAllWords()
+    val allWords: Flow<List<Word>> = database.wordDao().getAllWords()
 
-    fun getWordById(word: String) = wordDao.getWordByName(word)
+//    fun getWordById(word: String) = database.wordDao().getWordByName(word)
 
-    fun getWordWithPosAndMeaningsByName(word: String) = wordDao.getWordWithPosAndMeaningsByName(word)
+    fun getWordWithPosAndMeaningsByName(word: String) = database.wordDao().getWordWithPosAndMeaningsByName(word)
 
-    suspend fun updateWord(word: Word) = wordDao.update(word)
+    suspend fun updateWord(word: Word) = database.wordDao().update(word)
 
-    suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = posDao.update(partOfSpeech)
+    suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = database.partOfSpeechDao().update(partOfSpeech)
 
-    suspend fun updateMeaning(meaning: Meaning) = meaningDao.update(meaning)
+    suspend fun updateMeaning(meaning: Meaning) = database.meaningDao().update(meaning)
 
     suspend fun getWordFromDictionary(word: String): WordWithPartsOfSpeechAndMeanings {
         return dictionaryWordToVocabularyFormat(network.getWordFromDictionary(word)[0])
@@ -73,35 +71,35 @@ class AppRepository(
     }
 
     suspend fun insertWord(word: Word): Long {
-        return wordDao.insert(word)
+        return database.wordDao().insert(word)
     }
 
     suspend fun insertPartOfSpeech(partOfSpeech: PartOfSpeech): Long {
-        return posDao.insert(partOfSpeech)
+        return database.partOfSpeechDao().insert(partOfSpeech)
     }
 
     suspend fun insertMeaning(meaning: Meaning): Long {
-        return meaningDao.insert(meaning)
+        return database.meaningDao().insert(meaning)
     }
 
     suspend fun deletePartOfSpeech(partOfSpeech: PartOfSpeech) {
-        posDao.delete(partOfSpeech)
+        database.partOfSpeechDao().delete(partOfSpeech)
     }
 
     suspend fun deleteMeaning(meaning: Meaning) {
-        meaningDao.delete(meaning)
+        database.meaningDao().delete(meaning)
     }
 
     suspend fun removeWordByName(word: String) {
-        wordDao.removeWordByName(word)
+        database.wordDao().removeWordByName(word)
     }
 
     suspend fun updateWordIsFavorite(word: WordIsFavorite) {
-        wordDao.updateIsFavorite(word)
+        database.wordDao().updateIsFavorite(word)
     }
 
     suspend fun updateWordTranslation(word: WordTranslation) {
-        wordDao.updateWordTranslation(word)
+        database.wordDao().updateWordTranslation(word)
     }
 
 }
