@@ -173,6 +173,7 @@ class AddNewWordFragment : Fragment() {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(resources.getString(R.string.error))
                         .setMessage(resources.getString(R.string.word_already_exists))
+                        .setCancelable(false)
                         .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
                             viewModel.replaceWord(wordName)
                         }
@@ -189,6 +190,14 @@ class AddNewWordFragment : Fragment() {
         binding.generalTranslationSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setIsTranslationGeneral(isChecked)
             binding.generalTranslation.isEnabled = isChecked
+        }
+        binding.generalTranslationInfoBtn.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(resources.getString(R.string.general_translation_info_title))
+                .setMessage(resources.getString(R.string.general_translation_info_description))
+                .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
+                }
+                .show()
         }
 // TODO: 06.08.2021 Help button for general translation
         if (wordName == "") {

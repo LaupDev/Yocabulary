@@ -19,6 +19,8 @@
     <string name="new_word">Word *</string>
     <string name="transcription">Transcription</string>
     <string name="general_translation">Translation</string>
+    <string name="general_translation_info_title">General Translation</string>
+    <string name="general_translation_info_description">If "General" is on then the user can add general translation to the word. Otherwise, the user can add a unique translation for every "Part of speech" block</string>
     <string name="general">General</string>
     <string name="help">Help</string>
     <string name="part_of_speech">%s Part of speech *</string>
@@ -49,9 +51,9 @@
 
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
-    
+
     <string name="search_in_dictionary_inline">Search this word in dictionary</string>
-    
+
     <!--Vocabulary fragments -->
     <string name="vocabulary_tab">Vocabulary</string>
     <string name="my_words_tab">My words</string>
