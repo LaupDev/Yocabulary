@@ -12,6 +12,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -91,6 +92,7 @@ class AddNewWordFragment : Fragment() {
     private var totalMeaningCount = 1
     private val meaningsCountMap = mutableMapOf(partsOfSpeechCount to 1)
     private val partsOfSpeechIdsWithMeaningsIdsMap = mutableMapOf<Int, MutableSet<Int>>()
+    private var leaveWithoutWarning = true
 
     private var wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings? = null
 
@@ -100,10 +102,13 @@ class AddNewWordFragment : Fragment() {
         arguments?.let {
             wordName = it.getString(WORD, "")
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            leaveWithOrWithoutWarning()
+        }
     }
 
     // TODO: 10.08.2021 Fix bug. When AddNewWordFragment recreates itself it populates fields again and add them to already existing ones
-    // TODO: 10.08.2021 Ask user whether he is sure about leaving this fragment if some fields aren't empty
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -117,7 +122,7 @@ class AddNewWordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.topAppBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            leaveWithOrWithoutWarning()
         }
 
 //        viewModel.status.observe(viewLifecycleOwner) {
@@ -135,7 +140,7 @@ class AddNewWordFragment : Fragment() {
             addWordToDatabase()
         }
 
-        viewModel.addingProcess.observe(viewLifecycleOwner) {
+        viewModel.processState.observe(viewLifecycleOwner) {
             binding.loadingScreen.visibility = GONE
             var loadingAnim: AnimatedVectorDrawable? = null
             loadingAnim?.stop()
@@ -149,7 +154,7 @@ class AddNewWordFragment : Fragment() {
                     binding.loadingImg.setImageDrawable(loadingAnim)
                     loadingAnim.start()
                 }
-                ProcessState.COMPLETED -> {
+                ProcessState.COMPLETED_ADDING -> {
                     if (wordName.isEmpty()) {
                         findNavController().popBackStack()
                     } else {
@@ -199,9 +204,7 @@ class AddNewWordFragment : Fragment() {
                 }
                 .show()
         }
-// TODO: 06.08.2021 Help button for general translation
         if (wordName == "") {
-
             binding.searchInDictionary.apply {
                 visibility = VISIBLE
                 setOnClickListener {
@@ -221,10 +224,15 @@ class AddNewWordFragment : Fragment() {
                 }
             }
         } else {
-            viewModel.getWordWithPosAndMeaningsByName(wordName).observe(viewLifecycleOwner) {
-                it?.let {
-                    wordWithPartsOfSpeechAndMeanings = it
-                    populateFieldsWithData(it)
+            leaveWithoutWarning = false
+            viewModel.getWordWithPosAndMeaningsByName(wordName).let { liveData ->
+                liveData.observe(viewLifecycleOwner) { data ->
+                    data?.let {
+                        wordWithPartsOfSpeechAndMeanings = data
+                        populateFieldsWithData(data)
+                        viewModel.inactivateProcess()
+                        liveData.removeObservers(viewLifecycleOwner)
+                    }
                 }
             }
         }
@@ -235,6 +243,7 @@ class AddNewWordFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 textInputLayout.error = null
                 textInputLayout.isErrorEnabled = false
+                leaveWithoutWarning = false
             }
 
             override fun beforeTextChanged(
@@ -586,6 +595,21 @@ class AddNewWordFragment : Fragment() {
         )
 
         parentView.findViewById<LinearLayout>(R.id.meanings).addView(newMeaningView)
+    }
+
+    private fun leaveWithOrWithoutWarning() {
+        if (leaveWithoutWarning) {
+            findNavController().popBackStack()
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(resources.getString(R.string.changes_unsaved))
+                .setMessage(resources.getString(R.string.changes_unsaved_desc))
+                .setPositiveButton(resources.getString(R.string.stay)) { _, _ -> }
+                .setNegativeButton(resources.getString(R.string.leave)) { _, _ ->
+                    findNavController().popBackStack()
+                }
+                .show()
+        }
     }
 
     override fun onDestroyView() {

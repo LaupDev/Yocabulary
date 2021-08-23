@@ -39,6 +39,10 @@
     <string name="remove_part_of_speech">Remove Part of speech</string>
     <string name="remove_meaning">Remove Meaning</string>
     <string name="loading_word">Loading</string>
+    <string name="changes_unsaved">Unsaved changes</string>
+    <string name="changes_unsaved_desc">If you leave, the changes won\'t be saved</string>
+    <string name="leave">Leave</string>
+    <string name="stay">Stay</string>
 
     <string name="error">Error</string>
     <string name="no_such_word">No such word in dictionary</string>

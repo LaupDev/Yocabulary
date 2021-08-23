@@ -10,9 +10,9 @@ import java.lang.IllegalArgumentException
 
 class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
-    private val _addingProcess = MutableLiveData(ProcessState.INACTIVE)
-    val addingProcess: LiveData<ProcessState>
-        get() = _addingProcess
+    private val _processState = MutableLiveData(ProcessState.INACTIVE)
+    val processState: LiveData<ProcessState>
+        get() = _processState
 
     private val _status = MutableLiveData<String>()
     val status: LiveData<String>
@@ -25,7 +25,7 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     private lateinit var wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings
 
     fun inactivateProcess() {
-        _addingProcess.value = ProcessState.INACTIVE
+        _processState.value = ProcessState.INACTIVE
     }
 
     fun setIsTranslationGeneral(isTranslationGeneral: Boolean) {
@@ -34,6 +34,7 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
 
     fun getWordWithPosAndMeaningsByName(word: String) =
         repository.getWordWithPosAndMeaningsByName(word).asLiveData()
+            .also { _processState.value = ProcessState.PROCESSING }
 
     fun replaceWord(oldWord: String) {
         if (oldWord.isNotEmpty()) {
@@ -50,7 +51,7 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                _addingProcess.value = ProcessState.PROCESSING
+                _processState.value = ProcessState.PROCESSING
                 var stop = false
 
                 oldWordWithPartsOfSpeechAndMeanings?.partsOfSpeechWithMeanings?.forEach { oldPartOfSpeechWithMeanings ->
@@ -74,17 +75,26 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
                         stop = true
                         this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings =
                             newWordWithPartsOfSpeechAndMeanings
-                        _addingProcess.value = ProcessState.FAILED_WORD_EXISTS
+                        _processState.value = ProcessState.FAILED_WORD_EXISTS
                     } else {
                         if (oldWordWithPartsOfSpeechAndMeanings?.word?.word != newWordWithPartsOfSpeechAndMeanings.word.word) {
                             stop = true
                             this@AddWordViewModel.wordWithPartsOfSpeechAndMeanings =
                                 newWordWithPartsOfSpeechAndMeanings
-                            _addingProcess.value = ProcessState.FAILED_WORD_EXISTS
+                            _processState.value = ProcessState.FAILED_WORD_EXISTS
+                        } else {
+                            repository.updateWord(newWordWithPartsOfSpeechAndMeanings.word)
                         }
-                        repository.updateWord(newWordWithPartsOfSpeechAndMeanings.word)
+                    }
+                } else {
+                    oldWordWithPartsOfSpeechAndMeanings?.word?.word?.let {
+                        if (it != newWordWithPartsOfSpeechAndMeanings.word.word) {
+                            removeWordByName(it)
+                        }
                     }
                 }
+
+
                 if (!stop) {
                     newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
                         pos.word = newWordWithPartsOfSpeechAndMeanings.word.word
@@ -101,10 +111,10 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
                             }
                         }
                     }
-                    _addingProcess.value = ProcessState.COMPLETED
+                    _processState.value = ProcessState.COMPLETED_ADDING
                 }
             } catch (error: Exception) {
-                _addingProcess.value = ProcessState.FAILED
+                _processState.value = ProcessState.FAILED
                 _status.value = error.message
             }
         }
