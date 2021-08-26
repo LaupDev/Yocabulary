@@ -6,6 +6,7 @@ import com.laupdev.yocabulary.network.DictionaryNet
 import com.laupdev.yocabulary.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import timber.log.Timber
 
 class DictionaryApplication : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob())
@@ -13,4 +14,10 @@ class DictionaryApplication : Application() {
     val database by lazy { AppDatabase.getDatabase(this, applicationScope) }
     private val network = DictionaryNet.retrofitService
     val repository by lazy { AppRepository(network, database) }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        Timber.plant(Timber.DebugTree())
+    }
 }

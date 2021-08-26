@@ -3,20 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/wordListFragment">
+    app:startDestination="@id/vocabularyHomeFragment">
 
-    <fragment
-        android:id="@+id/wordListFragment"
-        android:name="com.laupdev.yocabulary.ui.WordListFragment"
-        android:label="@string/app_name"
-        tools:layout="@layout/fragment_word_list">
-        <action
-            android:id="@+id/action_wordListFragment_to_addNewWordFragment"
-            app:destination="@id/addNewWordFragment" />
-        <action
-            android:id="@+id/action_wordListFragment_to_wordDetailsFragment"
-            app:destination="@id/wordDetailsFragment" />
-    </fragment>
     <fragment
         android:id="@+id/wordDetailsFragment"
         android:name="com.laupdev.yocabulary.ui.WordDetailsFragment"
@@ -29,9 +17,9 @@
             android:id="@+id/action_wordDetailsFragment_to_addNewWordFragment"
             app:destination="@id/addNewWordFragment" />
         <action
-            android:id="@+id/action_wordDetailsFragment_to_wordListFragment"
-            app:destination="@id/wordListFragment"
-            app:popUpTo="@id/wordListFragment"
+            android:id="@+id/backToHome"
+            app:destination="@id/vocabularyHomeFragment"
+            app:popUpTo="@id/vocabularyHomeFragment"
             app:popUpToInclusive="true" />
         <argument
             android:name="is_in_vocabulary"
@@ -52,6 +40,17 @@
         <action
             android:id="@+id/action_addNewWordFragment_to_wordDetailsFragmentAfterEditing"
             app:destination="@id/wordDetailsFragment"
-            app:popUpTo="@id/wordListFragment" />
+            app:popUpTo="@id/vocabularyHomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/vocabularyHomeFragment"
+        android:name="com.laupdev.yocabulary.ui.VocabularyHomeFragment"
+        android:label="VocabularyHomeFragment" >
+        <action
+            android:id="@+id/showWordDetails"
+            app:destination="@id/wordDetailsFragment" />
+        <action
+            android:id="@+id/addNewWord"
+            app:destination="@id/addNewWordFragment" />
     </fragment>
 </navigation>

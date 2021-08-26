@@ -27,10 +27,6 @@ import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -123,7 +119,7 @@ class WordDetailsFragment : Fragment() {
 
         binding.topAppBar.setNavigationOnClickListener {
             if (viewModel.isAdded.value == true && !isInVocabulary) {
-                findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
+                findNavController().navigate(R.id.backToHome)
             } else {
                 findNavController().popBackStack()
             }

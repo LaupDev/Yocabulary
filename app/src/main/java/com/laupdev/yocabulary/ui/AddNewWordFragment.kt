@@ -24,7 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.laupdev.yocabulary.AdapterForDropdown
+import com.laupdev.yocabulary.adapters.AdapterForDropdown
 import com.laupdev.yocabulary.ProcessState
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.application.DictionaryApplication

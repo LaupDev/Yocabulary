@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui
+package com.laupdev.yocabulary.adapters
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.model.VocabularyViewModel
+import com.laupdev.yocabulary.ui.VocabularyHomeFragmentDirections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,7 +31,7 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
 
         init {
             view.findViewById<RelativeLayout>(R.id.word_container).setOnClickListener {
-                val action = WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(word = word.word)
+                val action = VocabularyHomeFragmentDirections.showWordDetails(word = word.word)
                 view.findNavController().navigate(action)
             }
         }
@@ -122,6 +123,8 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
         }
 
     }
+
+    // TODO: 27.08.2021 Fix bug. Recreation: 1. Sort words by word. 2. Make some word favorite
 
     override fun getFilter(): Filter {
         return object : Filter() {

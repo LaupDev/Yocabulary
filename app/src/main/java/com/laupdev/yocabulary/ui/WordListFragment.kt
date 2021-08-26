@@ -2,8 +2,7 @@ package com.laupdev.yocabulary.ui
 
 import android.os.Bundle
 import android.view.*
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
+import android.view.View.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -11,13 +10,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.laupdev.yocabulary.R
+import com.laupdev.yocabulary.adapters.WordAdapter
 import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.databinding.FragmentWordListBinding
 import com.laupdev.yocabulary.model.VocabularyViewModel
 import com.laupdev.yocabulary.model.VocabularyViewModelFactory
+import java.util.*
 
 class WordListFragment : Fragment() {
 
@@ -31,7 +34,7 @@ class WordListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: WordAdapter
 
-    private var sortMode = 0 // 0 -> Date added; 1 -> Word; 2 -> Favorite
+    private var sortMode = SortModes.BY_DATE_MODIFIED
 
     private val viewModel: VocabularyViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -55,7 +58,7 @@ class WordListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWordListBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
+//        (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
         return binding.root
     }
 
@@ -67,14 +70,23 @@ class WordListFragment : Fragment() {
         adapter = WordAdapter(viewModel)
         recyclerView.adapter = adapter
 
-        binding.addNewWordBtn.setOnClickListener {
-            val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment("")
-            view.findNavController().navigate(action)
-        }
+//        TabLayoutMediator(binding.vocabularyTabs, viewPager) { tab, position ->
+//            Timber.i(position.toString())
+//            when(position) {
+//                0 -> {
+//
+//                }
+//            }
+//        }.attach()
+
+//        binding.addNewWordBtn.setOnClickListener {
+//            val action = WordListFragmentDirections.actionWordListFragmentToAddNewWordFragment("")
+//            view.findNavController().navigate(action)
+//        }
 
         binding.searchInDictionary.setOnClickListener {
             val action =
-                WordListFragmentDirections.actionWordListFragmentToWordDetailsFragment(
+                VocabularyHomeFragmentDirections.showWordDetails(
                     word = binding.wordSearch.query.toString(),
                     isInVocabulary = false
                 )
@@ -102,7 +114,7 @@ class WordListFragment : Fragment() {
                     binding.searchInDictionary.visibility = if (searchQuery?.isNotEmpty() == true) {
                         VISIBLE
                     } else {
-                        INVISIBLE
+                        GONE
                     }
                     adapter.filter.filter(searchQuery)
                     return false
@@ -121,37 +133,49 @@ class WordListFragment : Fragment() {
         return when(item.itemId) {
             R.id.sort_by_date -> {
                 item.isChecked = true
-                sortWords(viewModel.allWords.value?: listOf(), 0)
+                sortWords(viewModel.allWords.value?: listOf(), SortModes.BY_DATE_MODIFIED)
                 return true
             }
             R.id.sort_by_word -> {
                 item.isChecked = true
-                sortWords(viewModel.allWords.value?: listOf(), 1)
+                sortWords(viewModel.allWords.value?: listOf(), SortModes.BY_NAME)
                 return true
             }
             R.id.sort_by_favorite -> {
                 item.isChecked = true
-                sortWords(viewModel.allWords.value?: listOf(), 2)
+                sortWords(viewModel.allWords.value?: listOf(), SortModes.BY_IS_FAVORITE)
                 return true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun sortWords(words: List<Word>, sortMode: Int) {
+    private fun sortWords(words: List<Word>, sortMode: SortModes) {
         if (words.isNotEmpty()) {
             when (sortMode) {
-                0 -> {
+                SortModes.BY_DATE_MODIFIED -> {
                     adapter.submitList(words.sortedByDescending { word -> word.dateAdded } as MutableList<Word>)
                 }
-                1 -> {
+                SortModes.BY_NAME -> {
                     adapter.submitList(words.sortedBy { word -> word.word.lowercase() } as MutableList<Word>)
                 }
-                2 -> {
+                SortModes.BY_IS_FAVORITE -> {
                     adapter.submitList(words.filter { word -> word.isFavourite == 1 } as MutableList<Word>)
                 }
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
+}
+
+enum class SortModes {
+    BY_DATE_MODIFIED,
+    BY_NAME,
+    BY_IS_FAVORITE
 
 }

@@ -1,9 +1,9 @@
-package com.laupdev.yocabulary
+package com.laupdev.yocabulary.adapters
 
-import android.content.ClipData
 import android.content.Context
 import android.widget.ArrayAdapter
 import android.widget.Filter
+import com.laupdev.yocabulary.R
 
 /*
 * This class is used for fixing bug connected
