@@ -1,5 +1,8 @@
 package com.laupdev.yocabulary.ui
 
+import android.content.Context
+import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +10,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
@@ -54,6 +58,16 @@ class VocabularyHomeFragment : Fragment() {
                 }
             }
         })
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            viewPager.layoutParams.height =
+//                requireActivity().windowManager.currentWindowMetrics.bounds.height() - binding.topAppBarLayout.height
+//        } else {
+//            val size = Point()
+//            @Suppress("DEPRECATION")
+//            (requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getSize(size)
+//            viewPager.layoutParams.height = size.y
+//        }
 
         binding.addNewWordBtn.setOnClickListener {
             val action = VocabularyHomeFragmentDirections.addNewWord("")

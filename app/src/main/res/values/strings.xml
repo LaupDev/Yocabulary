@@ -15,6 +15,8 @@
 
     <string name="search_word_btn">Search translation</string>
 
+    <string name="in_development">In development</string>
+
     <!--fragment_add_new_word-->
     <string name="new_word">Word *</string>
     <string name="transcription">Transcription</string>

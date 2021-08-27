@@ -10,7 +10,6 @@ class VocabularyHomeTabFragmentAdapter(fragment: Fragment) : FragmentStateAdapte
 
     override fun createFragment(position: Int): Fragment {
         return if (position == 0) {
-            // TODO: 25.08.2021 SINGLETON
             WordListFragment()
         } else {
             WordSetsListFragment()
