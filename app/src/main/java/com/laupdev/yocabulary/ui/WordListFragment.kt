@@ -5,6 +5,7 @@ import android.view.*
 import android.view.View.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -20,6 +21,7 @@ import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.databinding.FragmentWordListBinding
 import com.laupdev.yocabulary.model.VocabularyViewModel
 import com.laupdev.yocabulary.model.VocabularyViewModelFactory
+import timber.log.Timber
 import java.util.*
 
 class WordListFragment : Fragment() {
@@ -49,6 +51,7 @@ class WordListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.i("onCreate()")
         setHasOptionsMenu(true)
     }
 
@@ -64,7 +67,7 @@ class WordListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Timber.i("onViewCreated()")
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = WordAdapter(viewModel)
@@ -126,6 +129,7 @@ class WordListFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.sort_words_menu, menu)
+        menu.getItem(0).subMenu.getItem(sortMode.menuPosition).isChecked = true
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -152,6 +156,7 @@ class WordListFragment : Fragment() {
 
     private fun sortWords(words: List<Word>, sortMode: SortModes) {
         if (words.isNotEmpty()) {
+            this.sortMode = sortMode
             when (sortMode) {
                 SortModes.BY_DATE_MODIFIED -> {
                     adapter.submitList(words.sortedByDescending { word -> word.dateAdded } as MutableList<Word>)
@@ -173,9 +178,9 @@ class WordListFragment : Fragment() {
 
 }
 
-enum class SortModes {
-    BY_DATE_MODIFIED,
-    BY_NAME,
-    BY_IS_FAVORITE
+enum class SortModes(val menuPosition: Int) {
+    BY_DATE_MODIFIED(0),
+    BY_NAME(1),
+    BY_IS_FAVORITE(2)
 
 }

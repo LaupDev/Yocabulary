@@ -17,7 +17,6 @@ import com.laupdev.yocabulary.ui.VocabularyHomeFragmentDirections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
 
 class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word, WordAdapter.WordViewHolder>(
     DiffCallback
@@ -123,8 +122,6 @@ class WordAdapter(private val viewModel: VocabularyViewModel) : ListAdapter<Word
         }
 
     }
-
-    // TODO: 27.08.2021 Fix bug. Recreation: 1. Sort words by word. 2. Make some word favorite
 
     override fun getFilter(): Filter {
         return object : Filter() {
