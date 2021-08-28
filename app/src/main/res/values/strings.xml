@@ -17,6 +17,11 @@
 
     <string name="in_development">In development</string>
 
+    <string name="practice">Practice</string>
+    <string name="sets">Sets</string>
+    <string name="vocabulary">Vocabulary</string>
+    <string name="settings">Settings</string>
+
     <!--fragment_add_new_word-->
     <string name="new_word">Word *</string>
     <string name="transcription">Transcription</string>
@@ -78,5 +83,9 @@
     <string name="sort_by_word">Word</string>
     <string name="sort_by_date">Date modified</string>
     <string name="sort_by_favorite">Favorite</string>
+    <string name="title_activity_try">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 
 </resources>
