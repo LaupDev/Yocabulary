@@ -53,4 +53,9 @@
             android:id="@+id/addNewWord"
             app:destination="@id/addNewWordFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/practicePageFragment"
+        android:name="com.laupdev.yocabulary.PracticePageFragment"
+        android:label="fragment_practice_page"
+        tools:layout="@layout/fragment_practice_page" />
 </navigation>

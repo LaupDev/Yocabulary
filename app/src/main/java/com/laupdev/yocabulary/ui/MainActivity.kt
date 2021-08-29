@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
+import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.databinding.ActivityMainBinding
 import com.laupdev.yocabulary.network.CheckNetwork
@@ -42,8 +43,34 @@ class MainActivity : AppCompatActivity() {
 //        )
 //
 //        setupActionBarWithNavController(navController, appBarConfiguration)
+        bottomNavigation.selectedItemId = R.id.navigation_vocabulary
         bottomNavigation.setupWithNavController(navController)
-        bottomNavigation.labelVisibilityMode = LABEL_VISIBILITY_SELECTED
+        bottomNavigation.labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
+
+        bottomNavigation.setOnItemReselectedListener {}
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.navigation_practice -> {
+                    navController.navigate(R.id.practicePageFragment)
+                    true
+                }
+                R.id.navigation_sets -> {
+                    navController.navigate(R.id.practicePageFragment)
+                    true
+                }
+                R.id.navigation_vocabulary -> {
+                    navController.navigate(R.id.vocabularyHomeFragment)
+                    true
+                }
+                R.id.navigation_settings -> {
+                    navController.navigate(R.id.practicePageFragment)
+                    true
+                }
+                else -> {
+                    true
+                }
+            }
+        }
 
 //        applicationContext.deleteDatabase("yocabulary_database")
 
