@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 //        setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavigation.selectedItemId = R.id.navigation_vocabulary
         bottomNavigation.setupWithNavController(navController)
-        bottomNavigation.labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
+//        bottomNavigation.labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
 
         bottomNavigation.setOnItemReselectedListener {}
         bottomNavigation.setOnItemSelectedListener { item ->
