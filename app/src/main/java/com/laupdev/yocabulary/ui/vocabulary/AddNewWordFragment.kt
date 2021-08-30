@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui
+package com.laupdev.yocabulary.ui.vocabulary
 
 import android.content.res.Resources
 import android.graphics.drawable.AnimatedVectorDrawable
@@ -32,6 +32,7 @@ import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddWordViewModel
 import com.laupdev.yocabulary.model.AddWordViewModelFactory
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 /*** ABBREVIATIONS:
@@ -93,6 +94,7 @@ class AddNewWordFragment : Fragment() {
     private val meaningsCountMap = mutableMapOf(partsOfSpeechCount to 1)
     private val partsOfSpeechIdsWithMeaningsIdsMap = mutableMapOf<Int, MutableSet<Int>>()
     private var leaveWithoutWarning = true
+    private var loadingAnim: AnimatedVectorDrawable? = null
 
     private var wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings? = null
 
@@ -104,7 +106,7 @@ class AddNewWordFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            leaveWithOrWithoutWarning()
+            leavePage()
         }
     }
 
@@ -122,13 +124,8 @@ class AddNewWordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.topAppBar.setNavigationOnClickListener {
-            leaveWithOrWithoutWarning()
+            leavePage()
         }
-
-//        viewModel.status.observe(viewLifecycleOwner) {
-//            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
-//            Log.e(this.toString(), it)
-//        }
 
         binding.newWordEditText.addTextChangedListener(onChangeListener(binding.newWord))
 
@@ -142,17 +139,10 @@ class AddNewWordFragment : Fragment() {
 
         viewModel.processState.observe(viewLifecycleOwner) {
             binding.loadingScreen.visibility = GONE
-            var loadingAnim: AnimatedVectorDrawable? = null
             loadingAnim?.stop()
             when (it) {
                 ProcessState.PROCESSING -> {
-                    binding.loadingScreen.visibility = VISIBLE
-                    loadingAnim = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.anim_loading
-                    ) as AnimatedVectorDrawable
-                    binding.loadingImg.setImageDrawable(loadingAnim)
-                    loadingAnim.start()
+                    startLoadingAnimation()
                 }
                 ProcessState.COMPLETED_ADDING -> {
                     if (wordName.isEmpty()) {
@@ -169,7 +159,7 @@ class AddNewWordFragment : Fragment() {
                 ProcessState.FAILED -> {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(resources.getString(R.string.error))
-                        .setMessage("Failed to add/update word. Try again")
+                        .setMessage(R.string.error_add_or_update)
                         .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
                         }
                         .show()
@@ -204,25 +194,8 @@ class AddNewWordFragment : Fragment() {
                 }
                 .show()
         }
-        if (wordName == "") {
-            binding.searchInDictionary.apply {
-                visibility = VISIBLE
-                setOnClickListener {
-                    if (binding.newWordEditText.text.toString().isNotEmpty()) {
-                        binding.newWord.error = null
-
-                        val action =
-                            AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
-                                word = binding.newWordEditText.text.toString(),
-                                isInVocabulary = false
-                            )
-                        view.findNavController().navigate(action)
-                    } else {
-                        binding.newWord.isErrorEnabled = true
-                        binding.newWord.error = getString(R.string.required_error)
-                    }
-                }
-            }
+        if (wordName.isEmpty()) {
+            setupSearchInDictionaryBtn()
         } else {
             leaveWithoutWarning = false
             viewModel.getWordWithPosAndMeaningsByName(wordName).let { liveData ->
@@ -236,6 +209,37 @@ class AddNewWordFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setupSearchInDictionaryBtn() {
+        binding.searchInDictionary.apply {
+            visibility = VISIBLE
+            setOnClickListener {
+                if (binding.newWordEditText.text.toString().isNotEmpty()) {
+                    binding.newWord.error = null
+
+                    val action =
+                        AddNewWordFragmentDirections.actionAddNewWordFragmentToWordDetailsFragment(
+                            word = binding.newWordEditText.text.toString(),
+                            isInVocabulary = false
+                        )
+                    requireView().findNavController().navigate(action)
+                } else {
+                    binding.newWord.isErrorEnabled = true
+                    binding.newWord.error = getString(R.string.required_error)
+                }
+            }
+        }
+    }
+
+    private fun startLoadingAnimation() {
+        binding.loadingScreen.visibility = VISIBLE
+        loadingAnim = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.anim_loading
+        ) as AnimatedVectorDrawable
+        binding.loadingImg.setImageDrawable(loadingAnim)
+        loadingAnim?.start()
     }
 
     private fun onChangeListener(textInputLayout: TextInputLayout): TextWatcher =
@@ -264,7 +268,7 @@ class AddNewWordFragment : Fragment() {
         }
 
     private fun populateFieldsWithData(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
-        println("--------------POPULATE------------------")
+        Timber.i("--------------POPULATE------------------")
         wordWithPartsOfSpeechAndMeanings.word.let {
             binding.newWordEditText.setText(it.word)
             binding.transcriptionEditText.setText(it.transcription)
@@ -411,6 +415,8 @@ class AddNewWordFragment : Fragment() {
         }
     }
 
+    /** Generate Views for "Part of speech" block and adds to main layout
+     */
     private fun addPartOfSpeech(partOfSpeech: PartOfSpeech? = null): ViewGroup {
         val newPartOfSpeechView = layoutInflater.inflate(
             R.layout.view_part_of_speech,
@@ -528,6 +534,8 @@ class AddNewWordFragment : Fragment() {
 //        partsOfSpeechCount--
 //    }
 
+    /** Generate Views for "Meaning" block and adds to main layout
+     */
     private fun addMeaning(
         parentView: ViewGroup,
         partsOfSpeechCount: Int,
@@ -597,7 +605,7 @@ class AddNewWordFragment : Fragment() {
         parentView.findViewById<LinearLayout>(R.id.meanings).addView(newMeaningView)
     }
 
-    private fun leaveWithOrWithoutWarning() {
+    private fun leavePage() {
         if (leaveWithoutWarning) {
             findNavController().popBackStack()
         } else {
@@ -616,5 +624,4 @@ class AddNewWordFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

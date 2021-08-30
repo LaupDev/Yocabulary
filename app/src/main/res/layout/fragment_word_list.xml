@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.WordListFragment">
+    tools:context=".ui.vocabulary.WordListFragment">
 
 <!--    <com.google.android.material.appbar.AppBarLayout-->
 <!--        android:layout_width="match_parent"-->
@@ -59,7 +59,8 @@
             android:background="@drawable/rounded_corners"
             android:textCursorDrawable="@null"
             app:iconifiedByDefault="false"
-            app:queryBackground="@null" />
+            app:queryBackground="@null"
+            app:queryHint="@string/search_words_hint"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"

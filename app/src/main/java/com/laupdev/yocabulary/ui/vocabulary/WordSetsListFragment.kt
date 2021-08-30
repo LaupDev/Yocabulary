@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui
+package com.laupdev.yocabulary.ui.vocabulary
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

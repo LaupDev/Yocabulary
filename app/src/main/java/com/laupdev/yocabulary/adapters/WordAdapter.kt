@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.model.VocabularyViewModel
-import com.laupdev.yocabulary.ui.VocabularyHomeFragmentDirections
+import com.laupdev.yocabulary.ui.vocabulary.VocabularyHomeFragmentDirections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

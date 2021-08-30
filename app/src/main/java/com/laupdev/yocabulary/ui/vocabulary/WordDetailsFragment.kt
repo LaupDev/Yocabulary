@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui
+package com.laupdev.yocabulary.ui.vocabulary
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
@@ -96,13 +96,25 @@ class WordDetailsFragment : Fragment() {
             addWordDetailsFromDictionary()
         }
 
+        setObservers()
+
+        setListeners()
+    }
+
+    private fun setObservers() {
+        viewModel.isFavourite.observe(viewLifecycleOwner) {
+            binding.addToFavorite.isSelected = it
+        }
+    }
+
+    private fun setListeners() {
         binding.editWordBtn.setOnClickListener {
             if (viewModel.isAdded.value == true) {
                 val action =
                     WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
                         currWord
                     )
-                view.findNavController().navigate(action)
+                requireView().findNavController().navigate(action)
             } else {
                 Snackbar.make(requireView(), R.string.word_update_error, Snackbar.LENGTH_SHORT)
                     .show()
@@ -111,10 +123,6 @@ class WordDetailsFragment : Fragment() {
 
         binding.addToFavorite.setOnClickListener {
             viewModel.updateWordIsFavorite(currWord)
-        }
-
-        viewModel.isFavourite.observe(viewLifecycleOwner) {
-            binding.addToFavorite.isSelected = it
         }
 
         binding.topAppBar.setNavigationOnClickListener {
@@ -127,10 +135,10 @@ class WordDetailsFragment : Fragment() {
 
         binding.addTranslation.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                if (s.toString().isNotEmpty()) {
-                    binding.saveTranslation.visibility = VISIBLE
+                binding.saveTranslation.visibility = if (s.toString().isNotEmpty()) {
+                    VISIBLE
                 } else {
-                    binding.saveTranslation.visibility = GONE
+                    GONE
                 }
             }
 
@@ -157,15 +165,9 @@ class WordDetailsFragment : Fragment() {
             it.visibility = GONE
         }
 
-
-//        viewModel.status.observe(viewLifecycleOwner, {
-//            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
-//        })
-
-//        binding.searchTranslationBtn.setOnClickListener {
-//            searchWordTranslationInWeb()
-//        }
-
+        //        binding.searchTranslationBtn.setOnClickListener {
+        //            searchWordTranslationInWeb()
+        //        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -196,8 +198,17 @@ class WordDetailsFragment : Fragment() {
             }
         }
         viewModel.getWordFromDictionary(currWord)
+        setupErrorHandler()
+
+        binding.addToVocabulary.setOnClickListener {
+            viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)
+        }
+        // TODO: 12.07.2021 Fix long loading when getting first word from dictionary
+    }
+
+    private fun setupErrorHandler() {
         viewModel.error.observe(viewLifecycleOwner) {
-            when(it) {
+            when (it) {
                 ErrorType.NO_SUCH_WORD -> {
                     createAlertDialog(resources.getString(R.string.no_such_word))
                 }
@@ -218,14 +229,10 @@ class WordDetailsFragment : Fragment() {
                         }
                         .show()
                 }
-                else -> {}
+                else -> {
+                }
             }
         }
-
-        binding.addToVocabulary.setOnClickListener {
-            viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)
-        }
-        // TODO: 12.07.2021 Fix long loading when getting first word from dictionary
     }
 
     @SuppressLint("SetTextI18n")
@@ -263,7 +270,7 @@ class WordDetailsFragment : Fragment() {
         clearWordDetails()
 
         wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
-            addPartOfSpeech(partOfSpeechWithMeanings)
+            addPartOfSpeechBlockToLayout(partOfSpeechWithMeanings)
         }
     }
 
@@ -365,7 +372,7 @@ class WordDetailsFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun addPartOfSpeech(partOfSpeechWithMeanings: PartOfSpeechWithMeanings) {
+    private fun addPartOfSpeechBlockToLayout(partOfSpeechWithMeanings: PartOfSpeechWithMeanings) {
         val wordDetailsLinearLayout = LinearLayout(requireContext())
         wordDetailsLinearLayout.layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -423,7 +430,7 @@ class WordDetailsFragment : Fragment() {
 
         meaningsCount = 1
         partOfSpeechWithMeanings.meanings.forEach {
-            wordDetailsLinearLayout.addView(addDefinition(it))
+            wordDetailsLinearLayout.addView(addMeaningBlockToLayout(it))
         }
 
         binding.wordDetails.addView(wordDetailsLinearLayout)
@@ -431,13 +438,13 @@ class WordDetailsFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun addDefinition(meaning: Meaning): View {
-        val definitionLinearLayout = LinearLayout(requireContext())
-        definitionLinearLayout.layoutParams = LayoutParams(
+    private fun addMeaningBlockToLayout(meaning: Meaning): View {
+        val meaningLinearLayout = LinearLayout(requireContext())
+        meaningLinearLayout.layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT
         )
-        definitionLinearLayout.orientation = LinearLayout.VERTICAL
+        meaningLinearLayout.orientation = LinearLayout.VERTICAL
 
         if (meaning.meaning.isNotEmpty()) {
             val meaningTextView = TextView(requireContext())
@@ -462,7 +469,7 @@ class WordDetailsFragment : Fragment() {
                 R.style.TextAppearance_Yocabulary_Meaning
             )
 
-            definitionLinearLayout.addView(meaningTextView)
+            meaningLinearLayout.addView(meaningTextView)
         }
 
         if (meaning.example.isNotEmpty()) {
@@ -488,7 +495,7 @@ class WordDetailsFragment : Fragment() {
                 R.style.TextAppearance_Yocabulary_Example
             )
 
-            definitionLinearLayout.addView(exampleTextView)
+            meaningLinearLayout.addView(exampleTextView)
         }
 
         if (meaning.synonyms.isNotEmpty()) {
@@ -510,7 +517,7 @@ class WordDetailsFragment : Fragment() {
             )
             synonymsHeaderTextView.textSize = 16f
 
-            definitionLinearLayout.addView(synonymsHeaderTextView)
+            meaningLinearLayout.addView(synonymsHeaderTextView)
 
             val synonymsWordsTextView = TextView(requireContext())
             synonymsWordsTextView.id =
@@ -529,11 +536,11 @@ class WordDetailsFragment : Fragment() {
                 R.style.TextAppearance_Yocabulary_SynonymWords
             )
 
-            definitionLinearLayout.addView(synonymsWordsTextView)
+            meaningLinearLayout.addView(synonymsWordsTextView)
         }
 
         meaningsCount++
-        return definitionLinearLayout
+        return meaningLinearLayout
     }
 
 }
