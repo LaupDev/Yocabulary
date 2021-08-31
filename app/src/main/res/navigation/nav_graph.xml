@@ -55,7 +55,7 @@
     </fragment>
     <fragment
         android:id="@+id/practicePageFragment"
-        android:name="com.laupdev.yocabulary.PracticePageFragment"
+        android:name="com.laupdev.yocabulary.ui.practice.PracticePageFragment"
         android:label="fragment_practice_page"
         tools:layout="@layout/fragment_practice_page" />
 </navigation>

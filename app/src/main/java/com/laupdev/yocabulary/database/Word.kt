@@ -20,7 +20,7 @@ data class Word(
     @ColumnInfo(name = "is_trans_general")
     val isTranslationGeneral: Int = 1,
     @ColumnInfo(name = "date_added")
-    val dateAdded: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Calendar.getInstance().time),
+    val dateAdded: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().time),
     @ColumnInfo(name = "is_favorite")
     val isFavourite: Int = 0,
     @ColumnInfo(name = "audio_url")

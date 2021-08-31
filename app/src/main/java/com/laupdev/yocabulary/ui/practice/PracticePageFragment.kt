@@ -1,10 +1,11 @@
-package com.laupdev.yocabulary
+package com.laupdev.yocabulary.ui.practice
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.laupdev.yocabulary.R
 
 class PracticePageFragment : Fragment() {
 

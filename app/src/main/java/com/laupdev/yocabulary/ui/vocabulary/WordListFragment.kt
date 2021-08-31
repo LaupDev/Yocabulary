@@ -18,6 +18,7 @@ import com.laupdev.yocabulary.databinding.FragmentWordListBinding
 import com.laupdev.yocabulary.model.VocabularyViewModel
 import com.laupdev.yocabulary.model.VocabularyViewModelFactory
 import timber.log.Timber
+import java.text.SimpleDateFormat
 import java.util.*
 
 class WordListFragment : Fragment() {
@@ -147,7 +148,7 @@ class WordListFragment : Fragment() {
             this.sortMode = sortMode
             when (sortMode) {
                 SortModes.BY_DATE_MODIFIED -> {
-                    adapter.submitList(words.sortedByDescending { word -> word.dateAdded } as MutableList<Word>)
+                    adapter.submitList(words.sortedByDescending { word -> SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(word.dateAdded) } as MutableList<Word>)
                 }
                 SortModes.BY_NAME -> {
                     adapter.submitList(words.sortedBy { word -> word.word.lowercase() } as MutableList<Word>)
