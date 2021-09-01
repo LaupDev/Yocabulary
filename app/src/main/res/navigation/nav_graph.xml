@@ -58,4 +58,9 @@
         android:name="com.laupdev.yocabulary.ui.practice.PracticePageFragment"
         android:label="fragment_practice_page"
         tools:layout="@layout/fragment_practice_page" />
+    <fragment
+        android:id="@+id/inDevelopmentFragment"
+        android:name="com.laupdev.yocabulary.ui.InDevelopmentFragment"
+        android:label="fragment_in_development"
+        tools:layout="@layout/fragment_in_development" />
 </navigation>

@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_sets -> {
-                    navController.navigate(R.id.practicePageFragment)
+                    navController.navigate(R.id.inDevelopmentFragment)
                     true
                 }
                 R.id.navigation_vocabulary -> {
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_settings -> {
-                    navController.navigate(R.id.practicePageFragment)
+                    navController.navigate(R.id.inDevelopmentFragment)
                     true
                 }
                 else -> {

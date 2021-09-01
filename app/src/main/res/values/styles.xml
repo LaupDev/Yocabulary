@@ -26,7 +26,7 @@
     </style>
 
     <style name="Widget.Yocabulary.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.BottomNavigationView</item>
         <item name="itemIconTint">@color/selector_bottom_nav_tab_color</item>
         <item name="itemIconSize">36dp</item>
     </style>
@@ -290,9 +290,26 @@
 <!--        <item name="textColor">@color/black</item>-->
 <!--    </style>-->
 
+    <!-- Widget -->
+    <style name="Widget.Yocabulary.PracticeTitle" parent="Widget.AppCompat.TextView">
+        <item name="android:background">@drawable/rounded_corners_practice_titles</item>
+        <item name="android:padding">17dp</item>
+        <item name="android:gravity">center</item>
+        <item name="fontFamily">@font/poppins_bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <!--  ThemeOverlays  -->
-    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+    <style name="ThemeOverlay.Yocabulary.BottomNavigationView" parent="">
         <item name="colorPrimary">@color/color_grey_lighter</item>
+    </style>
+
+    <!-- ShapeAppearanceOverlays -->
+    <style name="ShapeAppearanceOverlay.Yocabulary.PracticeImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
     </style>
 
 </resources>

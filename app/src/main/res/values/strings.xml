@@ -89,4 +89,12 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
+
+    <!-- Practice Page -->
+
+    <!-- PracticePageFragment -->
+    <string name="match_meanings_with_words">Match meanings\nwith words</string>
+    <string name="learn_spelling">Learn spelling</string>
+    <string name="mixed_practice">Mixed practice</string>
+
 </resources>
