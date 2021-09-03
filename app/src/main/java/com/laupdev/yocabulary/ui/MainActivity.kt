@@ -12,8 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.google.android.material.navigation.NavigationBarView
-import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
-import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
+import com.google.android.material.navigation.NavigationBarView.*
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.databinding.ActivityMainBinding
 import com.laupdev.yocabulary.network.CheckNetwork
@@ -67,5 +66,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun hideBottomNav() {
+        binding.bottomNavigation.visibility = GONE
+    }
+
+    fun showBottomNav() {
+        binding.bottomNavigation.visibility = VISIBLE
     }
 }
