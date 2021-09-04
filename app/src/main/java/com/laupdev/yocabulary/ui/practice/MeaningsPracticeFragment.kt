@@ -23,8 +23,8 @@ class MeaningsPracticeFragment : BasePracticeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.test.setOnClickListener {
-            nextPage()
-        }
+//        binding.test.setOnClickListener {
+//            nextPage()
+//        }
     }
 }
