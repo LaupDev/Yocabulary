@@ -120,7 +120,7 @@ class AddWordViewModel(private val repository: AppRepository) : ViewModel() {
         }
     }
 
-    fun removeWordByName(word: String) {
+    private fun removeWordByName(word: String) {
         viewModelScope.launch {
             try {
                 repository.removeWordByName(word)

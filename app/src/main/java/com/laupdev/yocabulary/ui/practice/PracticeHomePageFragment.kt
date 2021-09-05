@@ -27,9 +27,12 @@ class PracticeHomePageFragment : Fragment() {
     }
 
     private fun setListeners() {
-        binding.matchMeaningsBlock.setOnClickListener {
-            val action = PracticeHomePageFragmentDirections.goToMeaningsPractice()
+        val goToPracticeListener = View.OnClickListener {
+            val action = PracticeHomePageFragmentDirections.goToPractice()
             findNavController().navigate(action)
         }
+        binding.matchMeaningsBlock.setOnClickListener(goToPracticeListener)
+        binding.learnSpellingBlock.setOnClickListener(goToPracticeListener)
+        binding.mixedPracticeBlock.setOnClickListener(goToPracticeListener)
     }
 }

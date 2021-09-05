@@ -70,9 +70,9 @@ class VocabularyHomeFragment : Fragment() {
         }.attach()
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDestroy()
     }
 
 }

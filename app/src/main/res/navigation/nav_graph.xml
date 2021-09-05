@@ -59,8 +59,8 @@
         android:label="fragment_practice_page"
         tools:layout="@layout/fragment_practice_home_page" >
         <action
-            android:id="@+id/goToMeaningsPractice"
-            app:destination="@id/meaningsPracticeFragment" />
+            android:id="@+id/goToPractice"
+            app:destination="@id/practiceFragment" />
     </fragment>
     <fragment
         android:id="@+id/inDevelopmentFragment"
@@ -68,8 +68,8 @@
         android:label="fragment_in_development"
         tools:layout="@layout/fragment_in_development" />
     <fragment
-        android:id="@+id/meaningsPracticeFragment"
-        android:name="com.laupdev.yocabulary.ui.practice.MeaningsPracticeFragment"
-        android:label="fragment_meanings_practice"
-        tools:layout="@layout/fragment_meanings_practice" />
+        android:id="@+id/practiceFragment"
+        android:name="com.laupdev.yocabulary.ui.practice.PracticeFragment"
+        android:label="fragment_practice"
+        tools:layout="@layout/fragment_practice" />
 </navigation>
