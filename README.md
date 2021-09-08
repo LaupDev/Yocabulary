@@ -4,7 +4,7 @@ This app is for people who want to learn English.
 
 ## Functionality
 * Add own words to your vocabulary
-* Search words with theirs meanings, synonyms etc. using "Free Dictionary API" and add them to vocabulary
+* Search words with theirs meanings, synonyms etc. using "Free Dictionary API" and add them to your vocabulary
 * Learn words (Currently in development)
 * Add predefined sets of words connected by topics (Will be added in near future)
 
