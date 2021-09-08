@@ -10,6 +10,7 @@ This app is for people who want to learn English.
 
 ## I took advantage of such libraries, frameworks, and languages(so far)
 * Kotlin
+* Kotlin Coroutines
 * LiveData
 * ViewBinding
 * Room
@@ -19,3 +20,6 @@ This app is for people who want to learn English.
 * SQLite
 * Moshi
 * JSON
+* Material Design
+* ViewPager2
+* Timber
