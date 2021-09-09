@@ -21,7 +21,8 @@
         <item name="tabStyle">@style/Widget.Yocabulary.TabLayout</item>
         <!-- Customize your theme here. -->
         <item name="android:colorBackground">@color/color_grey</item>
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Yocabulary.MaterialAlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Yocabulary.MaterialAlertDialog
+        </item>
         <item name="bottomNavigationStyle">@style/Widget.Yocabulary.BottomNavigationView</item>
     </style>
 
@@ -56,7 +57,7 @@
     <style name="Widget.Yocabulary.ToolBar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.Toolbar</item>
         <item name="titleTextAppearance">@style/TextAppearance.Yocabulary.Headline6</item>
-<!--        <item name="subtitleTextAppearance">@style/TextAppearance.Yocabulary.MenuItem</item>-->
+        <!--        <item name="subtitleTextAppearance">@style/TextAppearance.Yocabulary.MenuItem</item>-->
     </style>
 
     <style name="ThemeOverlay.Yocabulary.Toolbar" parent="">
@@ -156,7 +157,9 @@
     <style name="Widget.Yocabulary.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
 
         <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.TextInputLayout</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout</item>
+        <item name="shapeAppearanceOverlay">
+            @style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout
+        </item>
 
         <item name="boxBackgroundColor">@color/color_state_material_edit_text_layout</item>
         <item name="boxStrokeWidth">0dp</item>
@@ -165,8 +168,12 @@
     </style>
 
     <style name="Widget.Yocabulary.TextInputLayout.FilledBox.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.TextInputLayout.ExposedDropdownMenu</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout</item>
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Yocabulary.TextInputLayout.ExposedDropdownMenu
+        </item>
+        <item name="shapeAppearanceOverlay">
+            @style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout
+        </item>
 
         <item name="boxBackgroundColor">@color/color_grey_lighter</item>
         <item name="boxStrokeWidth">0dp</item>
@@ -177,7 +184,9 @@
     <style name="Widget.Yocabulary.AddButton" parent="Widget.MaterialComponents.Button">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.Button</item>
         <item name="android:textAppearance">@style/TextAppearance.Yocabulary.AddButton</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout</item>
+        <item name="shapeAppearanceOverlay">
+            @style/ShapeAppearanceOverlay.Yocabulary.TextInputLayout
+        </item>
 
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:insetTop">0dp</item>
@@ -191,13 +200,16 @@
     <style name="ThemeOverlay.Yocabulary.TextInputLayout" parent="">
         <item name="textAppearanceSubtitle1">@style/TextAppearance.Yocabulary.Subtitle1</item>
         <item name="textAppearanceCaption">@style/TextAppearance.Yocabulary.Caption</item>
-        <item name="editTextStyle">@style/Widget.MaterialComponents.TextInputEditText.FilledBox</item>
+        <item name="editTextStyle">@style/Widget.MaterialComponents.TextInputEditText.FilledBox
+        </item>
     </style>
 
     <style name="ThemeOverlay.Yocabulary.TextInputLayout.ExposedDropdownMenu" parent="">
         <item name="textAppearanceSubtitle1">@style/TextAppearance.Yocabulary.Subtitle1</item>
         <item name="textAppearanceCaption">@style/TextAppearance.Yocabulary.Caption</item>
-        <item name="autoCompleteTextViewStyle">@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox</item>
+        <item name="autoCompleteTextViewStyle">
+            @style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox
+        </item>
     </style>
 
     <style name="ThemeOverlay.Yocabulary.Button" parent="">
@@ -228,13 +240,17 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
     </style>
-    
+
     <!-- Common styles -->
     <style name="ThemeOverlay.Yocabulary.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog.Centered">
         <item name="alertDialogStyle">@style/MaterialAlertDialog.Yocabulary</item>
-<!--        <item name="materialAlertDialogTitlePanelStyle">@style/MaterialAlertDialog.Yocabulary.Title.Panel</item>-->
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Yocabulary.Title.Text</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Yocabulary.Body.Text</item>
+        <!--        <item name="materialAlertDialogTitlePanelStyle">@style/MaterialAlertDialog.Yocabulary.Title.Panel</item>-->
+        <item name="materialAlertDialogTitleTextStyle">
+            @style/MaterialAlertDialog.Yocabulary.Title.Text
+        </item>
+        <item name="materialAlertDialogBodyTextStyle">
+            @style/MaterialAlertDialog.Yocabulary.Body.Text
+        </item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.Yocabulary.PositiveButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.Yocabulary.NegativeButton</item>
     </style>
@@ -250,16 +266,16 @@
         <item name="android:textSize">19sp</item>
     </style>
 
-<!--    <style name="MaterialAlertDialog.Yocabulary.Title.Panel" parent="MaterialAlertDialog.MaterialComponents.Title.Panel">-->
-<!--        <item name="android:gravity">center_horizontal</item>-->
-<!--        <item name="android:textColor">@color/color_orange_text</item>-->
-<!--    </style>-->
+    <!--    <style name="MaterialAlertDialog.Yocabulary.Title.Panel" parent="MaterialAlertDialog.MaterialComponents.Title.Panel">-->
+    <!--        <item name="android:gravity">center_horizontal</item>-->
+    <!--        <item name="android:textColor">@color/color_orange_text</item>-->
+    <!--    </style>-->
 
     <style name="MaterialAlertDialog.Yocabulary.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@color/white</item>
     </style>
-    
+
     <style name="Widget.Yocabulary.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Yocabulary.FloatingActionButton</item>
     </style>
@@ -282,13 +298,13 @@
         <item name="cornerSize">12dp</item>
     </style>
 
-<!--    <style name="CustomHintDisabled" parent="TextAppearance.MaterialComponents.Caption">-->
-<!--        <item name="textColor">@color/gray</item>-->
-<!--    </style>-->
+    <!--    <style name="CustomHintDisabled" parent="TextAppearance.MaterialComponents.Caption">-->
+    <!--        <item name="textColor">@color/gray</item>-->
+    <!--    </style>-->
 
-<!--    <style name="CustomHintEnabled" parent="YourBaseTheme.TextAppearance">-->
-<!--        <item name="textColor">@color/black</item>-->
-<!--    </style>-->
+    <!--    <style name="CustomHintEnabled" parent="YourBaseTheme.TextAppearance">-->
+    <!--        <item name="textColor">@color/black</item>-->
+    <!--    </style>-->
 
     <!-- Widget -->
     <style name="Widget.Yocabulary.PracticeTitle" parent="Widget.AppCompat.TextView">
@@ -301,6 +317,40 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="Widget.Yocabulary.PracticeNextButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:gravity">center</item>
+        <item name="android:stateListAnimator">@animator/practice_button_press_anim</item>
+        <item name="backgroundTint">@color/color_grey_lighter_2</item>
+        <item name="rippleColor">@null</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="shapeAppearanceOverlay">
+            @style/ShapeAppearanceOverlay.Yocabulary.PracticeButton
+        </item>
+    </style>
+
+    <style name="Widget.Yocabulary.PracticeAnswerButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:stateListAnimator">@animator/practice_button_press_anim</item>
+        <item name="backgroundTint">@color/color_grey_lighter_2</item>
+        <item name="rippleColor">@null</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="shapeAppearanceOverlay">
+            @style/ShapeAppearanceOverlay.Yocabulary.PracticeButton
+        </item>
+    </style>
+
     <!--  ThemeOverlays  -->
     <style name="ThemeOverlay.Yocabulary.BottomNavigationView" parent="">
         <item name="colorPrimary">@color/color_grey_lighter</item>
@@ -310,6 +360,11 @@
     <style name="ShapeAppearanceOverlay.Yocabulary.PracticeImage" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">20dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Yocabulary.PracticeButton" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
 
 </resources>

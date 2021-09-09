@@ -3,6 +3,7 @@ package com.laupdev.yocabulary.model.practice
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.laupdev.yocabulary.ui.questions.MeaningQuestion
 import com.laupdev.yocabulary.ui.questions.Question
 import com.laupdev.yocabulary.ui.questions.QuestionType
 import timber.log.Timber
@@ -16,13 +17,15 @@ class PracticeViewModel : ViewModel() {
         get() = _practiceProgress
 
     val questions = mutableListOf(
-        Question(QuestionType.MATCH_MEANING,"LOL_1"),
-        Question(QuestionType.MATCH_MEANING,"LOL_2"),
-        Question(QuestionType.MATCH_MEANING,"LOL_3"),
-        Question(QuestionType.MATCH_MEANING,"LOL_4")
+        MeaningQuestion("Blablablablablabla  blablalbalb blablab ablalbalbalal", listOf("blabla", "asdasdasdasddsa", "lololololo", "braaaaa"), "blabla"),
+        MeaningQuestion("Lolololo lo lolo ololo lol olol ol lo ool ollo lolo lo olol o", listOf("asdasdasdasddsa", "lololololo", "blabla", "braaaaa"), "lololololo"),
+        MeaningQuestion("Brrrrrrrrrrrrraaaaaaaaaaaaa brabrbarbabbab braaaaaaaaaaaaaa brbrabrbarbabrbaba", listOf("blabla", "lololololo", "asdasdasdasddsa", "braaaaa"), "braaaaa"),
+        MeaningQuestion("ASasdasdasdas dsadasdasasd", listOf("braaaaa", "blabla", "asdasdasdasddsa", "lololololo"), "asdasdasdasddsa")
     )
 
     var currentQuestionIndex = 0
+
+    val rightWrongAnswerIndexes = intArrayOf(-1, -1)
 
     private fun increaseProgressForProgressBar() {
         (_practiceProgress.value ?: 1).apply {

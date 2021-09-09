@@ -4,19 +4,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.model.practice.PracticeViewModel
-import com.laupdev.yocabulary.ui.questions.MeaningsQuestionView
+import com.laupdev.yocabulary.ui.practice.PracticeFragment
+import com.laupdev.yocabulary.ui.questions.MeaningQuestionView
 import com.laupdev.yocabulary.ui.questions.Question
 import com.laupdev.yocabulary.ui.questions.QuestionType
 import com.laupdev.yocabulary.ui.questions.QuestionView
+import timber.log.Timber
 
-class PracticeQuestionAdapter(private val viewModel: PracticeViewModel) : RecyclerView.Adapter<PracticeQuestionHolder>() {
+class PracticeQuestionAdapter(private val viewModel: PracticeViewModel, private val practiceFragment: PracticeFragment) : RecyclerView.Adapter<PracticeQuestionHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PracticeQuestionHolder {
         return when (viewModel.questions[viewModel.currentQuestionIndex].questionType) {
             QuestionType.MATCH_MEANING -> {
-                PracticeQuestionHolder(MeaningsQuestionView(LayoutInflater.from(parent.context), parent))
+                PracticeQuestionHolder(MeaningQuestionView(LayoutInflater.from(parent.context), parent, practiceFragment))
             }
             else -> {
-                PracticeQuestionHolder(MeaningsQuestionView(LayoutInflater.from(parent.context), parent))
+                PracticeQuestionHolder(MeaningQuestionView(LayoutInflater.from(parent.context), parent, practiceFragment))
             }
         }
     }

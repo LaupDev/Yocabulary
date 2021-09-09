@@ -19,7 +19,7 @@ import com.laupdev.yocabulary.ui.MainActivity
 
 open class PracticeFragment : Fragment() {
 
-    private val viewModel: PracticeViewModel by viewModels()
+    val viewModel: PracticeViewModel by viewModels()
     private lateinit var viewPager2: ViewPager2
 
     private var _binding: FragmentPracticeBinding? = null
@@ -47,7 +47,7 @@ open class PracticeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewPager2 = binding.pager
-        viewPager2.adapter = PracticeQuestionAdapter(viewModel)
+        viewPager2.adapter = PracticeQuestionAdapter(viewModel, this)
         viewPager2.isUserInputEnabled = false
 
         (requireActivity() as MainActivity).hideBottomNav()
@@ -65,7 +65,6 @@ open class PracticeFragment : Fragment() {
     }
 
     fun nextPage() {
-        // TODO: 04.09.2021 Go to next page
         viewModel.nextQuestion()
         viewPager2.apply {
             this.currentItem = this.currentItem + 1
@@ -76,4 +75,5 @@ open class PracticeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

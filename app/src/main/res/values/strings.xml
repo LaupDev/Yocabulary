@@ -92,10 +92,14 @@
 
     <!-- Practice Page -->
 
-    <!-- PracticePageFragment -->
+    <!-- PracticeHomePageFragment -->
     <string name="match_meanings_with_words">Match meanings\nwith words</string>
     <string name="learn_spelling">Learn spelling</string>
     <string name="mixed_practice">Mixed practice</string>
     <string name="practice_english">Practice English</string>
+
+    <!-- PracticeFragment -->
+    <string name="next_question">Next</string>
+    <string name="match_meaning">Match meaning with word</string>
 
 </resources>

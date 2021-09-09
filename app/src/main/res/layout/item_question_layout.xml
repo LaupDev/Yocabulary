@@ -1,12 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/test_text"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" />
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/task_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:text="@string/match_meaning"
+            android:textColor="@color/color_white"
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/rounded_corners_practice_task"
+            android:elevation="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp"
+            android:text="Motivated to do or achieve something because of one's own enthusiasm or interest, without needing pressure from others."
+            android:textColor="@color/color_white"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/task_title" />
+
+        <View
+            android:id="@+id/space"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/all_answers"
+            app:layout_constraintTop_toBottomOf="@id/task" />
+
+        <LinearLayout
+            android:id="@+id/all_answers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="70dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/next_page"
+            app:layout_constraintTop_toBottomOf="@id/space">
+
+            <Button
+                android:id="@+id/answer_1"
+                style="@style/Widget.Yocabulary.PracticeAnswerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="access" />
+
+            <Button
+                android:id="@+id/answer_2"
+                style="@style/Widget.Yocabulary.PracticeAnswerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="self-development" />
+
+            <Button
+                android:id="@+id/answer_3"
+                style="@style/Widget.Yocabulary.PracticeAnswerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="hello" />
+
+            <Button
+                android:id="@+id/answer_4"
+                style="@style/Widget.Yocabulary.PracticeAnswerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="7dp"
+                android:text="cringe" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/next_page"
+            style="@style/Widget.Yocabulary.PracticeNextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:paddingStart="45dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="45dp"
+            android:paddingBottom="5dp"
+            android:text="@string/next_question"
+            android:textColor="@color/color_white"
+            android:textSize="20sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>

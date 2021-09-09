@@ -20,6 +20,11 @@
     <color name="color_red">#FFFF0033</color>
     <color name="color_loading_screen">#771B1B1B</color>
 
+    <color name="color_grey_lighter_2">#FF232323</color>
+
     <color name="color_disabled_input_text">#99303030</color>
     <color name="color_enabled_input_text">#FF303030</color>
+
+    <color name="color_right_answer">#FF04672F</color>
+    <color name="color_wrong_answer">#FF9E1515</color>
 </resources>
