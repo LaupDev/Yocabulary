@@ -111,7 +111,7 @@ class WordDetailsFragment : Fragment() {
         binding.editWordBtn.setOnClickListener {
             if (viewModel.isAdded.value == true) {
                 val action =
-                    WordDetailsFragmentDirections.actionWordDetailsFragmentToAddNewWordFragment(
+                    WordDetailsFragmentDirections.updateWord(
                         currWord
                     )
                 requireView().findNavController().navigate(action)
@@ -197,8 +197,8 @@ class WordDetailsFragment : Fragment() {
                 binding.buttons.visibility = VISIBLE
             }
         }
-        viewModel.getWordFromDictionary(currWord)
         setupErrorHandler()
+        viewModel.getWordFromDictionary(currWord)
 
         binding.addToVocabulary.setOnClickListener {
             viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)

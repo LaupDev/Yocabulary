@@ -55,7 +55,7 @@ class VocabularyHomeFragment : Fragment() {
         })
 
         binding.addNewWordBtn.setOnClickListener {
-            val action = VocabularyHomeFragmentDirections.addNewWord("")
+            val action = VocabularyHomeFragmentDirections.addNewWord()
             view.findNavController().navigate(action)
         }
 

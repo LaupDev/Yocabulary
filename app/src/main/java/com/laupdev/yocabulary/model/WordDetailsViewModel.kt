@@ -1,13 +1,10 @@
 package com.laupdev.yocabulary.model
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.laupdev.yocabulary.database.WordIsFavorite
 import com.laupdev.yocabulary.database.WordTranslation
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.repository.AppRepository
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
@@ -75,7 +72,6 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
                         _error.value = ErrorType.OTHER
                     }
                 }
-                Log.e(this.toString(), error.toString())
                 _status.value = "Failure: ${error.message}"
             }
         }
@@ -108,6 +104,7 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
                     _isAdded.value = true
                 }
             } catch (error: Exception) {
+                _error.value = ErrorType.OTHER
                 _status.value = "Failure: ${error.message}"
             }
         }

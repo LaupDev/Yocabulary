@@ -14,9 +14,6 @@
             android:name="word"
             app:argType="string" />
         <action
-            android:id="@+id/action_wordDetailsFragment_to_addNewWordFragment"
-            app:destination="@id/addNewWordFragment" />
-        <action
             android:id="@+id/backToHome"
             app:destination="@id/vocabularyHomeFragment"
             app:popUpTo="@id/vocabularyHomeFragment"
@@ -25,15 +22,15 @@
             android:name="is_in_vocabulary"
             app:argType="boolean"
             android:defaultValue="true" />
+        <action
+            android:id="@+id/updateWord"
+            app:destination="@id/updateWordFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewWordFragment"
         android:name="com.laupdev.yocabulary.ui.vocabulary.AddNewWordFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_add_new_word">
-        <argument
-            android:name="word"
-            app:argType="string" />
         <action
             android:id="@+id/action_addNewWordFragment_to_wordDetailsFragment"
             app:destination="@id/wordDetailsFragment" />
@@ -72,4 +69,16 @@
         android:name="com.laupdev.yocabulary.ui.practice.PracticeFragment"
         android:label="fragment_practice"
         tools:layout="@layout/fragment_practice" />
+    <fragment
+        android:id="@+id/updateWordFragment"
+        android:name="com.laupdev.yocabulary.ui.vocabulary.UpdateWordFragment"
+        android:label="UpdateWordFragment" >
+        <argument
+            android:name="word"
+            app:argType="string" />
+        <action
+            android:id="@+id/goToWordDetailsAfterUpdate"
+            app:destination="@id/wordDetailsFragment"
+            app:popUpTo="@id/vocabularyHomeFragment" />
+    </fragment>
 </navigation>
