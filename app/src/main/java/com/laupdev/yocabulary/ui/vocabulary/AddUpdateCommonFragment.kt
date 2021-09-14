@@ -30,6 +30,7 @@ import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddUpdateWordViewModel
 import com.laupdev.yocabulary.model.AddUpdateWordViewModelFactory
 import timber.log.Timber
+import java.text.FieldPosition
 
 abstract class AddUpdateCommonFragment : Fragment() {
 
@@ -51,10 +52,9 @@ abstract class AddUpdateCommonFragment : Fragment() {
     var leaveWithoutWarning = true
     private var loadingAnim: AnimatedVectorDrawable? = null
 
-    private val partsOfSpeechViewGroupWithMeaningsViewGroupMap = mutableMapOf<ViewGroup, MutableSet<ViewGroup>>()
+    private val partsOfSpeechViewGroupWithMeaningsViewGroupMap =
+        mutableMapOf<ViewGroup, MutableSet<ViewGroup>>()
     var partOfSpeechViewCount = 0
-    private var currentPartOfSpeechViewCount = 0
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +111,7 @@ abstract class AddUpdateCommonFragment : Fragment() {
     }
 
     private fun setObservers() {
+
         viewModel.processState.observe(viewLifecycleOwner) {
             binding.loadingScreen.visibility = View.GONE
             loadingAnim?.stop()
@@ -208,7 +209,7 @@ abstract class AddUpdateCommonFragment : Fragment() {
         loadingAnim?.start()
     }
 
-    fun processWord() {
+    private fun processWord() {
         if (isFieldsRight()) {
             val partsOfSpeechWithMeanings = mutableListOf<PartOfSpeechWithMeanings>()
             var translations = ""
@@ -330,14 +331,14 @@ abstract class AddUpdateCommonFragment : Fragment() {
             false
         ) as LinearLayout
 
-        partOfSpeechViewCount++
-        currentPartOfSpeechViewCount++
+        partOfSpeechViewCount += 1
 
         partsOfSpeechViewGroupWithMeaningsViewGroupMap[newPartOfSpeechView] = mutableSetOf()
-        newPartOfSpeechView.findViewById<TextInputLayout>(R.id.part_of_speech).hint = resources.getString(
-            R.string.part_of_speech,
-            "$partOfSpeechViewCount."
-        )
+        newPartOfSpeechView.findViewById<TextInputLayout>(R.id.part_of_speech).hint =
+            resources.getString(
+                R.string.part_of_speech,
+                "$partOfSpeechViewCount."
+            )
 
         val partOfSpeechAutoCompleteTextView =
             newPartOfSpeechView.findViewById<AutoCompleteTextView>(R.id.part_of_speech_dropdown)
@@ -360,9 +361,13 @@ abstract class AddUpdateCommonFragment : Fragment() {
             )
         )
 
-        newPartOfSpeechView.findViewById<ImageButton>(R.id.remove_part_of_speech).setOnClickListener {
-            removePartOfSpeech(newPartOfSpeechView)
-        }
+        newPartOfSpeechView.findViewById<ImageButton>(R.id.remove_part_of_speech)
+            .setOnClickListener {
+                removePartOfSpeech(
+                    newPartOfSpeechView,
+                    partsOfSpeechViewGroupWithMeaningsViewGroupMap.keys.indexOf(newPartOfSpeechView)
+                )
+            }
 
         newPartOfSpeechView.findViewById<TextInputLayout>(R.id.translation).apply {
             this.hint = resources.getString(R.string.translation, "$partOfSpeechViewCount.")
@@ -375,56 +380,87 @@ abstract class AddUpdateCommonFragment : Fragment() {
             addMeaningView(newPartOfSpeechView, partOfSpeechViewCount)
         }
 
-        val tempValue = partOfSpeechViewCount
+        val storedValueForListeners = partOfSpeechViewCount
+
         newPartOfSpeechView.findViewById<Button>(R.id.add_meaning).setOnClickListener {
-            addMeaningView(newPartOfSpeechView, tempValue)
+            addMeaningView(newPartOfSpeechView, storedValueForListeners)
         }
 
         partOfSpeech?.let {
             newPartOfSpeechView.tag = it.posId
             partOfSpeechAutoCompleteTextView.setText(it.partOfSpeech)
-            newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text).setText(it.translation)
+            newPartOfSpeechView.findViewById<TextInputEditText>(R.id.translation_edit_text)
+                .setText(it.translation)
         }
 
         binding.addWordFields.addView(newPartOfSpeechView)
         return newPartOfSpeechView
     }
 
-    private fun removePartOfSpeech(viewToRemove: View) {
+    private fun removePartOfSpeech(viewToRemove: View, viewToRemoveIndex: Int) {
         Timber.i(viewToRemove.toString())
+        Timber.i("partOfSpeechViewCount before remove: %d", partOfSpeechViewCount)
         binding.addWordFields.removeView(viewToRemove)
-        currentPartOfSpeechViewCount--
         partsOfSpeechViewGroupWithMeaningsViewGroupMap.remove(viewToRemove)
+        partOfSpeechViewCount -= 1
+        updateNumbers(viewToRemoveIndex)
+    }
 
-        if (currentPartOfSpeechViewCount == 0) {
-            partOfSpeechViewCount = 0
+    private fun updateNumbers(removedViewIndex: Int) {
+        partsOfSpeechViewGroupWithMeaningsViewGroupMap.onEachIndexed { index, entry ->
+            if (index >= removedViewIndex) {
+                val partOfSpeechViewGroupNewPosition = index + 1
+                Timber.i("Changed index: %d", index)
+                entry.key.findViewById<TextInputLayout>(R.id.part_of_speech).hint =
+                    resources.getString(
+                        R.string.part_of_speech,
+                        "$partOfSpeechViewGroupNewPosition."
+                    )
+                entry.key.findViewById<TextInputLayout>(R.id.translation).hint =
+                    resources.getString(R.string.translation, "$partOfSpeechViewGroupNewPosition.")
+
+                entry.value.forEachIndexed { meaningIndex, meaningViewGroup ->
+                    val meaningViewGroupNewPosition = meaningIndex + 1
+                    setMeaningViewGroupHints(
+                        meaningViewGroup,
+                        partOfSpeechViewGroupNewPosition,
+                        meaningViewGroupNewPosition
+                    )
+                }
+            }
         }
     }
 
-    fun addMeaningView(parentView: ViewGroup, parentPartOfSpeechIndex: Int, meaning: Meaning? = null) {
+    fun addMeaningView(
+        parentView: ViewGroup,
+        parentPartOfSpeechIndex: Int,
+        meaning: Meaning? = null
+    ) {
         var meaningsCount = partsOfSpeechViewGroupWithMeaningsViewGroupMap[parentView]?.size ?: 0
         meaningsCount += 1
 
-        val newMeaningView = layoutInflater.inflate(R.layout.view_meaning, parentView, false) as LinearLayout
+        val newMeaningView =
+            layoutInflater.inflate(R.layout.view_meaning, parentView, false) as LinearLayout
 
-        newMeaningView.findViewById<TextInputLayout>(R.id.meaning).hint =
-            resources.getString(R.string.meaning, "$parentPartOfSpeechIndex.$meaningsCount.")
-
-        newMeaningView.findViewById<TextInputLayout>(R.id.example).hint =
-            resources.getString(R.string.example, "$parentPartOfSpeechIndex.$meaningsCount.")
-
-        newMeaningView.findViewById<TextInputLayout>(R.id.synonyms).hint =
-            resources.getString(R.string.synonyms, "$parentPartOfSpeechIndex.$meaningsCount.")
+        setMeaningViewGroupHints(newMeaningView, parentPartOfSpeechIndex, meaningsCount)
 
         newMeaningView.findViewById<ImageButton>(R.id.remove_meaning).setOnClickListener {
-            removeMeaningView(parentView, newMeaningView)
+            removeMeaningView(
+                parentView,
+                newMeaningView,
+                partsOfSpeechViewGroupWithMeaningsViewGroupMap[parentView]?.indexOf(newMeaningView)
+                    ?: 0
+            )
         }
 
         meaning?.let {
             newMeaningView.tag = it.meaningId
-            newMeaningView.findViewById<TextInputEditText>(R.id.meaning_edit_text).setText(it.meaning)
-            newMeaningView.findViewById<TextInputEditText>(R.id.example_edit_text).setText(it.example)
-            newMeaningView.findViewById<TextInputEditText>(R.id.synonyms_edit_text).setText(it.synonyms)
+            newMeaningView.findViewById<TextInputEditText>(R.id.meaning_edit_text)
+                .setText(it.meaning)
+            newMeaningView.findViewById<TextInputEditText>(R.id.example_edit_text)
+                .setText(it.example)
+            newMeaningView.findViewById<TextInputEditText>(R.id.synonyms_edit_text)
+                .setText(it.synonyms)
         }
 
         partsOfSpeechViewGroupWithMeaningsViewGroupMap[parentView]?.add(newMeaningView)
@@ -432,9 +468,59 @@ abstract class AddUpdateCommonFragment : Fragment() {
         parentView.findViewById<LinearLayout>(R.id.meanings).addView(newMeaningView)
     }
 
-    private fun removeMeaningView(parentView: ViewGroup, viewToRemove: View) {
+    private fun removeMeaningView(
+        parentView: ViewGroup,
+        viewToRemove: View,
+        viewToRemoveIndex: Int
+    ) {
         parentView.findViewById<LinearLayout>(R.id.meanings).removeView(viewToRemove)
         partsOfSpeechViewGroupWithMeaningsViewGroupMap[parentView]?.remove(viewToRemove)
+        updateMeaningViewsPosition(
+            partsOfSpeechViewGroupWithMeaningsViewGroupMap.keys.indexOf(parentView) + 1,
+            partsOfSpeechViewGroupWithMeaningsViewGroupMap[parentView] ?: setOf(),
+            viewToRemoveIndex
+        )
+    }
+
+    private fun updateMeaningViewsPosition(
+        partOfSpeechViewPosition: Int,
+        meaningViews: Set<ViewGroup>,
+        removedViewIndex: Int
+    ) {
+        meaningViews.forEachIndexed { index, meaningViewGroup ->
+            val meaningViewGroupNewPosition = index + 1
+            if (index >= removedViewIndex) {
+                setMeaningViewGroupHints(
+                    meaningViewGroup,
+                    partOfSpeechViewPosition,
+                    meaningViewGroupNewPosition
+                )
+            }
+        }
+    }
+
+    private fun setMeaningViewGroupHints(
+        meaningViewGroup: ViewGroup,
+        partOfSpeechViewPosition: Int,
+        meaningViewGroupPosition: Int
+    ) {
+        meaningViewGroup.findViewById<TextInputLayout>(R.id.meaning).hint =
+            resources.getString(
+                R.string.meaning,
+                "$partOfSpeechViewPosition.$meaningViewGroupPosition."
+            )
+
+        meaningViewGroup.findViewById<TextInputLayout>(R.id.example).hint =
+            resources.getString(
+                R.string.example,
+                "$partOfSpeechViewPosition.$meaningViewGroupPosition."
+            )
+
+        meaningViewGroup.findViewById<TextInputLayout>(R.id.synonyms).hint =
+            resources.getString(
+                R.string.synonyms,
+                "$partOfSpeechViewPosition.$meaningViewGroupPosition."
+            )
     }
 
     override fun onDestroyView() {
