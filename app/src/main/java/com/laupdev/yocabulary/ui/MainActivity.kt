@@ -1,21 +1,13 @@
 package com.laupdev.yocabulary.ui
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
-import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationBarView.*
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.databinding.ActivityMainBinding
-import com.laupdev.yocabulary.network.CheckNetwork
 
 class MainActivity : AppCompatActivity() {
 

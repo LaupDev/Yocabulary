@@ -21,7 +21,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.laupdev.yocabulary.ProcessState
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.adapters.AdapterForDropdown
 import com.laupdev.yocabulary.application.DictionaryApplication
@@ -30,7 +29,6 @@ import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddUpdateWordViewModel
 import com.laupdev.yocabulary.model.AddUpdateWordViewModelFactory
 import timber.log.Timber
-import java.text.FieldPosition
 
 abstract class AddUpdateCommonFragment : Fragment() {
 
@@ -112,17 +110,17 @@ abstract class AddUpdateCommonFragment : Fragment() {
 
     private fun setObservers() {
 
-        viewModel.processState.observe(viewLifecycleOwner) {
+        viewModel.processStatus.observe(viewLifecycleOwner) {
             binding.loadingScreen.visibility = View.GONE
             loadingAnim?.stop()
             when (it) {
-                ProcessState.PROCESSING -> {
+                ProcessStatus.PROCESSING -> {
                     startLoadingAnimation()
                 }
-                ProcessState.COMPLETED_ADDING -> {
+                ProcessStatus.COMPLETED_ADDING -> {
                     findNavController().popBackStack()
                 }
-                ProcessState.COMPLETED_UPDATE -> {
+                ProcessStatus.COMPLETED_UPDATE -> {
                     val action =
                         UpdateWordFragmentDirections.goToWordDetailsAfterUpdate(
                             trimInputField(binding.newWordEditText.text.toString()),
@@ -130,7 +128,7 @@ abstract class AddUpdateCommonFragment : Fragment() {
                         )
                     findNavController().navigate(action)
                 }
-                ProcessState.FAILED -> {
+                ProcessStatus.FAILED -> {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(resources.getString(R.string.error))
                         .setMessage(R.string.error_add_or_update)
@@ -138,7 +136,7 @@ abstract class AddUpdateCommonFragment : Fragment() {
                         }
                         .show()
                 }
-                ProcessState.FAILED_WORD_EXISTS -> {
+                ProcessStatus.FAILED_WORD_EXISTS -> {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(resources.getString(R.string.error))
                         .setMessage(resources.getString(R.string.word_already_exists))

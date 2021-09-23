@@ -59,7 +59,7 @@ class WordDetailsFragment : Fragment() {
 
     private var currWord: String = ""
 //    private var wordToSearch: String = ""
-    private var isInVocabulary = true
+    private var isWordInVocabulary = true
 
     private var partOfSpeechCount = 1
     private var meaningsCount = 1
@@ -71,7 +71,7 @@ class WordDetailsFragment : Fragment() {
         setHasOptionsMenu(true)
         arguments?.let {
             currWord = it.getString(WORD).toString()
-            isInVocabulary = it.getBoolean(IS_IN_VOCABULARY)
+            isWordInVocabulary = it.getBoolean(IS_IN_VOCABULARY)
         }
     }
 
@@ -89,7 +89,7 @@ class WordDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (isInVocabulary) {
+        if (isWordInVocabulary) {
             //Add word details and callbacks for word from vocabulary
             addWordDetailsFromVocabulary()
         } else {
@@ -126,7 +126,7 @@ class WordDetailsFragment : Fragment() {
         }
 
         binding.topAppBar.setNavigationOnClickListener {
-            if (viewModel.isAdded.value == true && !isInVocabulary) {
+            if (viewModel.isAdded.value == true && !isWordInVocabulary) {
                 findNavController().navigate(R.id.backToHome)
             } else {
                 findNavController().popBackStack()
@@ -253,7 +253,7 @@ class WordDetailsFragment : Fragment() {
         wordWithPartsOfSpeechAndMeanings.word.translations.let {
             if (it.isEmpty()) {
                 binding.translation.visibility = GONE
-                if (isInVocabulary) {
+                if (isWordInVocabulary) {
                     binding.addTranslationBox.visibility = VISIBLE
                     if (binding.addTranslation.text.toString().isNotEmpty()) {
                         binding.addTranslation.isEnabled = false
@@ -354,7 +354,7 @@ class WordDetailsFragment : Fragment() {
             this.setText("")
         }
 
-        if (isInVocabulary) {
+        if (isWordInVocabulary) {
             findNavController().popBackStack()
 //            findNavController().navigate(R.id.action_wordDetailsFragment_to_wordListFragment)
         }

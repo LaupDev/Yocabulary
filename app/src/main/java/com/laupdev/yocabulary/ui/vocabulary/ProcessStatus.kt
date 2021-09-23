@@ -1,6 +1,6 @@
-package com.laupdev.yocabulary
+package com.laupdev.yocabulary.ui.vocabulary
 
-enum class ProcessState {
+enum class ProcessStatus {
     INACTIVE,
     PROCESSING,
     COMPLETED_ADDING,
