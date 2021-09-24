@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(entities = [Meaning::class, PartOfSpeech::class, Word::class], version = 1)
@@ -15,7 +16,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun partOfSpeechDao(): PartOfSpeechDao
     abstract fun meaningDao(): MeaningDao
 
-    private class WordDatabaseCallback(
+    class WordDatabaseCallback(
         private val scope: CoroutineScope
     ) : RoomDatabase.Callback() {
 
@@ -62,8 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
+            context: Context
         ): AppDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
@@ -73,7 +73,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "yocabulary_database"
                 )
-                    .addCallback(WordDatabaseCallback(scope))
+                    .addCallback(WordDatabaseCallback(CoroutineScope(Dispatchers.IO)))
                     .build()
                 INSTANCE = instance
                 // return instance

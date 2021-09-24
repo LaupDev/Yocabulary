@@ -16,10 +16,12 @@ import com.laupdev.yocabulary.adapters.PracticeQuestionAdapter
 import com.laupdev.yocabulary.databinding.FragmentPracticeBinding
 import com.laupdev.yocabulary.model.practice.PracticeViewModel
 import com.laupdev.yocabulary.ui.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 open class PracticeFragment : Fragment() {
 
-    val viewModel: PracticeViewModel by viewModels()
+    val viewModel by viewModels<PracticeViewModel>()
     private lateinit var viewPager2: ViewPager2
 
     private var _binding: FragmentPracticeBinding? = null

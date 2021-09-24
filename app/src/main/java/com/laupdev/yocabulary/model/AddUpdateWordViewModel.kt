@@ -4,12 +4,15 @@ import androidx.lifecycle.*
 import com.laupdev.yocabulary.ui.vocabulary.ProcessStatus
 import com.laupdev.yocabulary.database.PartOfSpeechWithMeanings
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
-import com.laupdev.yocabulary.repository.AppRepository
+import com.laupdev.yocabulary.repository.VocabularyRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
-class AddUpdateWordViewModel(private val repository: AppRepository) : ViewModel() {
+@HiltViewModel
+class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepository) : ViewModel() {
 
     private val _processStatus = MutableLiveData(ProcessStatus.INACTIVE)
     val processStatus: LiveData<ProcessStatus>
@@ -168,17 +171,6 @@ class AddUpdateWordViewModel(private val repository: AppRepository) : ViewModel(
                 _status.value = error.message
             }
         }
-    }
-
-}
-
-class AddUpdateWordViewModelFactory(private val repository: AppRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AddUpdateWordViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return AddUpdateWordViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 
 }

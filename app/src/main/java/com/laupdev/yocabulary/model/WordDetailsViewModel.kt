@@ -4,12 +4,14 @@ import androidx.lifecycle.*
 import com.laupdev.yocabulary.database.WordIsFavorite
 import com.laupdev.yocabulary.database.WordTranslation
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
-import com.laupdev.yocabulary.repository.AppRepository
+import com.laupdev.yocabulary.repository.VocabularyRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.net.UnknownHostException
+import javax.inject.Inject
 
 enum class ErrorType {
     NO_SUCH_WORD,
@@ -18,7 +20,8 @@ enum class ErrorType {
     OTHER
 }
 
-class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() {
+@HiltViewModel
+class WordDetailsViewModel @Inject constructor(private val repository: VocabularyRepository) : ViewModel() {
 
     private val _isAdded = MutableLiveData(true)
     val isAdded: LiveData<Boolean>
@@ -143,17 +146,5 @@ class WordDetailsViewModel(private val repository: AppRepository) : ViewModel() 
                 _status.value = error.message
             }
         }
-
-}
-
-class WordDetailsViewModelFactory(private val repository: AppRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(WordDetailsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return WordDetailsViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 
 }

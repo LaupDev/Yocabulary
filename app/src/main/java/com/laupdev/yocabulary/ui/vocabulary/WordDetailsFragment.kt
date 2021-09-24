@@ -15,18 +15,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
-import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
 import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.model.WordDetailsViewModel
-import com.laupdev.yocabulary.model.WordDetailsViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -35,6 +34,7 @@ enum class UniqueIdAddition(val idAddition: Int) {
     SYNONYM_WORDS(13000)
 }
 
+@AndroidEntryPoint
 class WordDetailsFragment : Fragment() {
 
     companion object {
@@ -46,19 +46,9 @@ class WordDetailsFragment : Fragment() {
     private var _binding: FragmentWordDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: WordDetailsViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(
-            this,
-            WordDetailsViewModelFactory((activity.application as DictionaryApplication).repository)
-        )
-            .get(WordDetailsViewModel::class.java)
-    }
+    private val viewModel by viewModels<WordDetailsViewModel>()
 
     private var currWord: String = ""
-//    private var wordToSearch: String = ""
     private var isWordInVocabulary = true
 
     private var partOfSpeechCount = 1

@@ -3,14 +3,14 @@ package com.laupdev.yocabulary.model.practice
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.laupdev.yocabulary.repository.VocabularyRepository
 import com.laupdev.yocabulary.ui.questions.MeaningQuestion
-import com.laupdev.yocabulary.ui.questions.Question
-import com.laupdev.yocabulary.ui.questions.QuestionType
+import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
-import kotlin.math.max
-import kotlin.math.min
+import javax.inject.Inject
 
-class PracticeViewModel : ViewModel() {
+@HiltViewModel
+class PracticeViewModel @Inject constructor(val repository: VocabularyRepository) : ViewModel() {
 
     private val _practiceProgress = MutableLiveData(1)
     val practiceProgress: LiveData<Int>

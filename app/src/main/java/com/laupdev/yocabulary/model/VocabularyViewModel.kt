@@ -3,18 +3,21 @@ package com.laupdev.yocabulary.model
 import androidx.lifecycle.*
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.database.WordIsFavorite
-import com.laupdev.yocabulary.repository.AppRepository
+import com.laupdev.yocabulary.repository.VocabularyRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import java.lang.Exception
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
-class VocabularyViewModel(private val repository: AppRepository) : ViewModel() {
+@HiltViewModel
+class VocabularyViewModel @Inject constructor(private val repository: VocabularyRepository) : ViewModel() {
 
     private val _status = MutableLiveData<String>()
     val status: LiveData<String>
         get() = _status
 
-    val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
+    val allWords: LiveData<List<Word>> = repository.getAllWords().asLiveData()
 
     suspend fun updateWordIsFavorite(word: String, isFavourite: Boolean) =
         viewModelScope.async {
@@ -34,17 +37,5 @@ class VocabularyViewModel(private val repository: AppRepository) : ViewModel() {
                 return@async false
             }
         }.await()
-
-}
-
-class VocabularyViewModelFactory(private val repository: AppRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(VocabularyViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return VocabularyViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 
 }

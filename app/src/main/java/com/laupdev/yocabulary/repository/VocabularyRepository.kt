@@ -3,14 +3,18 @@ package com.laupdev.yocabulary.repository
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.network.DictionaryNetwork
 import com.laupdev.yocabulary.network.WordFromDictionary
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppRepository(
-    private val network: DictionaryNetwork,
-    private val database: AppDatabase
+@Singleton
+class VocabularyRepository @Inject constructor(
+    val network: DictionaryNetwork,
+    val database: AppDatabase
 ) {
 
-    val allWords: Flow<List<Word>> = database.wordDao().getAllWords()
+    fun getAllWords() = database.wordDao().getAllWords()
 
     fun getWordWithPosAndMeaningsByName(word: String) = database.wordDao().getWordWithPosAndMeaningsByName(word)
 

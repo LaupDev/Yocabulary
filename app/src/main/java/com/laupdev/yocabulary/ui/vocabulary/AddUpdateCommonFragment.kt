@@ -16,36 +16,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.adapters.AdapterForDropdown
-import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
 import com.laupdev.yocabulary.model.AddUpdateWordViewModel
-import com.laupdev.yocabulary.model.AddUpdateWordViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 abstract class AddUpdateCommonFragment : Fragment() {
 
     private var _binding: FragmentAddNewWordBinding? = null
     val binding get() = _binding!!
 
-    val viewModel: AddUpdateWordViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(
-            this,
-            AddUpdateWordViewModelFactory((activity.application as DictionaryApplication).repository)
-        )
-            .get(AddUpdateWordViewModel::class.java)
-    }
-
+    protected val viewModel by viewModels<AddUpdateWordViewModel>()
 
     var leaveWithoutWarning = true
     private var loadingAnim: AnimatedVectorDrawable? = null

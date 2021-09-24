@@ -5,27 +5,23 @@ import android.view.*
 import android.view.View.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.adapters.WordAdapter
-import com.laupdev.yocabulary.application.DictionaryApplication
 import com.laupdev.yocabulary.database.Word
 import com.laupdev.yocabulary.databinding.FragmentWordListBinding
 import com.laupdev.yocabulary.model.VocabularyViewModel
-import com.laupdev.yocabulary.model.VocabularyViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
+@AndroidEntryPoint
 class WordListFragment : Fragment() {
-
-    companion object {
-//        const val LETTER = "letter"
-    }
 
     private var _binding: FragmentWordListBinding? = null
     private val binding get() = _binding!!
@@ -35,20 +31,10 @@ class WordListFragment : Fragment() {
 
     private var sortMode = SortModes.BY_DATE_MODIFIED
 
-    private val viewModel: VocabularyViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(
-            this,
-            VocabularyViewModelFactory((activity.application as DictionaryApplication).repository)
-        )
-            .get(VocabularyViewModel::class.java)
-    }
+    private val viewModel by viewModels<VocabularyViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.i("onCreate()")
         setHasOptionsMenu(true)
     }
 
