@@ -23,9 +23,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentWordDetailsBinding
+import com.laupdev.yocabulary.exceptions.WordAlreadyExistsException
 import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.model.WordDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.HttpException
+import java.lang.Exception
+import java.net.UnknownHostException
 
 enum class UniqueIdAddition(val idAddition: Int) {
     PART_OF_SPEECH(10000),
@@ -40,7 +44,6 @@ class WordDetailsFragment : Fragment() {
     companion object {
         const val WORD = "word"
         const val IS_IN_VOCABULARY = "is_in_vocabulary"
-//        const val SEARCH_PREFIX = "https://www.google.com/search?q="
     }
 
     private var _binding: FragmentWordDetailsBinding? = null
@@ -94,6 +97,13 @@ class WordDetailsFragment : Fragment() {
     private fun setObservers() {
         viewModel.isFavourite.observe(viewLifecycleOwner) {
             binding.addToFavorite.isSelected = it
+        }
+
+        viewModel.exceptionHolder.observe(viewLifecycleOwner) {
+            it?.let {
+                handleException(it)
+                viewModel.clearExceptionHolder()
+            }
         }
     }
 
@@ -154,10 +164,6 @@ class WordDetailsFragment : Fragment() {
             binding.addTranslation.isEnabled = false
             it.visibility = GONE
         }
-
-        //        binding.searchTranslationBtn.setOnClickListener {
-        //            searchWordTranslationInWeb()
-        //        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -187,41 +193,48 @@ class WordDetailsFragment : Fragment() {
                 binding.buttons.visibility = VISIBLE
             }
         }
-        setupErrorHandler()
         viewModel.getWordFromDictionary(currWord)
 
         binding.addToVocabulary.setOnClickListener {
-            viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)
+            try {
+                viewModel.insertWordWithPartsOfSpeechAndMeanings(viewModel.wordWithPosAndMeanings.value!!)
+            } catch (e: Exception) {
+                handleException(e)
+            }
         }
         // TODO: 12.07.2021 Fix long loading when getting first word from dictionary
     }
 
-    private fun setupErrorHandler() {
-        viewModel.error.observe(viewLifecycleOwner) {
-            when (it) {
-                ErrorType.NO_SUCH_WORD -> {
-                    createAlertDialog(resources.getString(R.string.no_such_word))
-                }
-                ErrorType.UNKNOWN_HOST -> {
-                    createAlertDialog(resources.getString(R.string.check_internet_connection))
-                }
-                ErrorType.OTHER -> {
-                    createAlertDialog(resources.getString(R.string.unknown_error))
-                }
-                ErrorType.WORD_EXISTS -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(resources.getString(R.string.error))
-                        .setMessage(resources.getString(R.string.word_already_exists))
-                        .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
-                            viewModel.replaceWord(viewModel.wordWithPosAndMeanings.value!!)
-                        }
-                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
-                        }
-                        .show()
-                }
-                else -> {
-                }
+    private fun handleException(e: Exception) {
+        when(e) {
+            is WordAlreadyExistsException -> {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(resources.getString(R.string.error))
+                    .setMessage(resources.getString(R.string.word_already_exists))
+                    .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
+                        replaceWord(viewModel.wordWithPosAndMeanings.value!!)
+                    }
+                    .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
+                    }
+                    .show()
             }
+            is UnknownHostException -> {
+                createAlertDialog(resources.getString(R.string.check_internet_connection))
+            }
+            is HttpException -> {
+                createAlertDialog(resources.getString(R.string.no_such_word))
+            }
+            else -> {
+                createAlertDialog(resources.getString(R.string.unknown_error))
+            }
+        }
+    }
+
+    private fun replaceWord(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+        try {
+            viewModel.replaceWord(wordWithPartsOfSpeechAndMeanings)
+        } catch (e: Exception) {
+            handleException(e)
         }
     }
 
@@ -292,12 +305,6 @@ class WordDetailsFragment : Fragment() {
         binding.wordDetails.removeAllViews()
         partOfSpeechCount = 1
     }
-
-//    private fun searchWordTranslationInWeb() {
-//        val queryUrl: Uri = Uri.parse("${SEARCH_PREFIX}${binding.word.text} translation")
-//        val intent = Intent(Intent.ACTION_VIEW, queryUrl)
-//        requireContext().startActivity(intent)
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

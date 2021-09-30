@@ -16,7 +16,6 @@ import javax.inject.Inject
 enum class ErrorType {
     NO_SUCH_WORD,
     UNKNOWN_HOST,
-    WORD_EXISTS,
     OTHER
 }
 
@@ -34,6 +33,10 @@ class WordDetailsViewModel @Inject constructor(private val repository: Vocabular
     private val _status = MutableLiveData<String>()
     val status: LiveData<String>
         get() = _status
+
+    private val _exceptionHolder = MutableLiveData<Exception?>(null)
+    val exceptionHolder: LiveData<Exception?>
+        get() = _exceptionHolder
 
     private val _error = MutableLiveData<ErrorType>()
     val error: LiveData<ErrorType>
@@ -64,18 +67,7 @@ class WordDetailsViewModel @Inject constructor(private val repository: Vocabular
             try {
                 _wordWithPosAndMeanings.value = repository.getWordFromDictionary(word)
             } catch (error: Exception) {
-                when(error) {
-                    is UnknownHostException -> {
-                        _error.value = ErrorType.UNKNOWN_HOST
-                    }
-                    is HttpException -> {
-                        _error.value = ErrorType.NO_SUCH_WORD
-                    }
-                    else -> {
-                        _error.value = ErrorType.OTHER
-                    }
-                }
-                _status.value = "Failure: ${error.message}"
+                _exceptionHolder.value = error
             }
         }
 
@@ -88,29 +80,19 @@ class WordDetailsViewModel @Inject constructor(private val repository: Vocabular
         }
     }
 
-    fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) =
+    fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
         viewModelScope.launch {
             try {
-                if (repository.insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
-                    _error.value = ErrorType.WORD_EXISTS
-                } else {
-                    wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
-                        partOfSpeechWithMeanings.partOfSpeech.word =
-                            wordWithPartsOfSpeechAndMeanings.word.word
-                        val newPosId =
-                            repository.insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
-                        partOfSpeechWithMeanings.meanings.forEach { meaning ->
-                            meaning.posId = newPosId
-                            repository.insertMeaning(meaning)
-                        }
-                    }
-                    _isAdded.value = true
-                }
-            } catch (error: Exception) {
-                _error.value = ErrorType.OTHER
-                _status.value = "Failure: ${error.message}"
+                _isAdded.value = repository.insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings)
+            } catch (e: Exception) {
+                _exceptionHolder.value = e
             }
         }
+    }
+
+    fun clearExceptionHolder() {
+        _exceptionHolder.value = null
+    }
 
     fun updateWordIsFavorite(word: String) =
         viewModelScope.launch {

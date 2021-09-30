@@ -1,6 +1,8 @@
 package com.laupdev.yocabulary.repository
 
 import com.laupdev.yocabulary.database.*
+import com.laupdev.yocabulary.exceptions.WordAlreadyExistsException
+import com.laupdev.yocabulary.model.ErrorType
 import com.laupdev.yocabulary.network.DictionaryNetwork
 import com.laupdev.yocabulary.network.WordFromDictionary
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,6 +70,24 @@ class VocabularyRepository @Inject constructor(
         }
 
         return WordWithPartsOfSpeechAndMeanings(word, partsOfSpeechWithMeanings)
+    }
+
+    suspend fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings): Boolean {
+        if (insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
+            throw WordAlreadyExistsException("Word already exists in database")
+        } else {
+            wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.forEach { partOfSpeechWithMeanings ->
+                partOfSpeechWithMeanings.partOfSpeech.word =
+                    wordWithPartsOfSpeechAndMeanings.word.word
+                val newPosId =
+                    insertPartOfSpeech(partOfSpeechWithMeanings.partOfSpeech)
+                partOfSpeechWithMeanings.meanings.forEach { meaning ->
+                    meaning.posId = newPosId
+                    insertMeaning(meaning)
+                }
+            }
+            return true
+        }
     }
 
     suspend fun insertWord(word: Word): Long {
