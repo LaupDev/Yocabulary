@@ -8,7 +8,7 @@ This app is for people who want to learn English.
 * Learn words (Currently in development)
 * Add predefined sets of words connected by topics (Will be added in near future)
 
-## I took advantage of such libraries, frameworks, and languages(so far)
+## Used libraries, frameworks, and languages(so far)
 * Kotlin
 * Kotlin Coroutines
 * LiveData
@@ -23,3 +23,4 @@ This app is for people who want to learn English.
 * Material Design
 * ViewPager2
 * Timber
+* JUnit 4
