@@ -20,7 +20,7 @@ import java.util.Calendar.DAY_OF_YEAR
 data class PracticeProgress(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val progressId: Long,
+    val progressId: Long = 0,
     @ColumnInfo(name = "word")
     var word: String,
     @ColumnInfo(name = "meaning_progress")
@@ -29,37 +29,60 @@ data class PracticeProgress(
     var nextMeaningPracticeDate: String = SimpleDateFormat(
         "yyyy-MM-dd",
         Locale.getDefault()
-    ).format(
-        Calendar.getInstance().time
-    ),
+    ).format(Calendar.getInstance().time),
     @ColumnInfo(name = "writing_progress")
     var writingProgress: Int = 0,
     @ColumnInfo(name = "next_writing_practice_date")
     var nextWritingPracticeDate: String = SimpleDateFormat(
         "yyyy-MM-dd",
         Locale.getDefault()
-    ).format(
-        Calendar.getInstance().time
-    ),
+    ).format(Calendar.getInstance().time),
 ) {
-    fun shouldBePracticed(nextPracticeDate: Date) =
-        Calendar.getInstance().time.after(nextPracticeDate)
+//    fun shouldBePracticed(practiceType: PracticeType) =
+//        if (practiceType == PracticeType.MEANINGS) {
+//            Calendar.getInstance().time.after(
+//                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(nextMeaningPracticeDate)
+//            )
+//        } else {
+//            Calendar.getInstance().time.after(
+//                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(nextWritingPracticeDate)
+//            )
+//        }
+
+    fun shouldBePracticed(practiceType: PracticeType) =
+        Calendar.getInstance().time.after(
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(
+                if (practiceType == PracticeType.MEANINGS)
+                    nextMeaningPracticeDate
+                else nextWritingPracticeDate)
+        )
 
     fun setNextMeaningPracticeDate() {
-        nextMeaningPracticeDate = SimpleDateFormat(
-            "yyyy-MM-dd",
-            Locale.getDefault()
-        ).format(
-            Calendar.getInstance().apply { add(DAY_OF_YEAR, (meaningProgress * 3) + 1) }.time
-        )
+        nextMeaningPracticeDate = getNextPracticeDate(meaningProgress)
     }
 
     fun setNextWritingPracticeDate() {
-        nextWritingPracticeDate = SimpleDateFormat(
+        nextWritingPracticeDate = getNextPracticeDate(writingProgress)
+    }
+
+    private fun getNextPracticeDate(progress: Int): String {
+        val daysToAdd =
+            when(progress) {
+                1 -> 1
+                2 -> 3
+                3 -> 6
+                else -> progress * 2
+            }
+        return SimpleDateFormat(
             "yyyy-MM-dd",
             Locale.getDefault()
         ).format(
-            Calendar.getInstance().apply { add(DAY_OF_YEAR, (writingProgress * 3) + 1) }.time
+            Calendar.getInstance().apply { add(DAY_OF_YEAR, daysToAdd) }.time
         )
     }
+}
+
+enum class PracticeType() {
+    MEANINGS,
+    WRITING
 }

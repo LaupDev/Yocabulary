@@ -49,7 +49,6 @@ object AppModule {
             AppDatabase::class.java,
             "yocabulary_database"
         )
-            .addCallback(AppDatabase.WordDatabaseCallback(CoroutineScope(Dispatchers.IO)))
             .build()
     }
 }

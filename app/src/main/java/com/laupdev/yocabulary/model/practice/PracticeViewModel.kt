@@ -3,6 +3,7 @@ package com.laupdev.yocabulary.model.practice
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.laupdev.yocabulary.repository.PracticeRepository
 import com.laupdev.yocabulary.repository.VocabularyRepository
 import com.laupdev.yocabulary.ui.questions.MeaningQuestion
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +11,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class PracticeViewModel @Inject constructor(val repository: VocabularyRepository) : ViewModel() {
+class PracticeViewModel @Inject constructor(val repository: PracticeRepository) : ViewModel() {
 
     private val _practiceProgress = MutableLiveData(1)
     val practiceProgress: LiveData<Int>
