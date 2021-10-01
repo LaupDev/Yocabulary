@@ -12,10 +12,10 @@ class PracticeRepository @Inject constructor(val database: AppDatabase) {
 
     private lateinit var allWordsWithPracticeProgress: List<WordWithPracticeProgress>
 
-    suspend fun getWordsForPractice(practiceType: PracticeType): List<WordWithPracticeProgress> {
+    suspend fun getWordsForPractice(practiceType: PracticeType, wordsCount: Int): List<WordWithPracticeProgress> {
         val wordsForPractice = mutableListOf<WordWithPracticeProgress>()
         getAllWordsWithPracticeProgress().forEach {
-            if (wordsForPractice.size == 5) {
+            if (wordsForPractice.size == wordsCount) {
                 return wordsForPractice
             }
             if (it.wordProgress.shouldBePracticed(practiceType)) {

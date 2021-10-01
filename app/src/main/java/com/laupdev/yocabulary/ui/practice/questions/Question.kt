@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui.questions
+package com.laupdev.yocabulary.ui.practice.questions
 
 abstract class Question {
     abstract val questionType: QuestionType

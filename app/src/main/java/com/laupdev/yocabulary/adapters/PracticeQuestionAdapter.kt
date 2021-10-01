@@ -5,11 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.laupdev.yocabulary.model.practice.PracticeViewModel
 import com.laupdev.yocabulary.ui.practice.PracticeFragment
-import com.laupdev.yocabulary.ui.questions.MeaningQuestionView
-import com.laupdev.yocabulary.ui.questions.Question
-import com.laupdev.yocabulary.ui.questions.QuestionType
-import com.laupdev.yocabulary.ui.questions.QuestionView
-import timber.log.Timber
+import com.laupdev.yocabulary.ui.practice.questions.MeaningQuestionView
+import com.laupdev.yocabulary.ui.practice.questions.Question
+import com.laupdev.yocabulary.ui.practice.questions.QuestionType
+import com.laupdev.yocabulary.ui.practice.questions.QuestionView
 
 class PracticeQuestionAdapter(private val viewModel: PracticeViewModel, private val practiceFragment: PracticeFragment) : RecyclerView.Adapter<PracticeQuestionHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PracticeQuestionHolder {

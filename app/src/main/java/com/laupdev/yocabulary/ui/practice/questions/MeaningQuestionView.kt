@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui.questions
+package com.laupdev.yocabulary.ui.practice.questions
 
 import android.view.LayoutInflater
 import android.view.View

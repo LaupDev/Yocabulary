@@ -1,4 +1,4 @@
-package com.laupdev.yocabulary.ui.questions
+package com.laupdev.yocabulary.ui.practice.questions
 
 class MeaningQuestion(
     val meaning: String,

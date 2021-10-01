@@ -38,16 +38,6 @@ data class PracticeProgress(
         Locale.getDefault()
     ).format(Calendar.getInstance().time),
 ) {
-//    fun shouldBePracticed(practiceType: PracticeType) =
-//        if (practiceType == PracticeType.MEANINGS) {
-//            Calendar.getInstance().time.after(
-//                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(nextMeaningPracticeDate)
-//            )
-//        } else {
-//            Calendar.getInstance().time.after(
-//                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(nextWritingPracticeDate)
-//            )
-//        }
 
     fun shouldBePracticed(practiceType: PracticeType) =
         Calendar.getInstance().time.after(

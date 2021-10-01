@@ -68,6 +68,7 @@ class VocabularyRepository @Inject constructor(
             throw WordAlreadyExistsException("Word already exists in database")
         } else {
             addOrUpdatePartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings.word.word, wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings)
+            insertPracticeProgress(PracticeProgress(word = wordWithPartsOfSpeechAndMeanings.word.word))
             return true
         }
     }
@@ -138,6 +139,10 @@ class VocabularyRepository @Inject constructor(
 
     private suspend fun insertMeaning(meaning: Meaning): Long {
         return database.meaningDao().insert(meaning)
+    }
+
+    private suspend fun insertPracticeProgress(practiceProgress: PracticeProgress) {
+        database.practiceProgressDao().insert(practiceProgress)
     }
 
     private suspend fun deletePartOfSpeech(partOfSpeech: PartOfSpeech) {

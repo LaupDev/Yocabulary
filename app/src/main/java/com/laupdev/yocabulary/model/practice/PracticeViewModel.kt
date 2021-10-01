@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.laupdev.yocabulary.repository.PracticeRepository
-import com.laupdev.yocabulary.repository.VocabularyRepository
-import com.laupdev.yocabulary.ui.questions.MeaningQuestion
+import com.laupdev.yocabulary.ui.practice.questions.MeaningQuestion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import javax.inject.Inject
