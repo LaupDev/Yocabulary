@@ -44,11 +44,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java,
-            "yocabulary_database"
-        )
-            .build()
+        return AppDatabase.getDatabase(context)
     }
 }

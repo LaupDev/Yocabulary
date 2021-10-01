@@ -4,6 +4,7 @@ import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.exceptions.WordAlreadyExistsException
 import com.laupdev.yocabulary.network.DictionaryNetwork
 import com.laupdev.yocabulary.network.WordFromDictionary
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,7 +16,8 @@ class VocabularyRepository @Inject constructor(
 
     fun getAllWords() = database.wordDao().getAllWords()
 
-    fun getWordWithPosAndMeaningsByName(word: String) = database.wordDao().getWordWithPosAndMeaningsByName(word)
+    fun getWordWithPosAndMeaningsByName(word: String) =
+        database.wordDao().getWordWithPosAndMeaningsByName(word)
 
     suspend fun getWordFromDictionary(word: String): WordWithPartsOfSpeechAndMeanings {
         return wordFromDictionaryApiToVocabularyFormat(network.getWordFromDictionary(word)[0])
@@ -25,7 +27,10 @@ class VocabularyRepository @Inject constructor(
 
         val word = Word(
             word = wordFromDictionary.word,
-            transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text.replace("/", "") else "",
+            transcription = if (wordFromDictionary.phonetics.isNotEmpty()) wordFromDictionary.phonetics[0].text.replace(
+                "/",
+                ""
+            ) else "",
             audioUrl = if (wordFromDictionary.phonetics.isNotEmpty()) {
                 wordFromDictionary.phonetics[0].audio.let {
                     if (it.startsWith("//")) {
@@ -39,7 +44,11 @@ class VocabularyRepository @Inject constructor(
         val partsOfSpeechWithMeanings = mutableListOf<PartOfSpeechWithMeanings>()
 
         wordFromDictionary.meanings.forEach {
-            val newPartOfSpeech = PartOfSpeech(posId = 0, word = wordFromDictionary.word, partOfSpeech = it.partOfSpeech)
+            val newPartOfSpeech = PartOfSpeech(
+                posId = 0,
+                word = wordFromDictionary.word,
+                partOfSpeech = it.partOfSpeech
+            )
             val newMeaningsList = mutableListOf<Meaning>()
             it.definitions.let { meanings ->
                 meanings.forEach { meaning ->
@@ -56,7 +65,8 @@ class VocabularyRepository @Inject constructor(
                 newMeaningsList
             }
 
-            val newPartOfSpeechWithMeanings = PartOfSpeechWithMeanings(newPartOfSpeech, newMeaningsList)
+            val newPartOfSpeechWithMeanings =
+                PartOfSpeechWithMeanings(newPartOfSpeech, newMeaningsList)
             partsOfSpeechWithMeanings.add(newPartOfSpeechWithMeanings)
         }
 
@@ -67,27 +77,67 @@ class VocabularyRepository @Inject constructor(
         if (insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
             throw WordAlreadyExistsException("Word already exists in database")
         } else {
-            addOrUpdatePartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings.word.word, wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings)
-            insertPracticeProgress(PracticeProgress(word = wordWithPartsOfSpeechAndMeanings.word.word))
+            addOrUpdatePartsOfSpeechAndMeaningsWithProgress(
+                wordWithPartsOfSpeechAndMeanings.word.word,
+                wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings
+            )
+            insertWritingPracticeProgress(WritingPracticeProgress(word = wordWithPartsOfSpeechAndMeanings.word.word))
+
             return true
         }
     }
 
-    suspend fun updateWordWithPartsOfSpeechAndMeanings(oldWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
-                                                       newWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings): Boolean {
-        deletePartsOfSpeechAndMeaningsRemovedByUser(oldWordWithPartsOfSpeechAndMeanings, newWordWithPartsOfSpeechAndMeanings)
+    suspend fun updateWordWithPartsOfSpeechAndMeanings(
+        oldWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
+        newWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings
+    ): Boolean {
         if (oldWordWithPartsOfSpeechAndMeanings.word.word != newWordWithPartsOfSpeechAndMeanings.word.word) {
-            val isSuccessfullyAdded = insertWordWithPartsOfSpeechAndMeanings(newWordWithPartsOfSpeechAndMeanings)
+            // TODO: 02.10.2021 Reset writing practice progress
+            val isSuccessfullyAdded =
+                insertWordWithPartsOfSpeechAndMeanings(newWordWithPartsOfSpeechAndMeanings)
             if (isSuccessfullyAdded) {
                 removeWordByName(oldWordWithPartsOfSpeechAndMeanings.word.word)
             }
         } else {
             updateWord(newWordWithPartsOfSpeechAndMeanings.word)
-            addOrUpdatePartsOfSpeechAndMeanings(
+            deletePartsOfSpeechAndMeaningsRemovedByUser(
+                oldWordWithPartsOfSpeechAndMeanings,
+                newWordWithPartsOfSpeechAndMeanings
+            )
+            resetMeaningsProgressIfMeaningChanged(
+                oldWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings,
+                newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings
+            )
+            addOrUpdatePartsOfSpeechAndMeaningsWithProgress(
                 newWordWithPartsOfSpeechAndMeanings.word.word,
-                newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings)
+                newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings
+            )
         }
         return true
+    }
+
+    private suspend fun resetMeaningsProgressIfMeaningChanged(
+        oldPartsOfSpeechWithMeanings: List<PartOfSpeechWithMeanings>,
+        newPartsOfSpeechWithMeanings: List<PartOfSpeechWithMeanings>
+    ) {
+        oldPartsOfSpeechWithMeanings.forEach { (oldPartOfSpeech, oldMeanings) ->
+            newPartsOfSpeechWithMeanings.firstOrNull {
+                it.partOfSpeech.posId == oldPartOfSpeech.posId
+            }?.let { (_, newMeanings) ->
+                oldMeanings.forEach { oldMeaning ->
+                    newMeanings.find { newMeaning -> oldMeaning.meaningId == newMeaning.meaningId }
+                        ?.let {
+                            if (oldMeaning.meaning != it.meaning) {
+                                Timber.w("${it.meaning}Meaning practice progress reset")
+                                deleteMeaningPracticeProgressByMeaningId(it.meaningId)
+                                insertMeaningPracticeProgress(MeaningPracticeProgress(meaningId = it.meaningId))
+                            }
+                        }
+                }
+            }
+
+        }
+
     }
 
     private suspend fun deletePartsOfSpeechAndMeaningsRemovedByUser(
@@ -95,15 +145,15 @@ class VocabularyRepository @Inject constructor(
         newWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings
     ) {
         oldWordWithPartsOfSpeechAndMeanings?.partsOfSpeechWithMeanings?.forEach { oldPartOfSpeechWithMeanings ->
-            val tempPartOfSpeech =
+            val tempPartOfSpeechWithMeanings =
                 newWordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings.firstOrNull {
                     it.partOfSpeech.posId == oldPartOfSpeechWithMeanings.partOfSpeech.posId
                 }
-            if (tempPartOfSpeech == null) {
+            if (tempPartOfSpeechWithMeanings == null) {
                 deletePartOfSpeech(oldPartOfSpeechWithMeanings.partOfSpeech)
             } else {
                 oldPartOfSpeechWithMeanings.meanings.forEach { oldMeaning ->
-                    if (!tempPartOfSpeech.meanings.any { it.meaningId == oldMeaning.meaningId }) {
+                    if (!tempPartOfSpeechWithMeanings.meanings.any { it.meaningId == oldMeaning.meaningId }) {
                         deleteMeaning(oldMeaning)
                     }
                 }
@@ -111,7 +161,10 @@ class VocabularyRepository @Inject constructor(
         }
     }
 
-    private suspend fun addOrUpdatePartsOfSpeechAndMeanings(word: String, partsOfSpeechWithMeanings: List<PartOfSpeechWithMeanings>) {
+    private suspend fun addOrUpdatePartsOfSpeechAndMeaningsWithProgress(
+        word: String,
+        partsOfSpeechWithMeanings: List<PartOfSpeechWithMeanings>
+    ) {
         partsOfSpeechWithMeanings.forEach { (pos, meanings) ->
             pos.word = word
             var newPosId = insertPartOfSpeech(pos)
@@ -122,8 +175,11 @@ class VocabularyRepository @Inject constructor(
 
             meanings.forEach {
                 it.posId = newPosId
-                if (insertMeaning(it) == -1L) {
+                val newMeaningId = insertMeaning(it)
+                if (newMeaningId == -1L) {
                     updateMeaning(it)
+                } else {
+                    insertMeaningPracticeProgress(MeaningPracticeProgress(meaningId = newMeaningId))
                 }
             }
         }
@@ -141,8 +197,12 @@ class VocabularyRepository @Inject constructor(
         return database.meaningDao().insert(meaning)
     }
 
-    private suspend fun insertPracticeProgress(practiceProgress: PracticeProgress) {
-        database.practiceProgressDao().insert(practiceProgress)
+    private suspend fun insertWritingPracticeProgress(writingPracticeProgress: WritingPracticeProgress) {
+        database.practiceProgressDao().insertWritingPracticeProgress(writingPracticeProgress)
+    }
+
+    private suspend fun insertMeaningPracticeProgress(meaningPracticeProgress: MeaningPracticeProgress) {
+        database.practiceProgressDao().insertMeaningPracticeProgress(meaningPracticeProgress)
     }
 
     private suspend fun deletePartOfSpeech(partOfSpeech: PartOfSpeech) {
@@ -153,13 +213,18 @@ class VocabularyRepository @Inject constructor(
         database.meaningDao().delete(meaning)
     }
 
+    private suspend fun deleteMeaningPracticeProgressByMeaningId(meaningId: Long) {
+        database.practiceProgressDao().deleteMeaningPracticeProgressByMeaningId(meaningId)
+    }
+
     suspend fun removeWordByName(word: String) {
         database.wordDao().removeWordByName(word)
     }
 
     private suspend fun updateWord(word: Word) = database.wordDao().update(word)
 
-    private suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) = database.partOfSpeechDao().update(partOfSpeech)
+    private suspend fun updatePartOfSpeech(partOfSpeech: PartOfSpeech) =
+        database.partOfSpeechDao().update(partOfSpeech)
 
     private suspend fun updateMeaning(meaning: Meaning) = database.meaningDao().update(meaning)
 

@@ -13,7 +13,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
@@ -22,7 +21,7 @@ class PracticeProgressTest {
     private lateinit var wordDao: WordDao
     private lateinit var practiceProgressDao: PracticeProgressDao
     private lateinit var database: AppDatabase
-    private lateinit var wordWithPracticeProgress: WordWithPracticeProgress
+    private lateinit var wordWithWritingPracticeProgress: WordWithWritingPracticeProgress
 
     @Before
     fun createDbAndInsertData() = runBlocking {
@@ -32,8 +31,8 @@ class PracticeProgressTest {
         wordDao = database.wordDao()
         practiceProgressDao = database.practiceProgressDao()
         wordDao.insert(testWord)
-        practiceProgressDao.insert(testPracticeProgress)
-        wordWithPracticeProgress = practiceProgressDao.getAllWordsWithPracticeProgress()[0]
+        practiceProgressDao.insertWritingPracticeProgress(testPracticeProgress)
+        wordWithWritingPracticeProgress = practiceProgressDao.getAllWordsWithWritingPracticeProgress()[0]
     }
 
     @After
@@ -46,8 +45,7 @@ class PracticeProgressTest {
     @Throws(Exception::class)
     fun shouldBePracticedAfterWordCreated() {
         runBlocking {
-            assertTrue(wordWithPracticeProgress.wordProgress.shouldBePracticed(PracticeType.MEANINGS))
-            assertTrue(wordWithPracticeProgress.wordProgress.shouldBePracticed(PracticeType.WRITING))
+            assertTrue(wordWithWritingPracticeProgress.wordProgress.shouldBePracticed())
         }
     }
 
@@ -56,22 +54,22 @@ class PracticeProgressTest {
     fun setNewPracticeDateAndCheckDate() {
         runBlocking {
             
-            wordWithPracticeProgress.wordProgress.meaningProgress += 1
-            wordWithPracticeProgress.wordProgress.setNextMeaningPracticeDate()
-            var actualDate = wordWithPracticeProgress.wordProgress.nextMeaningPracticeDate
-            var expectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time)
+            wordWithWritingPracticeProgress.wordProgress.progress += 1
+            wordWithWritingPracticeProgress.wordProgress.setNextPracticeDate()
+            var actualDate = wordWithWritingPracticeProgress.wordProgress.nextPracticeDate
+            var expectedDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
             assertEquals(expectedDate, actualDate)
 
-            wordWithPracticeProgress.wordProgress.meaningProgress += 1
-            wordWithPracticeProgress.wordProgress.setNextMeaningPracticeDate()
-            actualDate = wordWithPracticeProgress.wordProgress.nextMeaningPracticeDate
-            expectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 3) }.time)
+            wordWithWritingPracticeProgress.wordProgress.progress += 1
+            wordWithWritingPracticeProgress.wordProgress.setNextPracticeDate()
+            actualDate = wordWithWritingPracticeProgress.wordProgress.nextPracticeDate
+            expectedDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 3) }
             assertEquals(expectedDate, actualDate)
 
-            wordWithPracticeProgress.wordProgress.meaningProgress += 1
-            wordWithPracticeProgress.wordProgress.setNextMeaningPracticeDate()
-            actualDate = wordWithPracticeProgress.wordProgress.nextMeaningPracticeDate
-            expectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 6) }.time)
+            wordWithWritingPracticeProgress.wordProgress.progress += 1
+            wordWithWritingPracticeProgress.wordProgress.setNextPracticeDate()
+            actualDate = wordWithWritingPracticeProgress.wordProgress.nextPracticeDate
+            expectedDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 6) }
             assertEquals(expectedDate, actualDate)
         }
     }

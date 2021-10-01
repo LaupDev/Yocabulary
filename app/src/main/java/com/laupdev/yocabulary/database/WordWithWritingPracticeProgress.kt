@@ -3,13 +3,13 @@ package com.laupdev.yocabulary.database
 import androidx.room.Embedded
 import androidx.room.Relation
 
-data class WordWithPracticeProgress(
+data class WordWithWritingPracticeProgress(
     @Embedded
     val word: Word,
     @Relation(
-        entity = PracticeProgress::class,
+        entity = WritingPracticeProgress::class,
         parentColumn = "word",
         entityColumn = "word"
     )
-    val wordProgress: PracticeProgress
+    val wordProgress: WritingPracticeProgress
 )

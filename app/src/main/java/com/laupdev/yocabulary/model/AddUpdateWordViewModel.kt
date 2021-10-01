@@ -40,6 +40,7 @@ class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepos
             .also { _processStatus.value = ProcessStatus.PROCESSING }
 
     fun replaceWord() {
+        // TODO: 02.10.2021 When replacing word, preserve its writing practice progress
         removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
         insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings)
     }
