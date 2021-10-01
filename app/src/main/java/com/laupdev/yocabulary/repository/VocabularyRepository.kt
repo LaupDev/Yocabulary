@@ -92,7 +92,6 @@ class VocabularyRepository @Inject constructor(
         newWordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings
     ): Boolean {
         if (oldWordWithPartsOfSpeechAndMeanings.word.word != newWordWithPartsOfSpeechAndMeanings.word.word) {
-            // TODO: 02.10.2021 Reset writing practice progress
             val isSuccessfullyAdded =
                 insertWordWithPartsOfSpeechAndMeanings(newWordWithPartsOfSpeechAndMeanings)
             if (isSuccessfullyAdded) {
