@@ -25,9 +25,11 @@ import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.adapters.AdapterForDropdown
 import com.laupdev.yocabulary.database.*
 import com.laupdev.yocabulary.databinding.FragmentAddNewWordBinding
+import com.laupdev.yocabulary.exceptions.WordAlreadyExistsException
 import com.laupdev.yocabulary.model.AddUpdateWordViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import java.lang.Exception
 
 @AndroidEntryPoint
 abstract class AddUpdateCommonFragment : Fragment() {
@@ -101,51 +103,59 @@ abstract class AddUpdateCommonFragment : Fragment() {
     private fun setObservers() {
 
         viewModel.processStatus.observe(viewLifecycleOwner) {
-            binding.loadingScreen.visibility = View.GONE
-            loadingAnim?.stop()
             when (it) {
                 ProcessStatus.PROCESSING -> {
                     startLoadingAnimation()
                 }
-                ProcessStatus.COMPLETED_ADDING -> {
-                    findNavController().popBackStack()
+                ProcessStatus.COMPLETED -> {
+                    changePageAfterActionCompleted()
                 }
-                ProcessStatus.COMPLETED_UPDATE -> {
-                    val action =
-                        UpdateWordFragmentDirections.goToWordDetailsAfterUpdate(
-                            trimInputField(binding.newWordEditText.text.toString()),
-                            true
-                        )
-                    findNavController().navigate(action)
-                }
-                ProcessStatus.FAILED -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(resources.getString(R.string.error))
-                        .setMessage(R.string.error_add_or_update)
-                        .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
-                        }
-                        .show()
-                }
-                ProcessStatus.FAILED_WORD_EXISTS -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(resources.getString(R.string.error))
-                        .setMessage(resources.getString(R.string.word_already_exists))
-                        .setCancelable(false)
-                        .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
-                            replaceWord()
-                        }
-                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
-                            viewModel.inactivateProcess()
-                        }
-                        .show()
+                ProcessStatus.INACTIVE -> {
+                    binding.loadingScreen.visibility = View.GONE
+                    loadingAnim?.stop()
                 }
                 else -> {
                 }
             }
         }
+
+        viewModel.exceptionHolder.observe(viewLifecycleOwner) {
+            it?.let {
+                handleException(it)
+            }
+        }
+    }
+
+    private fun handleException(e: Exception) {
+        when(e) {
+            is WordAlreadyExistsException -> {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(resources.getString(R.string.error))
+                    .setMessage(resources.getString(R.string.word_already_exists))
+                    .setCancelable(false)
+                    .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
+                        replaceWord()
+                    }
+                    .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
+                        viewModel.inactivateProcess()
+                    }
+                    .show()
+            }
+            else -> {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(resources.getString(R.string.error))
+                    .setMessage(R.string.error_add_or_update)
+                    .setPositiveButton(resources.getString(R.string.got_it)) { _, _ ->
+                    }
+                    .show()
+            }
+        }
+        viewModel.clearExceptionHolder()
     }
 
     abstract fun replaceWord()
+
+    abstract fun changePageAfterActionCompleted()
 
     private fun leavePage() {
         if (leaveWithoutWarning) {
@@ -308,7 +318,7 @@ abstract class AddUpdateCommonFragment : Fragment() {
         return isFieldsRight
     }
 
-    private fun trimInputField(text: String): String {
+    fun trimInputField(text: String): String {
         return text.trim().replace("\\s+".toRegex(), " ")
     }
 

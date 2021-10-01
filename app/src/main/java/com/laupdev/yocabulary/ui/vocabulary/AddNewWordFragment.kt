@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.view.View
 import android.view.View.VISIBLE
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import kotlin.math.roundToInt
@@ -27,6 +28,10 @@ class AddNewWordFragment : AddUpdateCommonFragment() {
         viewModel.replaceWord()
     }
 
+    override fun changePageAfterActionCompleted() {
+        findNavController().popBackStack()
+    }
+
     override fun getPartOfSpeechId(partOfSpeechView: View): Long {
         return 0
     }
@@ -36,10 +41,7 @@ class AddNewWordFragment : AddUpdateCommonFragment() {
     }
 
     override fun doActionOnWord(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
-        viewModel.insertWordWithPartsOfSpeechWithMeanings(
-            wordWithPartsOfSpeechAndMeanings,
-            false
-        )
+        viewModel.insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings)
     }
 
     private fun setupSearchInDictionaryBtn() {

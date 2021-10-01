@@ -212,7 +212,7 @@ class WordDetailsFragment : Fragment() {
                     .setTitle(resources.getString(R.string.error))
                     .setMessage(resources.getString(R.string.word_already_exists))
                     .setPositiveButton(resources.getString(R.string.replace)) { _, _ ->
-                        replaceWord(viewModel.wordWithPosAndMeanings.value!!)
+                        viewModel.replaceWord(viewModel.wordWithPosAndMeanings.value!!)
                     }
                     .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
                     }
@@ -228,14 +228,7 @@ class WordDetailsFragment : Fragment() {
                 createAlertDialog(resources.getString(R.string.unknown_error))
             }
         }
-    }
-
-    private fun replaceWord(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
-        try {
-            viewModel.replaceWord(wordWithPartsOfSpeechAndMeanings)
-        } catch (e: Exception) {
-            handleException(e)
-        }
+        viewModel.clearExceptionHolder()
     }
 
     @SuppressLint("SetTextI18n")

@@ -2,6 +2,7 @@ package com.laupdev.yocabulary.ui.vocabulary
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import timber.log.Timber
 
@@ -38,6 +39,15 @@ class UpdateWordFragment : AddUpdateCommonFragment() {
 
     override fun replaceWord() {
         viewModel.replaceWordOnUpdate(word)
+    }
+
+    override fun changePageAfterActionCompleted() {
+        val action =
+            UpdateWordFragmentDirections.goToWordDetailsAfterUpdate(
+                trimInputField(binding.newWordEditText.text.toString()),
+                true
+            )
+        findNavController().navigate(action)
     }
 
     override fun getPartOfSpeechId(partOfSpeechView: View): Long {
