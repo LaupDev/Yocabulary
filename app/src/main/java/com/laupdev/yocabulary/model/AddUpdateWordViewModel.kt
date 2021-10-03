@@ -49,10 +49,10 @@ class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepos
     }
 
     fun replaceWordOnUpdate(oldWord: String) {
-        if (oldWord.isNotEmpty()) {
-            removeWordByName(oldWord)
-        }
         viewModelScope.launch {
+            if (oldWord.isNotEmpty()) {
+                removeWordByName(oldWord)
+            }
             val writingPracticeProgress = repository.getWritingPracticeProgressByWord(wordWithPartsOfSpeechAndMeanings.word.word)
             removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
             insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings, writingPracticeProgress)
@@ -114,10 +114,8 @@ class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepos
         }
     }
 
-    private fun removeWordByName(word: String) {
-        viewModelScope.launch {
-            repository.deleteWordByName(word)
-        }
+    private suspend fun removeWordByName(word: String) {
+        repository.deleteWordByName(word)
     }
 
 }
