@@ -23,6 +23,8 @@ class VocabularyRepository @Inject constructor(
         return wordFromDictionaryApiToVocabularyFormat(network.getWordFromDictionary(word)[0])
     }
 
+    suspend fun getWritingPracticeProgressByWord(word: String) = database.practiceProgressDao().getWritingPracticeProgressByWord(word)
+
     private fun wordFromDictionaryApiToVocabularyFormat(wordFromDictionary: WordFromDictionary): WordWithPartsOfSpeechAndMeanings {
 
         val word = Word(
@@ -73,7 +75,10 @@ class VocabularyRepository @Inject constructor(
         return WordWithPartsOfSpeechAndMeanings(word, partsOfSpeechWithMeanings)
     }
 
-    suspend fun insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings): Boolean {
+    suspend fun insertWordWithPartsOfSpeechAndMeanings(
+        wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
+        writingPracticeProgress: WritingPracticeProgress? = null
+    ): Boolean {
         if (insertWord(wordWithPartsOfSpeechAndMeanings.word) == -1L) {
             throw WordAlreadyExistsException("Word already exists in database")
         } else {
@@ -81,7 +86,7 @@ class VocabularyRepository @Inject constructor(
                 wordWithPartsOfSpeechAndMeanings.word.word,
                 wordWithPartsOfSpeechAndMeanings.partsOfSpeechWithMeanings
             )
-            insertWritingPracticeProgress(WritingPracticeProgress(word = wordWithPartsOfSpeechAndMeanings.word.word))
+            insertWritingPracticeProgress(writingPracticeProgress ?: WritingPracticeProgress(word = wordWithPartsOfSpeechAndMeanings.word.word))
 
             return true
         }
@@ -95,7 +100,7 @@ class VocabularyRepository @Inject constructor(
             val isSuccessfullyAdded =
                 insertWordWithPartsOfSpeechAndMeanings(newWordWithPartsOfSpeechAndMeanings)
             if (isSuccessfullyAdded) {
-                removeWordByName(oldWordWithPartsOfSpeechAndMeanings.word.word)
+                deleteWordByName(oldWordWithPartsOfSpeechAndMeanings.word.word)
             }
         } else {
             updateWord(newWordWithPartsOfSpeechAndMeanings.word)
@@ -216,8 +221,8 @@ class VocabularyRepository @Inject constructor(
         database.practiceProgressDao().deleteMeaningPracticeProgressByMeaningId(meaningId)
     }
 
-    suspend fun removeWordByName(word: String) {
-        database.wordDao().removeWordByName(word)
+    suspend fun deleteWordByName(word: String) {
+        database.wordDao().deleteWordByName(word)
     }
 
     private suspend fun updateWord(word: Word) = database.wordDao().update(word)

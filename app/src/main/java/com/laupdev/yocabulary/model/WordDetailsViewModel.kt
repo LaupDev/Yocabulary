@@ -7,10 +7,7 @@ import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
 import com.laupdev.yocabulary.repository.VocabularyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import java.lang.Exception
-import java.lang.IllegalArgumentException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 enum class ErrorType {
@@ -55,7 +52,7 @@ class WordDetailsViewModel @Inject constructor(private val repository: Vocabular
     }
 
     fun removeWord(word: String) = viewModelScope.launch {
-        repository.removeWordByName(word)
+        repository.deleteWordByName(word)
         _isAdded.value = false
     }
 
@@ -75,7 +72,7 @@ class WordDetailsViewModel @Inject constructor(private val repository: Vocabular
 
     fun replaceWord(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
         viewModelScope.launch {
-            repository.removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
+            repository.deleteWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
             insertWordWithPartsOfSpeechAndMeanings(wordWithPartsOfSpeechAndMeanings)
         }
     }

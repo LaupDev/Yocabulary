@@ -11,6 +11,9 @@ interface PracticeProgressDao {
     @Query("SELECT * FROM words")
     suspend fun getAllWordsWithWritingPracticeProgress(): List<WordWithWritingPracticeProgress>
 
+    @Query("SELECT * FROM writing_practice_progress WHERE word = :word")
+    suspend fun getWritingPracticeProgressByWord(word: String): WritingPracticeProgress
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMeaningPracticeProgress(meaningPracticeProgress: MeaningPracticeProgress)
 

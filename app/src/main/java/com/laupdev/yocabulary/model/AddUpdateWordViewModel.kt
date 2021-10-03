@@ -3,6 +3,7 @@ package com.laupdev.yocabulary.model
 import androidx.lifecycle.*
 import com.laupdev.yocabulary.ui.vocabulary.ProcessStatus
 import com.laupdev.yocabulary.database.WordWithPartsOfSpeechAndMeanings
+import com.laupdev.yocabulary.database.WritingPracticeProgress
 import com.laupdev.yocabulary.repository.VocabularyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -40,24 +41,32 @@ class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepos
             .also { _processStatus.value = ProcessStatus.PROCESSING }
 
     fun replaceWord() {
-        // TODO: 02.10.2021 When replacing word, preserve its writing practice progress
-        removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
-        insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings)
+        viewModelScope.launch {
+            val writingPracticeProgress = repository.getWritingPracticeProgressByWord(wordWithPartsOfSpeechAndMeanings.word.word)
+            removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
+            insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings, writingPracticeProgress)
+        }
     }
 
     fun replaceWordOnUpdate(oldWord: String) {
         if (oldWord.isNotEmpty()) {
             removeWordByName(oldWord)
         }
-        removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
-        insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings)
+        viewModelScope.launch {
+            val writingPracticeProgress = repository.getWritingPracticeProgressByWord(wordWithPartsOfSpeechAndMeanings.word.word)
+            removeWordByName(wordWithPartsOfSpeechAndMeanings.word.word)
+            insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings, writingPracticeProgress)
+        }
     }
 
     fun clearExceptionHolder() {
         _exceptionHolder.value = null
     }
 
-    fun insertWordWithPartsOfSpeechWithMeanings(wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings) {
+    fun insertWordWithPartsOfSpeechWithMeanings(
+        wordWithPartsOfSpeechAndMeanings: WordWithPartsOfSpeechAndMeanings,
+        writingPracticeProgress: WritingPracticeProgress? = null
+    ) {
         viewModelScope.launch {
             _processStatus.value = ProcessStatus.PROCESSING
             this@AddUpdateWordViewModel.wordWithPartsOfSpeechAndMeanings =
@@ -65,7 +74,8 @@ class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepos
             try {
 
                 val isSuccessfullyAdded = repository.insertWordWithPartsOfSpeechAndMeanings(
-                    wordWithPartsOfSpeechAndMeanings
+                    wordWithPartsOfSpeechAndMeanings,
+                    writingPracticeProgress
                 )
 
                 if (isSuccessfullyAdded) {
@@ -106,7 +116,7 @@ class AddUpdateWordViewModel @Inject constructor(val repository: VocabularyRepos
 
     private fun removeWordByName(word: String) {
         viewModelScope.launch {
-            repository.removeWordByName(word)
+            repository.deleteWordByName(word)
         }
     }
 
