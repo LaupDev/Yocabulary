@@ -27,12 +27,19 @@ class PracticeHomePageFragment : Fragment() {
     }
 
     private fun setListeners() {
-        val goToPracticeListener = View.OnClickListener {
-            val action = PracticeHomePageFragmentDirections.goToPractice()
-            findNavController().navigate(action)
+        binding.matchMeaningsBlock.setOnClickListener {
+            goToPractice(PracticeType.MATCH_MEANINGS)
         }
-        binding.matchMeaningsBlock.setOnClickListener(goToPracticeListener)
-        binding.learnSpellingBlock.setOnClickListener(goToPracticeListener)
-        binding.mixedPracticeBlock.setOnClickListener(goToPracticeListener)
+        binding.learnSpellingBlock.setOnClickListener {
+            goToPractice(PracticeType.LEARN_SPELLING)
+        }
+        binding.mixedPracticeBlock.setOnClickListener {
+            goToPractice(PracticeType.MIXED)
+        }
+    }
+
+    private fun goToPractice(practiceType: PracticeType) {
+        val action = PracticeHomePageFragmentDirections.goToPracticeStartPage(practiceType)
+        findNavController().navigate(action)
     }
 }

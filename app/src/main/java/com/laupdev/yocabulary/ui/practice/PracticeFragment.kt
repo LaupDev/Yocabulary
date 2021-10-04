@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
@@ -21,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 open class PracticeFragment : Fragment() {
 
-    val viewModel by viewModels<PracticeViewModel>()
+    val viewModel by activityViewModels<PracticeViewModel>()
     private lateinit var viewPager2: ViewPager2
 
     private var _binding: FragmentPracticeBinding? = null
@@ -59,7 +60,7 @@ open class PracticeFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        binding.practiceProgressBar.max = viewModel.questions.size
+        binding.practiceProgressBar.max = viewModel.questions.value?.size ?: 0
 
         viewModel.practiceProgress.observe(viewLifecycleOwner) {
             binding.practiceProgressBar.setProgressCompat(it, true)

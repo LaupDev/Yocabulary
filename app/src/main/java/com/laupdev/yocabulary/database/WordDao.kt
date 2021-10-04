@@ -9,6 +9,9 @@ interface WordDao {
     @Query("SELECT * FROM words")
     fun getAllWords(): Flow<List<Word>>
 
+    @Query("SELECT * FROM words LIMIT 10")
+    suspend fun getTenWords(): List<Word>
+
     @Query("SELECT * FROM words WHERE word LIKE :letter || '%'")
     fun getByFirstLetter(letter: Char): Flow<List<Word>>
 

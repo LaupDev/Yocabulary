@@ -257,6 +257,7 @@ abstract class AddUpdateCommonFragment : Fragment() {
                                     newMeaningsList.add(
                                         Meaning(
                                             meaningId = getMeaningId(meaningView),
+                                            word = word,
                                             posId = getPartOfSpeechId(partOfSpeechView),
                                             meaning = meaningText,
                                             example = exampleText,

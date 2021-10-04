@@ -16,9 +16,7 @@ import java.util.*
     indices = [Index("word")]
 )
 data class WritingPracticeProgress(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    val progressId: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "word")
     var word: String,
     @ColumnInfo(name = "progress")

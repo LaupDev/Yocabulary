@@ -56,8 +56,8 @@
         android:label="fragment_practice_page"
         tools:layout="@layout/fragment_practice_home_page" >
         <action
-            android:id="@+id/goToPractice"
-            app:destination="@id/practiceFragment" />
+            android:id="@+id/goToPracticeStartPage"
+            app:destination="@id/practiceStartPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/inDevelopmentFragment"
@@ -80,5 +80,17 @@
             android:id="@+id/goToWordDetailsAfterUpdate"
             app:destination="@id/wordDetailsFragment"
             app:popUpTo="@id/vocabularyHomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/practiceStartPageFragment"
+        android:name="com.laupdev.yocabulary.ui.practice.PracticeStartPageFragment"
+        android:label="fragment_practice_start_page"
+        tools:layout="@layout/fragment_practice_start_page" >
+        <argument
+            android:name="practice_type"
+            app:argType="com.laupdev.yocabulary.ui.practice.PracticeType" />
+        <action
+            android:id="@+id/startPractice"
+            app:destination="@id/practiceFragment" />
     </fragment>
 </navigation>

@@ -12,7 +12,7 @@ import com.laupdev.yocabulary.ui.practice.questions.QuestionView
 
 class PracticeQuestionAdapter(private val viewModel: PracticeViewModel, private val practiceFragment: PracticeFragment) : RecyclerView.Adapter<PracticeQuestionHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PracticeQuestionHolder {
-        return when (viewModel.questions[viewModel.currentQuestionIndex].questionType) {
+        return when (viewModel.getQuestions()[viewModel.currentQuestionIndex].questionType) {
             QuestionType.MATCH_MEANING -> {
                 PracticeQuestionHolder(MeaningQuestionView(LayoutInflater.from(parent.context), parent, practiceFragment))
             }
@@ -22,12 +22,14 @@ class PracticeQuestionAdapter(private val viewModel: PracticeViewModel, private 
         }
     }
 
+    // TODO: 05.10.2021 Fix bug with buttons. It shows the result of previous answer on the question
+
     override fun onBindViewHolder(holder: PracticeQuestionHolder, position: Int) {
-        holder.bind(viewModel.questions[position])
+        holder.bind(viewModel.getQuestions()[position])
     }
 
     override fun getItemCount(): Int {
-        return viewModel.questions.size
+        return viewModel.getQuestions().size
     }
 }
 

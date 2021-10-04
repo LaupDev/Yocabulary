@@ -5,11 +5,13 @@ import androidx.room.*
 @Dao
 interface PracticeProgressDao {
 
-//    @Query("SELECT * FROM practice_progress WHERE word = :word")
-
     @Transaction
     @Query("SELECT * FROM words")
     suspend fun getAllWordsWithWritingPracticeProgress(): List<WordWithWritingPracticeProgress>
+
+    @Transaction
+    @Query("SELECT * FROM meanings")
+    suspend fun getAllMeaningsWithMeaningPracticeProgress(): List<MeaningWithMeaningPracticeProgress>
 
     @Query("SELECT * FROM writing_practice_progress WHERE word = :word")
     suspend fun getWritingPracticeProgressByWord(word: String): WritingPracticeProgress

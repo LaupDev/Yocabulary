@@ -16,9 +16,7 @@ import java.util.*
     indices = [Index("meaning_id")]
 )
 data class MeaningPracticeProgress(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    val progressId: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "meaning_id")
     var meaningId: Long,
     @ColumnInfo(name = "progress")
@@ -30,7 +28,7 @@ data class MeaningPracticeProgress(
 
     fun setNextPracticeDate() {
         val daysToAdd =
-            when(progress) {
+            when (progress) {
                 1 -> 1
                 2 -> 3
                 3 -> 6

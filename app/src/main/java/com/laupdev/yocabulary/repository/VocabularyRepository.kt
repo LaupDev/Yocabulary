@@ -57,6 +57,7 @@ class VocabularyRepository @Inject constructor(
                     newMeaningsList.add(
                         Meaning(
                             meaningId = 0,
+                            word = word.word,
                             posId = 0,
                             meaning = meaning.definition.replaceFirstChar { firstChar -> firstChar.uppercase() },
                             example = meaning.example.replaceFirstChar { firstChar -> firstChar.uppercase() },
