@@ -50,7 +50,7 @@ open class PracticeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewPager2 = binding.pager
-        viewPager2.adapter = PracticeQuestionAdapter(viewModel, this)
+        viewPager2.adapter = PracticeQuestionAdapter(viewModel.getQuestions(), this)
         viewPager2.isUserInputEnabled = false
 
         (requireActivity() as MainActivity).hideBottomNav()
@@ -69,6 +69,7 @@ open class PracticeFragment : Fragment() {
 
     fun nextPage() {
         viewModel.nextQuestion()
+        (viewPager2.adapter as PracticeQuestionAdapter).setCurrentQuestionIndex(viewModel.currentQuestionIndex)
         viewPager2.apply {
             this.currentItem = this.currentItem + 1
         }

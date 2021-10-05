@@ -91,6 +91,7 @@ class PracticeStartPageFragment : Fragment() {
             it?.let {
                 if (it.isEmpty()) {
                     //Display dialog
+                    // TODO: 06.10.2021 Handle case when list is empty
                 } else {
                     binding.startPractice.isEnabled = true
                 }
