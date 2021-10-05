@@ -1,7 +1,6 @@
 package com.laupdev.yocabulary.repository
 
 import com.laupdev.yocabulary.database.AppDatabase
-import com.laupdev.yocabulary.database.MeaningWithMeaningPracticeProgress
 import com.laupdev.yocabulary.database.WordWithWritingPracticeProgress
 import com.laupdev.yocabulary.ui.practice.questions.MeaningQuestion
 import javax.inject.Inject
@@ -9,6 +8,8 @@ import javax.inject.Singleton
 
 @Singleton
 class PracticeRepository @Inject constructor(val database: AppDatabase) {
+
+    suspend fun getWordsCountMax5() = database.wordDao().getWordsCountMax5()
 
     suspend fun getWordsForWritingPractice(itemCount: Int): List<WordWithWritingPracticeProgress> {
         val wordsForPractice = mutableListOf<WordWithWritingPracticeProgress>()

@@ -320,7 +320,7 @@
     <style name="Widget.Yocabulary.PracticeNextButton" parent="Widget.MaterialComponents.Button">
         <item name="android:gravity">center</item>
         <item name="android:stateListAnimator">@animator/practice_button_press_anim</item>
-        <item name="backgroundTint">@color/color_grey_lighter_2</item>
+        <item name="backgroundTint">@color/color_state_btn_practice</item>
         <item name="rippleColor">@null</item>
         <item name="android:elevation">4dp</item>
         <item name="android:insetTop">0dp</item>

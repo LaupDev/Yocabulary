@@ -9,6 +9,9 @@ interface WordDao {
     @Query("SELECT * FROM words")
     fun getAllWords(): Flow<List<Word>>
 
+    @Query("SELECT COUNT(*) FROM words LIMIT 5")
+    suspend fun getWordsCountMax5(): Int
+
     @Query("SELECT * FROM words LIMIT 10")
     suspend fun getTenWords(): List<Word>
 

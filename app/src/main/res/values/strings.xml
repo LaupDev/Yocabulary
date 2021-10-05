@@ -101,6 +101,8 @@
     <!-- PracticeStartPageFragment -->
     <string name="meaning_task">Choose the correct word\nfor the given meaning</string>
     <string name="start">Start</string>
+    <string name="not_enough_words_title">Not enough words</string>
+    <string name="not_enough_words_desc">You should have at least 5 words in your vocabulary</string>
 
     <!-- PracticeFragment -->
     <string name="next_question">Next</string>
