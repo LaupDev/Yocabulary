@@ -22,8 +22,6 @@ class PracticeQuestionAdapter(private val viewModel: PracticeViewModel, private 
         }
     }
 
-    // TODO: 05.10.2021 Fix bug with buttons. It shows the result of previous answer on the question
-
     override fun onBindViewHolder(holder: PracticeQuestionHolder, position: Int) {
         holder.bind(viewModel.getQuestions()[position])
     }

@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true">
 
 
@@ -37,7 +38,7 @@
             android:paddingTop="24dp"
             android:paddingEnd="16dp"
             android:paddingBottom="24dp"
-            android:text="Motivated to do or achieve something because of one's own enthusiasm or interest, without needing pressure from others."
+            tools:text="Motivated to do or achieve something because of one's own enthusiasm or interest, without needing pressure from others."
             android:textColor="@color/color_white"
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/task_title" />
@@ -65,7 +66,7 @@
                 style="@style/Widget.Yocabulary.PracticeAnswerButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="access" />
+                tools:text="access" />
 
             <Button
                 android:id="@+id/answer_2"
@@ -73,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:text="self-development" />
+                tools:text="self-development" />
 
             <Button
                 android:id="@+id/answer_3"
@@ -81,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:text="hello" />
+                tools:text="hello" />
 
             <Button
                 android:id="@+id/answer_4"
@@ -90,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:layout_marginBottom="7dp"
-                android:text="cringe" />
+                tools:text="cringe" />
 
         </LinearLayout>
 

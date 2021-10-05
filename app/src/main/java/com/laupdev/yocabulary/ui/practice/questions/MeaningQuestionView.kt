@@ -2,6 +2,7 @@ package com.laupdev.yocabulary.ui.practice.questions
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
@@ -13,6 +14,7 @@ import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import com.laupdev.yocabulary.R
 import com.laupdev.yocabulary.ui.practice.PracticeFragment
+import timber.log.Timber
 
 class MeaningQuestionView(layoutInflater: LayoutInflater, container: ViewGroup?, private val practiceFragment: PracticeFragment) : QuestionView() {
     override var view: View = layoutInflater.inflate(R.layout.item_question_layout, container, false)
@@ -20,6 +22,8 @@ class MeaningQuestionView(layoutInflater: LayoutInflater, container: ViewGroup?,
     private lateinit var rightAnswer: String
 
     override fun bind(question: Question) {
+        resetView()
+
         val meaningQuestion = question as MeaningQuestion
         rightAnswer = meaningQuestion.rightAnswer
 
@@ -38,6 +42,7 @@ class MeaningQuestionView(layoutInflater: LayoutInflater, container: ViewGroup?,
         view.findViewById<TextView>(R.id.task).text = meaningQuestion.meaning
 
         view.findViewById<LinearLayout>(R.id.all_answers).forEachIndexed { index, answerBtn ->
+
             (answerBtn as Button).text = meaningQuestion.answersList[index]
             answerBtn.setOnClickListener(answerButtonOnClickListener)
         }
@@ -76,6 +81,15 @@ class MeaningQuestionView(layoutInflater: LayoutInflater, container: ViewGroup?,
             it.isEnabled = false
         }
         view.findViewById<Button>(R.id.next_page).visibility = VISIBLE
+    }
+
+    private fun resetView() {
+        view.findViewById<LinearLayout>(R.id.all_answers).forEach {
+            it.isEnabled = true
+            it.backgroundTintList = ContextCompat.getColorStateList(practiceFragment.requireContext(), R.color.color_grey_lighter_2)
+        }
+        view.findViewById<Button>(R.id.next_page).visibility = INVISIBLE
+
     }
 
     private fun setRightAnswerButtonUI(rightAnswerButton: Button) {
