@@ -41,7 +41,6 @@ class PracticeStartPageFragment : Fragment() {
     }
 
     // TODO: 05.10.2021 Throw error if words less than 4
-    // TODO: 05.10.2021 Randomly arrange questions
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

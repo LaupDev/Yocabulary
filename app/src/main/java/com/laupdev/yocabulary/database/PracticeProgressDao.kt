@@ -10,7 +10,7 @@ interface PracticeProgressDao {
     suspend fun getAllWordsWithWritingPracticeProgress(): List<WordWithWritingPracticeProgress>
 
     @Transaction
-    @Query("SELECT * FROM meanings")
+    @Query("SELECT * FROM meanings ORDER BY RANDOM()")
     suspend fun getAllMeaningsWithMeaningPracticeProgress(): List<MeaningWithMeaningPracticeProgress>
 
     @Query("SELECT * FROM writing_practice_progress WHERE word = :word")

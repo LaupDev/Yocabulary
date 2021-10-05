@@ -24,15 +24,11 @@ class PracticeRepository @Inject constructor(val database: AppDatabase) {
     }
 
     suspend fun getMeaningQuestions(itemCount: Int): List<MeaningQuestion> {
-        val randomWords = database.wordDao().getTenWords().map { it.word }
         val meaningQuestions = mutableListOf<MeaningQuestion>()
         database.practiceProgressDao().getAllMeaningsWithMeaningPracticeProgress().forEach { meaningWithProgress ->
             if (meaningWithProgress.meaning.meaning.isNotEmpty() && meaningWithProgress.meaningPracticeProgress.shouldBePracticed()) {
                 val rightAnswer = meaningWithProgress.meaning.word
-                val possibleAnswers = randomWords.shuffled().filter { it != rightAnswer }.take(3).toMutableList().let {
-                    it.add(rightAnswer)
-                    it.shuffled()
-                }
+                val possibleAnswers = getPossibleAnswers(rightAnswer)
 
                 val meaningQuestion = MeaningQuestion(
                     meaningWithProgress.meaning.meaning,
@@ -46,6 +42,14 @@ class PracticeRepository @Inject constructor(val database: AppDatabase) {
             }
         }
         return meaningQuestions
+    }
+
+    private suspend fun getPossibleAnswers(rightAnswer: String): List<String> {
+        val randomWords = database.wordDao().getTenWords().map { it.word }
+        return randomWords.shuffled().filter { it != rightAnswer }.take(3).toMutableList().let {
+            it.add(rightAnswer)
+            it.shuffled()
+        }
     }
 
 }
