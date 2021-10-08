@@ -103,6 +103,9 @@
     <string name="start">Start</string>
     <string name="not_enough_words_title">Not enough words</string>
     <string name="not_enough_words_desc">You should have at least 5 words in your vocabulary</string>
+    <string name="no_meanings_title">Good job</string>
+    <string name="no_meanings_desc">There are no meanings that should be practiced at the moment.\nYou can repeat meanings that have been already practiced</string>
+    <string name="repeat">Repeat</string>
 
     <!-- PracticeFragment -->
     <string name="next_question">Next</string>

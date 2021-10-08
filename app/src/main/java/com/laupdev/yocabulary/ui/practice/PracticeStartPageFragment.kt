@@ -46,17 +46,18 @@ class PracticeStartPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.resetData()
+        viewModel.practiceType = practiceType
+        viewModel.getQuestionsFromDatabase()
 
         when (practiceType) {
             PracticeType.MATCH_MEANINGS -> {
                 binding.task.text = getString(R.string.meaning_task)
-                viewModel.getMeaningQuestions()
             }
             PracticeType.LEARN_SPELLING -> {
-
+                // TODO: 09.10.2021 COMPLETE
             }
             PracticeType.MIXED -> {
-
+                // TODO: 09.10.2021 COMPLETE
             }
         }
         setListeners()
@@ -90,13 +91,39 @@ class PracticeStartPageFragment : Fragment() {
         viewModel.questions.observe(viewLifecycleOwner) {
             it?.let {
                 if (it.isEmpty()) {
-                    //Display dialog
-                    // TODO: 06.10.2021 Handle case when list is empty
+                    when (practiceType) {
+                        PracticeType.MATCH_MEANINGS -> {
+                            showDialog(
+                                resources.getString(R.string.no_meanings_title),
+                                resources.getString(R.string.no_meanings_desc)
+                            )
+                        }
+                        PracticeType.LEARN_SPELLING -> {
+                            // TODO: 09.10.2021 COMPLETE
+                        }
+                        PracticeType.MIXED -> {
+                            // TODO: 09.10.2021 COMPLETE
+                        }
+                    }
                 } else {
                     binding.startPractice.isEnabled = true
                 }
             }
         }
+    }
+
+    private fun showDialog(title: String, description: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setMessage(description)
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ ->
+                findNavController().popBackStack()
+            }
+            .setPositiveButton(resources.getString(R.string.repeat)) { _, _ ->
+                viewModel.getQuestionsFromDatabase(true)
+                // TODO: 09.10.2021 COMPLETE
+            }
+            .show()
     }
 
     override fun onDestroyView() {
