@@ -1,6 +1,7 @@
 package com.laupdev.yocabulary.repository
 
 import com.laupdev.yocabulary.database.AppDatabase
+import com.laupdev.yocabulary.database.MeaningPracticeProgress
 import com.laupdev.yocabulary.database.WordWithWritingPracticeProgress
 import com.laupdev.yocabulary.ui.practice.questions.MeaningQuestion
 import javax.inject.Inject
@@ -24,14 +25,15 @@ class PracticeRepository @Inject constructor(val database: AppDatabase) {
         return wordsForPractice
     }
 
-    suspend fun getMeaningQuestions(itemCount: Int): List<MeaningQuestion> {
+    suspend fun getMeaningQuestions(itemCount: Int, allWords: Boolean): List<MeaningQuestion> {
         val meaningQuestions = mutableListOf<MeaningQuestion>()
         database.practiceProgressDao().getAllMeaningsWithMeaningPracticeProgress().forEach { meaningWithProgress ->
-            if (meaningWithProgress.meaning.meaning.isNotEmpty() && meaningWithProgress.meaningPracticeProgress.shouldBePracticed()) {
+            if (meaningWithProgress.meaning.meaning.isNotEmpty() && (meaningWithProgress.meaningPracticeProgress.shouldBePracticed() || allWords)) {
                 val rightAnswer = meaningWithProgress.meaning.word
                 val possibleAnswers = getPossibleAnswers(rightAnswer)
 
                 val meaningQuestion = MeaningQuestion(
+                    meaningWithProgress.meaningPracticeProgress,
                     meaningWithProgress.meaning.meaning,
                     possibleAnswers,
                     rightAnswer
@@ -51,6 +53,10 @@ class PracticeRepository @Inject constructor(val database: AppDatabase) {
             it.add(rightAnswer)
             it.shuffled()
         }
+    }
+
+    suspend fun updateMeaningPracticeProgress(meaningPracticeProgress: MeaningPracticeProgress) {
+        database.practiceProgressDao().updateMeaningPracticeProgress(meaningPracticeProgress)
     }
 
 }

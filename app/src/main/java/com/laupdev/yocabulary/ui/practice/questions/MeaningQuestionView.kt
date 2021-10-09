@@ -30,7 +30,11 @@ class MeaningQuestionView(layoutInflater: LayoutInflater, container: ViewGroup?,
         val answerButtonOnClickListener = View.OnClickListener {
             val chosenAnswer = (it as Button).text.toString()
             if (isAnswerRight(chosenAnswer)) {
-                // TODO: 09.09.2021 Change score
+                if (meaningQuestion.meaningPracticeProgress.shouldBePracticed()) {
+                    meaningQuestion.meaningPracticeProgress.progress++
+                    meaningQuestion.meaningPracticeProgress.setNextPracticeDate()
+                }
+                practiceFragment.viewModel.updateMeaningPracticeProgress(meaningQuestion.meaningPracticeProgress)
                 setRightAnswerButtonUI(it)
             } else {
                 setWrongAnswerButtonUI(it)

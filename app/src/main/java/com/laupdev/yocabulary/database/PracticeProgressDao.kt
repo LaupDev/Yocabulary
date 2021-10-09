@@ -25,4 +25,7 @@ interface PracticeProgressDao {
     @Query("DELETE FROM meaning_practice_progress WHERE meaning_id = :meaningId")
     suspend fun deleteMeaningPracticeProgressByMeaningId(meaningId: Long)
 
+    @Update
+    suspend fun updateMeaningPracticeProgress(meaningPracticeProgress: MeaningPracticeProgress)
+
 }

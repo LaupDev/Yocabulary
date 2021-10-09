@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.laupdev.yocabulary.database.MeaningPracticeProgress
 import com.laupdev.yocabulary.exceptions.NotEnoughWords
 import com.laupdev.yocabulary.repository.PracticeRepository
 import com.laupdev.yocabulary.ui.practice.PracticeType
@@ -59,10 +60,9 @@ class PracticeViewModel @Inject constructor(val repository: PracticeRepository) 
     }
 
     fun getMeaningQuestions(allWords: Boolean) {
-        // TODO: 09.10.2021 Get meanings from all words when allWords is true
         viewModelScope.launch {
             if (isEnoughWords()) {
-                _questions.value = repository.getMeaningQuestions(10)
+                _questions.value = repository.getMeaningQuestions(10, allWords)
             }
         }
     }
@@ -95,6 +95,12 @@ class PracticeViewModel @Inject constructor(val repository: PracticeRepository) 
 
     fun clearExceptionHolder() {
         _exceptionHolder.value = null
+    }
+
+    fun updateMeaningPracticeProgress(meaningPracticeProgress: MeaningPracticeProgress) {
+        viewModelScope.launch {
+            repository.updateMeaningPracticeProgress(meaningPracticeProgress)
+        }
     }
 
 }
